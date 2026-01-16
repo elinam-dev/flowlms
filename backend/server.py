@@ -711,7 +711,13 @@ async def create_module(course_id: str, module: ModuleCreate, admin: dict = Depe
         **module.model_dump()
     }
     await db.modules.insert_one(module_doc)
-    return {"id": module_id, **module_doc}
+    return {
+        "id": module_id,
+        "course_id": course_id,
+        "title": module.title,
+        "description": module.description,
+        "order": module.order
+    }
 
 @admin_router.put("/modules/{module_id}")
 async def update_module(module_id: str, module: ModuleCreate, admin: dict = Depends(get_admin_user)):
