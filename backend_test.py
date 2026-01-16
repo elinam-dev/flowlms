@@ -379,6 +379,37 @@ class FlowitecLMSTester:
             print(f"   Course has {len(response.get('modules', []))} modules")
         return success
 
+    def test_course_types(self):
+        """Test creating courses with different types"""
+        course_types = ["optional", "compulsory", "assigned"]
+        
+        for course_type in course_types:
+            course_data = {
+                "title": f"Test {course_type.title()} Course",
+                "description": f"A {course_type} course for testing",
+                "category": "Testing",
+                "duration_hours": 5.0,
+                "is_published": True,
+                "course_type": course_type
+            }
+            
+            success, response = self.run_test(
+                f"Create {course_type.title()} Course",
+                "POST",
+                "admin/courses",
+                200,
+                data=course_data,
+                token=self.admin_token,
+                description=f"Create a {course_type} type course"
+            )
+            
+            if success and 'id' in response:
+                self.created_resources['courses'].append(response['id'])
+                print(f"   {course_type.title()} course created with ID: {response['id']}")
+            else:
+                return False
+        
+        return True
     def test_lesson_progress(self, lesson_id):
         """Test lesson progress update"""
         print("\n" + "="*50)
