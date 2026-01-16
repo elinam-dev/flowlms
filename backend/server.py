@@ -795,7 +795,15 @@ async def create_quiz(module_id: str, quiz: QuizCreate, admin: dict = Depends(ge
         "questions": [q.model_dump() for q in quiz.questions]
     }
     await db.quizzes.insert_one(quiz_doc)
-    return {"id": quiz_id, **quiz_doc}
+    return {
+        "id": quiz_id,
+        "module_id": module_id,
+        "course_id": module["course_id"],
+        "title": quiz.title,
+        "description": quiz.description,
+        "passing_score": quiz.passing_score,
+        "questions": [q.model_dump() for q in quiz.questions]
+    }
 
 @admin_router.put("/quizzes/{quiz_id}")
 async def update_quiz(quiz_id: str, quiz: QuizCreate, admin: dict = Depends(get_admin_user)):
