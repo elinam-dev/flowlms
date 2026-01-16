@@ -55,7 +55,7 @@ class UserCreate(BaseModel):
     employee_id: Optional[str] = None
 
 class UserLogin(BaseModel):
-    email: EmailStr
+    identifier: str  # Can be email or employee ID
     password: str
 
 class UserResponse(BaseModel):
@@ -179,7 +179,14 @@ async def register(user_data: UserCreate):
 
 @auth_router.post("/login", response_model=TokenResponse)
 async def login(credentials: UserLogin):
-    user = await db.users.find_one({"email": credentials.email})
+    # Try to find user by email or employee_id
+    user = await db.users.find_one({
+        "$or": [
+            {"email": credentials.identifier},
+            {"employee_id": credentials.identifier}
+        ]
+    })
+    
     if not user or not verify_password(credentials.password, user["password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
