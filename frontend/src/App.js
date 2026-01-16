@@ -5,7 +5,6 @@ import { Toaster } from "./components/ui/sonner";
 
 // Auth Pages
 import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
 
 // Learner Pages
 import LearnerDashboard from "./pages/learner/Dashboard";
