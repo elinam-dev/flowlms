@@ -81,8 +81,8 @@ class FlowitecLMSTester:
             return True
         return False
 
-    def test_user_registration(self):
-        """Test user registration"""
+    def test_user_registration_disabled(self):
+        """Test that user registration is disabled"""
         timestamp = datetime.now().strftime('%H%M%S')
         user_data = {
             "email": f"testuser{timestamp}@flowitec.com",
@@ -92,16 +92,27 @@ class FlowitecLMSTester:
         }
         
         success, response = self.run_test(
-            "User Registration",
+            "User Registration (Should be Disabled)",
             "POST",
             "auth/register",
-            200,
+            403,  # Expecting 403 Forbidden
             data=user_data,
-            description="Register a new learner"
+            description="Verify registration is disabled - only admin can create users"
+        )
+        return success
+
+    def test_learner_login(self):
+        """Test learner login with existing credentials"""
+        success, response = self.run_test(
+            "Learner Login",
+            "POST",
+            "auth/login",
+            200,
+            data={"email": "learner@flowitec.com", "password": "learner123"},
+            description="Login with learner credentials"
         )
         if success and 'access_token' in response:
             self.learner_token = response['access_token']
-            self.created_resources['users'].append(response['user']['id'])
             print(f"   Learner token obtained: {self.learner_token[:20]}...")
             return True
         return False
