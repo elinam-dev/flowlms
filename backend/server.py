@@ -616,6 +616,54 @@ async def get_all_users(admin: dict = Depends(get_admin_user)):
     users = await db.users.find({}, {"_id": 0, "password": 0}).to_list(1000)
     return users
 
+@admin_router.post("/users")
+async def create_user(user_data: AdminUserCreate, admin: dict = Depends(get_admin_user)):
+    # Check if email exists
+    existing = await db.users.find_one({"email": user_data.email})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    user_id = str(uuid.uuid4())
+    user_doc = {
+        "id": user_id,
+        "email": user_data.email,
+        "password": hash_password(user_data.password),
+        "first_name": user_data.first_name,
+        "last_name": user_data.last_name,
+        "employee_id": user_data.employee_id or f"EMP-{user_id[:8].upper()}",
+        "role": user_data.role,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "enrolled_courses": [],
+        "completed_courses": [],
+        "certificates": [],
+        "check_ins": [],
+        "streak": 0,
+        "last_check_in": None
+    }
+    
+    await db.users.insert_one(user_doc)
+    
+    # Return user without password
+    del user_doc["password"]
+    user_doc.pop("_id", None)
+    return user_doc
+
+@admin_router.delete("/users/{user_id}")
+async def delete_user(user_id: str, admin: dict = Depends(get_admin_user)):
+    # Don't allow deleting yourself
+    if user_id == admin["id"]:
+        raise HTTPException(status_code=400, detail="Cannot delete your own account")
+    
+    result = await db.users.delete_one({"id": user_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Clean up user's progress and certificates
+    await db.progress.delete_many({"user_id": user_id})
+    await db.certificates.delete_many({"user_id": user_id})
+    
+    return {"message": "User deleted"}
+
 @admin_router.post("/users/{user_id}/role")
 async def update_user_role(user_id: str, role: str, admin: dict = Depends(get_admin_user)):
     if role not in ["learner", "admin"]:
