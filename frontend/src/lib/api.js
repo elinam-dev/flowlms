@@ -29,7 +29,7 @@ const API = getApiUrl();
 
 // Auth APIs
 export const authApi = {
-  login: (data) => axios.post(`${API}/auth/login`, data),
+  login: (data) => axios.post(`${API}/auth/login`, { identifier: data.identifier, password: data.password }),
   register: (data) => axios.post(`${API}/auth/register`, data),
   me: () => axios.get(`${API}/auth/me`),
 };
