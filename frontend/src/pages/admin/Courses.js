@@ -364,6 +364,19 @@ export default function AdminCourses() {
                   data-testid="course-thumbnail-input"
                 />
               </div>
+              <div className="space-y-2">
+                <Label>Course Type</Label>
+                <Select value={formData.course_type} onValueChange={(value) => setFormData({ ...formData, course_type: value })}>
+                  <SelectTrigger data-testid="course-type-select">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="optional">Optional - Learners can choose to enroll</SelectItem>
+                    <SelectItem value="compulsory">Compulsory - Required for all learners</SelectItem>
+                    <SelectItem value="assigned">Assigned - Admin assigns to specific users</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="flex items-center justify-between">
                 <Label>Publish Course</Label>
                 <Switch
