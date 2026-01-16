@@ -174,40 +174,8 @@ async def get_admin_user(current_user: dict = Depends(get_current_user)):
 
 @auth_router.post("/register", response_model=TokenResponse)
 async def register(user_data: UserCreate):
-    # Check if email exists
-    existing = await db.users.find_one({"email": user_data.email})
-    if existing:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    
-    user_id = str(uuid.uuid4())
-    user_doc = {
-        "id": user_id,
-        "email": user_data.email,
-        "password": hash_password(user_data.password),
-        "first_name": user_data.first_name,
-        "last_name": user_data.last_name,
-        "employee_id": user_data.employee_id or f"EMP-{user_id[:8].upper()}",
-        "role": "learner",
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "enrolled_courses": [],
-        "completed_courses": [],
-        "certificates": []
-    }
-    
-    await db.users.insert_one(user_doc)
-    
-    token = create_token(user_id, "learner")
-    user_response = UserResponse(
-        id=user_id,
-        email=user_data.email,
-        first_name=user_data.first_name,
-        last_name=user_data.last_name,
-        employee_id=user_doc["employee_id"],
-        role="learner",
-        created_at=user_doc["created_at"]
-    )
-    
-    return TokenResponse(access_token=token, user=user_response)
+    # Registration is disabled - only admin can create users
+    raise HTTPException(status_code=403, detail="Registration is disabled. Please contact your administrator.")
 
 @auth_router.post("/login", response_model=TokenResponse)
 async def login(credentials: UserLogin):
