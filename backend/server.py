@@ -224,6 +224,61 @@ async def update_profile(
     updated_user = await db.users.find_one({"id": current_user["id"]}, {"_id": 0, "password": 0})
     return updated_user
 
+@user_router.post("/check-in")
+async def daily_check_in(current_user: dict = Depends(get_current_user)):
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    
+    # Get user's check-in history
+    user = await db.users.find_one({"id": current_user["id"]})
+    check_ins = user.get("check_ins", [])
+    last_check_in = user.get("last_check_in")
+    streak = user.get("streak", 0)
+    
+    # Check if already checked in today
+    if today in check_ins:
+        return {
+            "message": "Already checked in today",
+            "streak": streak,
+            "check_ins": check_ins[-30:],  # Last 30 days
+            "already_checked_in": True
+        }
+    
+    # Calculate streak
+    yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d")
+    if last_check_in == yesterday:
+        streak += 1
+    elif last_check_in != today:
+        streak = 1  # Reset streak
+    
+    # Update user
+    await db.users.update_one(
+        {"id": current_user["id"]},
+        {
+            "$push": {"check_ins": today},
+            "$set": {"last_check_in": today, "streak": streak}
+        }
+    )
+    
+    return {
+        "message": "Check-in successful!",
+        "streak": streak,
+        "check_ins": (check_ins + [today])[-30:],
+        "already_checked_in": False
+    }
+
+@user_router.get("/check-in/status")
+async def get_check_in_status(current_user: dict = Depends(get_current_user)):
+    user = await db.users.find_one({"id": current_user["id"]}, {"_id": 0})
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    check_ins = user.get("check_ins", [])
+    
+    return {
+        "streak": user.get("streak", 0),
+        "check_ins": check_ins[-30:],
+        "checked_in_today": today in check_ins,
+        "last_check_in": user.get("last_check_in")
+    }
+
 # ======================= COURSE ROUTES =======================
 
 @course_router.get("")
