@@ -23,6 +23,8 @@ export const authApi = {
 export const userApi = {
   getProfile: () => axios.get(`${API}/users/profile`),
   updateProfile: (data) => axios.put(`${API}/users/profile`, null, { params: data }),
+  checkIn: () => axios.post(`${API}/users/check-in`),
+  getCheckInStatus: () => axios.get(`${API}/users/check-in/status`),
 };
 
 // Course APIs
