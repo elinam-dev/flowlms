@@ -246,6 +246,7 @@ async def update_profile(
 
 # ======================= COURSE ROUTES =======================
 
+@course_router.get("")
 @course_router.get("/")
 async def get_courses(current_user: dict = Depends(get_current_user)):
     query = {"is_published": True} if current_user["role"] != "admin" else {}
