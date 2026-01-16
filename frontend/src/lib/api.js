@@ -58,6 +58,8 @@ export const certificateApi = {
 export const adminApi = {
   getStats: () => axios.get(`${API}/admin/stats`),
   getUsers: () => axios.get(`${API}/admin/users`),
+  createUser: (data) => axios.post(`${API}/admin/users`, data),
+  deleteUser: (userId) => axios.delete(`${API}/admin/users/${userId}`),
   updateUserRole: (userId, role) => axios.post(`${API}/admin/users/${userId}/role`, null, { params: { role } }),
   
   // Courses
