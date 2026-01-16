@@ -3,14 +3,16 @@ import axios from 'axios';
 
 const AuthContext = createContext(null);
 
-// Ensure we use HTTPS URL
+// Create a function to get the API URL dynamically
 const getApiUrl = () => {
-  let url = process.env.REACT_APP_BACKEND_URL || '';
-  // Force HTTPS in production
-  if (url.startsWith('http://') && window.location.protocol === 'https:') {
-    url = url.replace('http://', 'https://');
+  let baseUrl = process.env.REACT_APP_BACKEND_URL || '';
+  
+  // Force HTTPS in production when accessed via HTTPS
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    baseUrl = baseUrl.replace('http://', 'https://');
   }
-  return `${url}/api`;
+  
+  return `${baseUrl}/api`;
 };
 
 const API = getApiUrl();
