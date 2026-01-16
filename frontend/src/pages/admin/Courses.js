@@ -85,7 +85,8 @@ export default function AdminCourses() {
       thumbnail: '',
       category: '',
       duration_hours: 0,
-      is_published: false
+      is_published: false,
+      course_type: 'optional'
     });
   };
 
