@@ -657,7 +657,19 @@ async def create_course(course: CourseCreate, admin: dict = Depends(get_admin_us
         "created_by": admin["id"]
     }
     await db.courses.insert_one(course_doc)
-    return {"id": course_id, **course_doc}
+    # Return without MongoDB _id field
+    return {
+        "id": course_id,
+        "title": course.title,
+        "description": course.description,
+        "thumbnail": course.thumbnail,
+        "category": course.category,
+        "duration_hours": course.duration_hours,
+        "is_published": course.is_published,
+        "enrolled_users": [],
+        "created_at": course_doc["created_at"],
+        "created_by": admin["id"]
+    }
 
 @admin_router.put("/courses/{course_id}")
 async def update_course(course_id: str, course: CourseCreate, admin: dict = Depends(get_admin_user)):
