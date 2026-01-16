@@ -151,7 +151,8 @@ export default function AdminCourses() {
       thumbnail: course.thumbnail || '',
       category: course.category || '',
       duration_hours: course.duration_hours || 0,
-      is_published: course.is_published || false
+      is_published: course.is_published || false,
+      course_type: course.course_type || 'optional'
     });
     setShowEditModal(true);
   };
