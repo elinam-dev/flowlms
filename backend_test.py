@@ -503,8 +503,12 @@ class FlowitecLMSTester:
             print("❌ Admin login failed, stopping tests")
             return False
             
-        if not self.test_user_registration():
-            print("❌ User registration failed, stopping tests")
+        # Test that registration is disabled
+        self.test_user_registration_disabled()
+        
+        # Test learner login with existing credentials
+        if not self.test_learner_login():
+            print("❌ Learner login failed, stopping tests")
             return False
             
         self.test_auth_me()
@@ -512,10 +516,19 @@ class FlowitecLMSTester:
         # Admin functionality tests
         self.test_admin_stats()
         
+        # Test admin user creation
+        new_user_id = self.test_admin_user_creation()
+        
+        # Test daily check-in feature
+        self.test_daily_check_in()
+        
         course_id = self.test_course_creation()
         if not course_id:
             print("❌ Course creation failed, stopping tests")
             return False
+        
+        # Test different course types
+        self.test_course_types()
             
         module_id = self.test_module_creation(course_id)
         if not module_id:
