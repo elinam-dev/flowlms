@@ -1,14 +1,29 @@
 import axios from 'axios';
 
-// Ensure we use HTTPS URL
+// Create a function to get the API URL dynamically
 const getApiUrl = () => {
-  let url = process.env.REACT_APP_BACKEND_URL || '';
-  // Force HTTPS in production
-  if (url.startsWith('http://') && window.location.protocol === 'https:') {
-    url = url.replace('http://', 'https://');
+  let baseUrl = process.env.REACT_APP_BACKEND_URL || '';
+  
+  // Force HTTPS in production when accessed via HTTPS
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    baseUrl = baseUrl.replace('http://', 'https://');
   }
-  return `${url}/api`;
+  
+  return `${baseUrl}/api`;
 };
+
+// Set up axios interceptor to fix URLs
+axios.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    if (config.url && config.url.startsWith('http://')) {
+      config.url = config.url.replace('http://', 'https://');
+    }
+    if (config.baseURL && config.baseURL.startsWith('http://')) {
+      config.baseURL = config.baseURL.replace('http://', 'https://');
+    }
+  }
+  return config;
+});
 
 const API = getApiUrl();
 
