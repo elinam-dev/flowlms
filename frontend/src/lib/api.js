@@ -1,6 +1,16 @@
 import axios from 'axios';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+// Ensure we use HTTPS URL
+const getApiUrl = () => {
+  let url = process.env.REACT_APP_BACKEND_URL || '';
+  // Force HTTPS in production
+  if (url.startsWith('http://') && window.location.protocol === 'https:') {
+    url = url.replace('http://', 'https://');
+  }
+  return `${url}/api`;
+};
+
+const API = getApiUrl();
 
 // Auth APIs
 export const authApi = {
