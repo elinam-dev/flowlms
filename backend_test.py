@@ -147,14 +147,78 @@ class FlowitecLMSTester:
             print(f"   Stats: {response}")
         return success
 
+    def test_admin_user_creation(self):
+        """Test admin creating new users"""
+        timestamp = datetime.now().strftime('%H%M%S')
+        user_data = {
+            "email": f"newlearner{timestamp}@flowitec.com",
+            "password": "NewPass123!",
+            "first_name": "New",
+            "last_name": "Learner",
+            "employee_id": f"EMP-{timestamp}",
+            "role": "learner"
+        }
+        
+        success, response = self.run_test(
+            "Admin Create User",
+            "POST",
+            "admin/users",
+            200,
+            data=user_data,
+            token=self.admin_token,
+            description="Admin creates a new learner account"
+        )
+        if success and 'id' in response:
+            self.created_resources['users'].append(response['id'])
+            print(f"   User created with ID: {response['id']}")
+            return response['id']
+        return None
+
+    def test_daily_check_in(self):
+        """Test daily check-in functionality"""
+        print("\n" + "="*50)
+        print("TESTING DAILY CHECK-IN FEATURE")
+        print("="*50)
+        
+        # Get check-in status first
+        success, response = self.run_test(
+            "Get Check-in Status",
+            "GET",
+            "users/check-in/status",
+            200,
+            token=self.learner_token,
+            description="Get current check-in status and streak"
+        )
+        
+        if success:
+            print(f"   Current streak: {response.get('streak', 0)}")
+            print(f"   Checked in today: {response.get('checked_in_today', False)}")
+        
+        # Perform check-in
+        success2, response2 = self.run_test(
+            "Daily Check-in",
+            "POST",
+            "users/check-in",
+            200,
+            token=self.learner_token,
+            description="Perform daily check-in"
+        )
+        
+        if success2:
+            print(f"   New streak: {response2.get('streak', 0)}")
+            print(f"   Already checked in: {response2.get('already_checked_in', False)}")
+        
+        return success and success2
+
     def test_course_creation(self):
-        """Test course creation"""
+        """Test course creation with course_type"""
         course_data = {
             "title": "Test Engineering Course",
             "description": "A comprehensive test course for engineering professionals",
             "category": "Engineering",
             "duration_hours": 10.5,
-            "is_published": True
+            "is_published": True,
+            "course_type": "optional"
         }
         
         success, response = self.run_test(
