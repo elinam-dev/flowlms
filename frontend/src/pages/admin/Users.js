@@ -4,6 +4,7 @@ import { adminApi } from '../../lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
+import { Label } from '../../components/ui/label';
 import { Badge } from '../../components/ui/badge';
 import { Skeleton } from '../../components/ui/skeleton';
 import { toast } from 'sonner';
@@ -22,13 +23,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/ui/select';
-import { Users, Search, Shield, User, Mail, Calendar } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '../../components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '../../components/ui/alert-dialog';
+import { Users, Search, Shield, User, Mail, Calendar, Plus, Trash2, Loader2, UserPlus } from 'lucide-react';
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [updatingRole, setUpdatingRole] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [creating, setCreating] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    first_name: '',
+    last_name: '',
+    employee_id: '',
+    role: 'learner'
+  });
 
   useEffect(() => {
     fetchUsers();
@@ -58,6 +89,49 @@ export default function AdminUsers() {
     }
   };
 
+  const resetForm = () => {
+    setFormData({
+      email: '',
+      password: '',
+      first_name: '',
+      last_name: '',
+      employee_id: '',
+      role: 'learner'
+    });
+  };
+
+  const handleCreateUser = async () => {
+    if (!formData.email || !formData.password || !formData.first_name || !formData.last_name) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    
+    setCreating(true);
+    try {
+      const response = await adminApi.createUser(formData);
+      setUsers([...users, response.data]);
+      setShowCreateModal(false);
+      resetForm();
+      toast.success('User created successfully');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to create user');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    try {
+      await adminApi.deleteUser(selectedUser.id);
+      setUsers(users.filter(u => u.id !== selectedUser.id));
+      setShowDeleteDialog(false);
+      setSelectedUser(null);
+      toast.success('User deleted');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to delete user');
+    }
+  };
+
   const filteredUsers = users.filter(user => 
     user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
     `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -83,13 +157,23 @@ export default function AdminUsers() {
           <div>
             <h1 className="text-3xl font-bold text-[#0F172A] mb-2">User Management</h1>
             <p className="text-slate-500">
-              Manage learners and their access permissions.
+              Create and manage learner accounts.
             </p>
           </div>
-          <Badge variant="outline" className="text-[#095EB1]">
-            <Users className="w-4 h-4 mr-2" />
-            {users.length} Users
-          </Badge>
+          <div className="flex items-center gap-3">
+            <Badge variant="outline" className="text-[#095EB1]">
+              <Users className="w-4 h-4 mr-2" />
+              {users.length} Users
+            </Badge>
+            <Button 
+              className="bg-gradient-to-r from-[#095EB1] to-[#0EA5E9] hover:from-[#074A8C] hover:to-[#0284C7]"
+              onClick={() => { resetForm(); setShowCreateModal(true); }}
+              data-testid="create-user-btn"
+            >
+              <UserPlus className="w-4 h-4 mr-2" />
+              Create User
+            </Button>
+          </div>
         </div>
 
         {/* Search */}
@@ -116,6 +200,7 @@ export default function AdminUsers() {
                   <TableHead>Employee ID</TableHead>
                   <TableHead>Role</TableHead>
                   <TableHead>Enrolled Courses</TableHead>
+                  <TableHead>Streak</TableHead>
                   <TableHead>Joined</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -123,7 +208,7 @@ export default function AdminUsers() {
               <TableBody>
                 {filteredUsers.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-slate-500">
+                    <TableCell colSpan={7} className="text-center py-8 text-slate-500">
                       No users found
                     </TableCell>
                   </TableRow>
@@ -132,8 +217,8 @@ export default function AdminUsers() {
                     <TableRow key={user.id} data-testid={`user-row-${user.id}`}>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
-                            <User className="w-5 h-5 text-slate-500" />
+                          <div className="w-10 h-10 bg-gradient-to-br from-[#095EB1] to-[#0EA5E9] rounded-full flex items-center justify-center text-white font-semibold">
+                            {user.first_name?.[0]}{user.last_name?.[0]}
                           </div>
                           <div>
                             <p className="font-medium text-[#0F172A]">
@@ -147,7 +232,7 @@ export default function AdminUsers() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <span className="font-mono text-sm">{user.employee_id || '-'}</span>
+                        <span className="font-mono text-sm bg-slate-100 px-2 py-1 rounded">{user.employee_id || '-'}</span>
                       </TableCell>
                       <TableCell>
                         <Badge className={user.role === 'admin' ? 'bg-violet-100 text-violet-700' : 'bg-blue-100 text-blue-700'}>
@@ -159,25 +244,42 @@ export default function AdminUsers() {
                         <span className="text-slate-600">{user.enrolled_courses?.length || 0}</span>
                       </TableCell>
                       <TableCell>
+                        <div className="flex items-center gap-1">
+                          <span className="text-lg">🔥</span>
+                          <span className="font-semibold text-orange-600">{user.streak || 0}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
                         <span className="text-sm text-slate-500 flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
                           {new Date(user.created_at).toLocaleDateString()}
                         </span>
                       </TableCell>
                       <TableCell className="text-right">
-                        <Select
-                          value={user.role}
-                          onValueChange={(value) => handleRoleChange(user.id, value)}
-                          disabled={updatingRole === user.id}
-                        >
-                          <SelectTrigger className="w-32" data-testid={`role-select-${user.id}`}>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="learner">Learner</SelectItem>
-                            <SelectItem value="admin">Admin</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <div className="flex items-center justify-end gap-2">
+                          <Select
+                            value={user.role}
+                            onValueChange={(value) => handleRoleChange(user.id, value)}
+                            disabled={updatingRole === user.id}
+                          >
+                            <SelectTrigger className="w-28" data-testid={`role-select-${user.id}`}>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="learner">Learner</SelectItem>
+                              <SelectItem value="admin">Admin</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            onClick={() => { setSelectedUser(user); setShowDeleteDialog(true); }}
+                            data-testid={`delete-user-${user.id}`}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
@@ -186,6 +288,118 @@ export default function AdminUsers() {
             </Table>
           </CardContent>
         </Card>
+
+        {/* Create User Modal */}
+        <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <UserPlus className="w-5 h-5 text-[#095EB1]" />
+                Create New User
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>First Name *</Label>
+                  <Input
+                    value={formData.first_name}
+                    onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                    placeholder="John"
+                    data-testid="user-first-name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Last Name *</Label>
+                  <Input
+                    value={formData.last_name}
+                    onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                    placeholder="Doe"
+                    data-testid="user-last-name"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Email *</Label>
+                <Input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="john.doe@flowitec.com"
+                  data-testid="user-email"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Password *</Label>
+                <Input
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder="Create a password"
+                  data-testid="user-password"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Employee ID</Label>
+                  <Input
+                    value={formData.employee_id}
+                    onChange={(e) => setFormData({ ...formData, employee_id: e.target.value })}
+                    placeholder="EMP-001"
+                    data-testid="user-employee-id"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Role</Label>
+                  <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
+                    <SelectTrigger data-testid="user-role">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="learner">Learner</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowCreateModal(false)}>Cancel</Button>
+              <Button 
+                className="bg-[#095EB1] hover:bg-[#074A8C]"
+                onClick={handleCreateUser}
+                disabled={creating}
+                data-testid="save-user-btn"
+              >
+                {creating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Create User
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation */}
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete User</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete "{selectedUser?.first_name} {selectedUser?.last_name}"? 
+                This will also remove their progress and certificates. This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteUser}
+                className="bg-red-600 hover:bg-red-700"
+                data-testid="confirm-delete-user"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </Layout>
   );
