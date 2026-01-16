@@ -751,7 +751,15 @@ async def create_lesson(module_id: str, lesson: LessonCreate, admin: dict = Depe
         **lesson.model_dump()
     }
     await db.lessons.insert_one(lesson_doc)
-    return {"id": lesson_id, **lesson_doc}
+    return {
+        "id": lesson_id,
+        "module_id": module_id,
+        "title": lesson.title,
+        "content_type": lesson.content_type,
+        "content": lesson.content,
+        "duration_minutes": lesson.duration_minutes,
+        "order": lesson.order
+    }
 
 @admin_router.put("/lessons/{lesson_id}")
 async def update_lesson(lesson_id: str, lesson: LessonCreate, admin: dict = Depends(get_admin_user)):
