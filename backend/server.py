@@ -79,6 +79,7 @@ class CourseCreate(BaseModel):
     category: Optional[str] = None
     duration_hours: Optional[float] = 0
     is_published: bool = False
+    course_type: str = "optional"  # compulsory, optional, assigned
 
 class ModuleCreate(BaseModel):
     title: str
@@ -119,6 +120,17 @@ class ProgressUpdate(BaseModel):
 
 class CourseEnrollment(BaseModel):
     course_id: str
+
+class AdminUserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    first_name: str
+    last_name: str
+    employee_id: Optional[str] = None
+    role: str = "learner"
+
+class DailyCheckIn(BaseModel):
+    date: str
 
 # ======================= HELPERS =======================
 
