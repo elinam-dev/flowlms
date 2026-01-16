@@ -58,25 +58,33 @@ A professional Learning Management System (LMS) for Flowitec, a corporate engine
 ## What's Been Implemented (January 16, 2026)
 
 ### Backend (FastAPI + MongoDB)
-- Complete REST API with 16+ endpoints
+- Complete REST API with 20+ endpoints
 - JWT authentication with role-based access
 - Course, Module, Lesson, Quiz CRUD
+- Course types: Compulsory, Optional, Assigned
 - Progress tracking with auto-calculation
 - Certificate generation with ReportLab PDF
 - File upload support (video, document, image)
+- Daily check-in with streak tracking
+- Admin-only user creation (self-registration disabled)
 
 ### Frontend (React + Tailwind)
 - Flowitec branded UI with professional design
-- Login/Register pages
-- Learner Dashboard with stats and progress
+- Login page (no self-registration)
+- Welcome back popup on login
+- Learner Dashboard with:
+  - Daily check-in feature with streak tracking
+  - 7-day check-in calendar
+  - Colorful gradient stats cards
+  - Course progress tracking
 - Course Catalog with search and filter
 - Course Detail with lesson player
 - Quiz component with all question types
 - Certificate download
 - Admin Dashboard with analytics
-- Admin Course Management
+- Admin Course Management with course types
 - Admin Course Detail (module/lesson/quiz builder)
-- Admin User Management
+- Admin User Management with user creation
 
 ## Tech Stack
 - **Backend**: FastAPI, Python 3.11, Motor (MongoDB async)
