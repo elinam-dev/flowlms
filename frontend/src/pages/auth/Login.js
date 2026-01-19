@@ -6,10 +6,10 @@ import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { toast } from 'sonner';
-import { Loader2, Mail, Lock, ArrowRight, Sparkles } from 'lucide-react';
+import { Loader2, User, Lock, ArrowRight, Sparkles } from 'lucide-react';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -20,7 +20,7 @@ export default function Login() {
     setLoading(true);
     
     try {
-      const user = await login(email, password);
+      const user = await login(identifier, password);
       
       // Show welcome back toast with animation
       toast.success(
@@ -73,24 +73,24 @@ export default function Login() {
             <CardHeader className="px-0">
               <CardTitle className="text-3xl font-bold text-[#0F172A]">Welcome back</CardTitle>
               <CardDescription className="text-slate-500 text-base">
-                Sign in to continue your learning journey
+                Sign in with your Employee ID or Email
               </CardDescription>
             </CardHeader>
             <CardContent className="px-0">
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-slate-700 font-medium">Email</Label>
+                  <Label htmlFor="identifier" className="text-slate-700 font-medium">Employee ID or Email</Label>
                   <div className="relative group">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-[#095EB1] transition-colors" />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-[#095EB1] transition-colors" />
                     <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="you@company.com"
+                      id="identifier"
+                      type="text"
+                      value={identifier}
+                      onChange={(e) => setIdentifier(e.target.value)}
+                      placeholder="EMP-001 or you@company.com"
                       className="pl-11 h-12 text-base border-slate-200 focus:border-[#095EB1] focus:ring-[#095EB1]"
                       required
-                      data-testid="login-email"
+                      data-testid="login-identifier"
                     />
                   </div>
                 </div>
@@ -143,6 +143,7 @@ export default function Login() {
               <div className="mt-4 p-4 bg-amber-50 rounded-xl border border-amber-200">
                 <p className="text-xs font-semibold text-amber-700 mb-2">Demo Credentials:</p>
                 <p className="text-xs text-amber-600"><span className="font-medium">Admin:</span> admin@flowitec.com / admin123</p>
+                <p className="text-xs text-amber-600"><span className="font-medium">Learner:</span> EMP-TEST-01 / learner123</p>
               </div>
             </CardContent>
           </Card>
