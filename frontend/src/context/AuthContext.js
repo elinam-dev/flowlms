@@ -57,8 +57,8 @@ export const AuthProvider = ({ children }) => {
     fetchUser();
   }, [fetchUser]);
 
-  const login = async (email, password) => {
-    const response = await axios.post(`${API}/auth/login`, { email, password });
+  const login = async (identifier, password) => {
+    const response = await axios.post(`${API}/auth/login`, { identifier, password });
     const { access_token, user: userData } = response.data;
     
     localStorage.setItem('flowitec_token', access_token);
