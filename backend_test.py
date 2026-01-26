@@ -714,6 +714,9 @@ class FlowitecLMSTester:
         # Test admin users endpoint with enrolled courses details
         self.test_admin_users_with_enrolled_courses()
         
+        # Test document viewer endpoints for compulsory courses
+        self.test_document_viewer_endpoints()
+        
         # Print final results
         print("\n" + "="*60)
         print("📊 FINAL TEST RESULTS")
