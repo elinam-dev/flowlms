@@ -172,7 +172,7 @@ frontend:
 metadata:
   created_by: "main_agent"
   version: "1.0"
-  test_sequence: 2
+  test_sequence: 3
   run_ui: false
 
 test_plan:
@@ -185,3 +185,5 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Implemented compulsory courses feature. Created 5 courses from uploaded documents, enrolled all existing users, and modified backend to auto-enroll new users. Frontend updated to show expandable list of enrolled courses."
+  - agent: "testing"
+    message: "Completed comprehensive testing of document viewer functionality. All 5 compulsory course documents are accessible via the viewer endpoint: DOCX files properly convert to HTML, PDF files serve correctly with proper headers. Document viewer endpoint at /api/upload/view/{filename} is fully functional."
