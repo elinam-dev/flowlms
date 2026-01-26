@@ -152,17 +152,17 @@ export default function CourseDetail() {
     // Get the full URL for the content
     const getContentUrl = () => {
       if (activeLesson.content.startsWith('/')) {
-        return `${process.env.REACT_APP_BACKEND_URL}${activeLesson.content}`;
+        // Use the current window origin for the backend URL to ensure proper HTTPS handling
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+        return `${backendUrl}${activeLesson.content}`;
       }
       return activeLesson.content;
     };
 
-    // Check if the file is a Word document
-    const isWordDoc = activeLesson.content.toLowerCase().endsWith('.docx') || 
-                      activeLesson.content.toLowerCase().endsWith('.doc');
-    
-    // Check if the file is a PDF
-    const isPdf = activeLesson.content.toLowerCase().endsWith('.pdf');
+    // Check file types
+    const contentLower = activeLesson.content.toLowerCase();
+    const isWordDoc = contentLower.endsWith('.docx') || contentLower.endsWith('.doc');
+    const isPdf = contentLower.endsWith('.pdf');
 
     switch (activeLesson.content_type) {
       case 'video':
@@ -189,9 +189,38 @@ export default function CourseDetail() {
       case 'pdf':
         const contentUrl = getContentUrl();
         
-        if (isWordDoc) {
-          // Use Microsoft Office Online Viewer for Word documents
-          const encodedUrl = encodeURIComponent(contentUrl);
+        if (isPdf) {
+          // For PDFs, embed directly - works in most modern browsers
+          return (
+            <div className="rounded-lg overflow-hidden border bg-slate-100" style={{ height: '80vh' }}>
+              <object
+                data={contentUrl}
+                type="application/pdf"
+                className="w-full h-full"
+              >
+                <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+                  <FileText className="w-16 h-16 text-slate-400 mb-4" />
+                  <p className="text-slate-600 mb-4">Unable to display PDF in browser.</p>
+                  <a 
+                    href={contentUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#095EB1] text-white rounded-lg hover:bg-[#074A8C]"
+                  >
+                    <FileText className="w-4 h-4" />
+                    Open PDF
+                  </a>
+                </div>
+              </object>
+            </div>
+          );
+        } else if (isWordDoc) {
+          // For Word documents, try Microsoft Office Online viewer with fallback
+          const publicUrl = window.location.origin.includes('localhost') 
+            ? contentUrl 
+            : `${window.location.origin}${activeLesson.content}`;
+          const encodedUrl = encodeURIComponent(publicUrl);
+          
           return (
             <div className="rounded-lg overflow-hidden border bg-white" style={{ height: '80vh' }}>
               <iframe
@@ -199,24 +228,29 @@ export default function CourseDetail() {
                 title={activeLesson.title}
                 className="w-full h-full"
                 frameBorder="0"
+                onError={() => {
+                  // Fallback handled by the fallback div below
+                }}
               />
-            </div>
-          );
-        } else if (isPdf) {
-          // Use Google Docs Viewer for PDFs (more reliable cross-browser)
-          const encodedUrl = encodeURIComponent(contentUrl);
-          return (
-            <div className="rounded-lg overflow-hidden border bg-white" style={{ height: '80vh' }}>
-              <iframe
-                src={`https://docs.google.com/viewer?url=${encodedUrl}&embedded=true`}
-                title={activeLesson.title}
-                className="w-full h-full"
-                frameBorder="0"
-              />
+              {/* Fallback message if iframe doesn't load */}
+              <noscript>
+                <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+                  <FileText className="w-16 h-16 text-slate-400 mb-4" />
+                  <p className="text-slate-600 mb-4">Document viewer requires JavaScript.</p>
+                  <a 
+                    href={contentUrl} 
+                    download
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#095EB1] text-white rounded-lg hover:bg-[#074A8C]"
+                  >
+                    <FileText className="w-4 h-4" />
+                    Download Document
+                  </a>
+                </div>
+              </noscript>
             </div>
           );
         } else {
-          // Fallback for other file types
+          // Generic file embed
           return (
             <div className="rounded-lg overflow-hidden border bg-white" style={{ height: '80vh' }}>
               <iframe
