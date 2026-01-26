@@ -51,6 +51,7 @@ export default function AdminUsers() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [creating, setCreating] = useState(false);
+  const [expandedUsers, setExpandedUsers] = useState({});
   
   const [formData, setFormData] = useState({
     email: '',
