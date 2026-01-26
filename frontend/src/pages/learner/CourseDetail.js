@@ -592,7 +592,7 @@ export default function CourseDetail() {
                                   {completed ? (
                                     <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0" />
                                   ) : isEnrolled ? (
-                                    getContentIcon(lesson.content_type)
+                                    getContentIcon(lesson.content_type, lesson.content)
                                   ) : (
                                     <Lock className="w-4 h-4 text-slate-400 flex-shrink-0" />
                                   )}
