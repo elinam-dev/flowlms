@@ -501,7 +501,7 @@ export default function CourseDetail() {
                   <CardHeader className="bg-slate-50 border-b">
                     <div className="flex items-center justify-between">
                       <CardTitle className="flex items-center gap-2">
-                        {getContentIcon(activeLesson.content_type)}
+                        {getContentIcon(activeLesson.content_type, activeLesson.content)}
                         {activeLesson.title}
                       </CardTitle>
                       {activeLesson.duration_minutes > 0 && (
