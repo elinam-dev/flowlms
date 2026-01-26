@@ -146,7 +146,10 @@ export default function Courses() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCourses.map((course) => {
-              const isEnrolled = enrolledIds.includes(course.id);
+              const enrolledCourse = getEnrolledCourse(course.id);
+              const isEnrolled = !!enrolledCourse;
+              const progress = enrolledCourse?.progress || 0;
+              const isCompleted = progress >= 100;
               
               return (
                 <Link 
@@ -154,7 +157,7 @@ export default function Courses() {
                   to={`/courses/${course.id}`}
                   data-testid={`course-${course.id}`}
                 >
-                  <Card className="card-base card-interactive h-full group">
+                  <Card className={`card-base card-interactive h-full group ${isCompleted ? 'border-emerald-200' : ''}`}>
                     {/* Thumbnail */}
                     <div className="aspect-video bg-slate-100 relative overflow-hidden">
                       {course.thumbnail ? (
@@ -164,8 +167,16 @@ export default function Courses() {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#095EB1]/10 to-[#0EA5E9]/10">
-                          <BookOpen className="w-12 h-12 text-[#095EB1]/40" />
+                        <div className={`w-full h-full flex items-center justify-center ${
+                          isCompleted 
+                            ? 'bg-gradient-to-br from-emerald-100 to-emerald-200' 
+                            : 'bg-gradient-to-br from-[#095EB1]/10 to-[#0EA5E9]/10'
+                        }`}>
+                          {isCompleted ? (
+                            <Award className="w-12 h-12 text-emerald-500" />
+                          ) : (
+                            <BookOpen className="w-12 h-12 text-[#095EB1]/40" />
+                          )}
                         </div>
                       )}
                       {course.category && (
@@ -173,21 +184,52 @@ export default function Courses() {
                           {course.category}
                         </Badge>
                       )}
-                      {isEnrolled && (
+                      {isCompleted ? (
                         <Badge className="absolute top-3 right-3 bg-emerald-500 text-white">
                           <CheckCircle className="w-3 h-3 mr-1" />
+                          Completed
+                        </Badge>
+                      ) : isEnrolled ? (
+                        <Badge className="absolute top-3 right-3 bg-blue-500 text-white">
+                          <BookOpen className="w-3 h-3 mr-1" />
                           Enrolled
                         </Badge>
-                      )}
+                      ) : null}
                     </div>
 
                     <CardContent className="p-5">
+                      {/* Course Type Badge */}
+                      <div className="flex items-center gap-2 mb-2">
+                        {course.course_type === 'compulsory' && (
+                          <Badge className="bg-red-100 text-red-700 text-xs">Required</Badge>
+                        )}
+                        {course.course_type === 'assigned' && (
+                          <Badge className="bg-purple-100 text-purple-700 text-xs">Assigned</Badge>
+                        )}
+                      </div>
+                      
                       <h3 className="font-semibold text-lg text-[#0F172A] mb-2 group-hover:text-[#095EB1] transition-colors line-clamp-2">
                         {course.title}
                       </h3>
                       <p className="text-sm text-slate-500 mb-4 line-clamp-2">
                         {course.description}
                       </p>
+
+                      {/* Progress bar for enrolled courses */}
+                      {isEnrolled && (
+                        <div className="mb-4">
+                          <div className="flex items-center justify-between text-sm mb-1">
+                            <span className="text-slate-500">Progress</span>
+                            <span className={`font-semibold ${isCompleted ? 'text-emerald-600' : 'text-[#095EB1]'}`}>
+                              {progress}%
+                            </span>
+                          </div>
+                          <Progress 
+                            value={progress} 
+                            className={`h-2 ${isCompleted ? '[&>div]:bg-emerald-500' : ''}`} 
+                          />
+                        </div>
+                      )}
 
                       {/* Meta info */}
                       <div className="flex items-center gap-4 text-sm text-slate-500 mb-4">
@@ -204,7 +246,15 @@ export default function Courses() {
                       </div>
 
                       {/* Action Button */}
-                      {isEnrolled ? (
+                      {isCompleted ? (
+                        <Button 
+                          className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
+                          data-testid={`completed-course-${course.id}`}
+                        >
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          Completed
+                        </Button>
+                      ) : isEnrolled ? (
                         <Button 
                           className="w-full bg-[#095EB1] hover:bg-[#074A8C]"
                           data-testid={`continue-course-${course.id}`}
