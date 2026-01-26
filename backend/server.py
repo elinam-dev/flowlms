@@ -1060,6 +1060,108 @@ async def upload_image(
     
     return {"url": f"/api/uploads/images/{file_id}{file_ext}", "filename": file.filename}
 
+# Document viewer endpoint - converts DOCX to HTML for inline viewing
+@upload_router.get("/view/{filename}")
+async def view_document(filename: str):
+    """View document inline - converts DOCX to HTML, serves PDF as-is"""
+    file_path = ROOT_DIR / "uploads" / "documents" / filename
+    
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    # Handle DOCX files - convert to HTML
+    if filename.lower().endswith('.docx'):
+        try:
+            with open(file_path, 'rb') as docx_file:
+                result = mammoth.convert_to_html(docx_file)
+                html_content = result.value
+                
+                # Wrap in a nice styled HTML page
+                full_html = f"""
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Document Viewer</title>
+                    <style>
+                        body {{
+                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                            line-height: 1.6;
+                            max-width: 900px;
+                            margin: 0 auto;
+                            padding: 40px 20px;
+                            background: #fff;
+                            color: #333;
+                        }}
+                        h1, h2, h3, h4, h5, h6 {{
+                            color: #095EB1;
+                            margin-top: 1.5em;
+                            margin-bottom: 0.5em;
+                        }}
+                        h1 {{ font-size: 2em; border-bottom: 2px solid #095EB1; padding-bottom: 0.3em; }}
+                        h2 {{ font-size: 1.5em; }}
+                        h3 {{ font-size: 1.25em; }}
+                        p {{ margin: 1em 0; }}
+                        table {{
+                            border-collapse: collapse;
+                            width: 100%;
+                            margin: 1em 0;
+                        }}
+                        th, td {{
+                            border: 1px solid #ddd;
+                            padding: 12px;
+                            text-align: left;
+                        }}
+                        th {{
+                            background-color: #095EB1;
+                            color: white;
+                        }}
+                        tr:nth-child(even) {{
+                            background-color: #f9fafb;
+                        }}
+                        ul, ol {{
+                            margin: 1em 0;
+                            padding-left: 2em;
+                        }}
+                        li {{
+                            margin: 0.5em 0;
+                        }}
+                        strong {{
+                            color: #0F172A;
+                        }}
+                        img {{
+                            max-width: 100%;
+                            height: auto;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    {html_content}
+                </body>
+                </html>
+                """
+                return HTMLResponse(content=full_html)
+        except Exception as e:
+            logger.error(f"Error converting DOCX: {e}")
+            raise HTTPException(status_code=500, detail="Failed to convert document")
+    
+    # Handle PDF files - serve with proper headers for embedding
+    elif filename.lower().endswith('.pdf'):
+        async with aiofiles.open(file_path, 'rb') as f:
+            content = await f.read()
+        return Response(
+            content=content,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"inline; filename={filename}",
+                "X-Frame-Options": "SAMEORIGIN"
+            }
+        )
+    
+    else:
+        raise HTTPException(status_code=400, detail="Unsupported file type")
+
 # ======================= SETUP =======================
 
 # Include routers
