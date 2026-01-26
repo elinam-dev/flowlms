@@ -152,17 +152,27 @@ export default function CourseDetail() {
     // Get the full URL for the content
     const getContentUrl = () => {
       if (activeLesson.content.startsWith('/')) {
-        // Use the current window origin for the backend URL to ensure proper HTTPS handling
         const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
         return `${backendUrl}${activeLesson.content}`;
       }
       return activeLesson.content;
     };
 
+    // Get the viewer URL for documents (converts DOCX to HTML, serves PDF inline)
+    const getViewerUrl = () => {
+      if (activeLesson.content.startsWith('/api/uploads/documents/')) {
+        const filename = activeLesson.content.split('/').pop();
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
+        return `${backendUrl}/api/upload/view/${filename}`;
+      }
+      return getContentUrl();
+    };
+
     // Check file types
     const contentLower = activeLesson.content.toLowerCase();
     const isWordDoc = contentLower.endsWith('.docx') || contentLower.endsWith('.doc');
     const isPdf = contentLower.endsWith('.pdf');
+    const isDocument = isWordDoc || isPdf;
 
     switch (activeLesson.content_type) {
       case 'video':
@@ -187,81 +197,31 @@ export default function CourseDetail() {
           </div>
         );
       case 'pdf':
-        const contentUrl = getContentUrl();
-        
-        if (isPdf) {
-          // For PDFs, embed directly - works in most modern browsers
-          return (
-            <div className="rounded-lg overflow-hidden border bg-slate-100" style={{ height: '80vh' }}>
-              <object
-                data={contentUrl}
-                type="application/pdf"
-                className="w-full h-full"
-              >
-                <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-                  <FileText className="w-16 h-16 text-slate-400 mb-4" />
-                  <p className="text-slate-600 mb-4">Unable to display PDF in browser.</p>
-                  <a 
-                    href={contentUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#095EB1] text-white rounded-lg hover:bg-[#074A8C]"
-                  >
-                    <FileText className="w-4 h-4" />
-                    Open PDF
-                  </a>
-                </div>
-              </object>
-            </div>
-          );
-        } else if (isWordDoc) {
-          // For Word documents, try Microsoft Office Online viewer with fallback
-          const publicUrl = window.location.origin.includes('localhost') 
-            ? contentUrl 
-            : `${window.location.origin}${activeLesson.content}`;
-          const encodedUrl = encodeURIComponent(publicUrl);
-          
+        if (isDocument) {
+          // Use the viewer endpoint for documents
           return (
             <div className="rounded-lg overflow-hidden border bg-white" style={{ height: '80vh' }}>
               <iframe
-                src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodedUrl}`}
+                src={getViewerUrl()}
                 title={activeLesson.title}
                 className="w-full h-full"
                 frameBorder="0"
-                onError={() => {
-                  // Fallback handled by the fallback div below
-                }}
-              />
-              {/* Fallback message if iframe doesn't load */}
-              <noscript>
-                <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-                  <FileText className="w-16 h-16 text-slate-400 mb-4" />
-                  <p className="text-slate-600 mb-4">Document viewer requires JavaScript.</p>
-                  <a 
-                    href={contentUrl} 
-                    download
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#095EB1] text-white rounded-lg hover:bg-[#074A8C]"
-                  >
-                    <FileText className="w-4 h-4" />
-                    Download Document
-                  </a>
-                </div>
-              </noscript>
-            </div>
-          );
-        } else {
-          // Generic file embed
-          return (
-            <div className="rounded-lg overflow-hidden border bg-white" style={{ height: '80vh' }}>
-              <iframe
-                src={contentUrl}
-                title={activeLesson.title}
-                className="w-full h-full"
-                frameBorder="0"
+                style={{ border: 'none' }}
               />
             </div>
           );
         }
+        // Fallback for other file types
+        return (
+          <div className="rounded-lg overflow-hidden border bg-white" style={{ height: '80vh' }}>
+            <iframe
+              src={getContentUrl()}
+              title={activeLesson.title}
+              className="w-full h-full"
+              frameBorder="0"
+            />
+          </div>
+        );
       default:
         return (
           <div className="prose max-w-none p-6 bg-white rounded-lg border">
