@@ -725,6 +725,26 @@ async def create_user(user_data: AdminUserCreate, admin: dict = Depends(get_admi
     
     await db.users.insert_one(user_doc)
     
+    # Initialize progress for compulsory courses and add user to course enrolled_users
+    for course_id in compulsory_course_ids:
+        # Add user to course's enrolled users
+        await db.courses.update_one(
+            {"id": course_id},
+            {"$addToSet": {"enrolled_users": user_id}}
+        )
+        # Initialize progress
+        progress_doc = {
+            "id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "course_id": course_id,
+            "completed_lessons": [],
+            "quiz_scores": {},
+            "percentage": 0,
+            "started_at": datetime.now(timezone.utc).isoformat(),
+            "last_accessed": datetime.now(timezone.utc).isoformat()
+        }
+        await db.progress.insert_one(progress_doc)
+    
     # Return user without password
     del user_doc["password"]
     user_doc.pop("_id", None)
