@@ -40,7 +40,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../../components/ui/alert-dialog';
-import { Users, Search, Shield, User, Mail, Calendar, Plus, Trash2, Loader2, UserPlus } from 'lucide-react';
+import { Users, Search, Shield, User, Mail, Calendar, Plus, Trash2, Loader2, UserPlus, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
