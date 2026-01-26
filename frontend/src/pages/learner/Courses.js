@@ -7,6 +7,7 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Badge } from '../../components/ui/badge';
 import { Skeleton } from '../../components/ui/skeleton';
+import { Progress } from '../../components/ui/progress';
 import { toast } from 'sonner';
 import { 
   BookOpen, 
@@ -15,7 +16,8 @@ import {
   Users,
   ChevronRight,
   Filter,
-  CheckCircle
+  CheckCircle,
+  Award
 } from 'lucide-react';
 import {
   Select,
