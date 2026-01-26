@@ -600,6 +600,9 @@ class FlowitecLMSTester:
         # Certificate tests
         self.test_certificates()
         
+        # Test admin users endpoint with enrolled courses details
+        self.test_admin_users_with_enrolled_courses()
+        
         # Print final results
         print("\n" + "="*60)
         print("📊 FINAL TEST RESULTS")
