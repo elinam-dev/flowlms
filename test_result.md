@@ -101,3 +101,48 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Add already registered courses on all users page"
+
+backend:
+  - task: "Admin users endpoint returns enrolled courses details"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Modified /admin/users endpoint to enrich user data with enrolled_courses_details containing course id and title"
+
+frontend:
+  - task: "Display enrolled courses on admin users page"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/admin/Users.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Updated Users.js to display enrolled courses with expandable list showing course titles"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Admin users endpoint returns enrolled courses details"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Implemented feature to show enrolled courses on admin users page. Backend now returns enrolled_courses_details array with course id and title for each user. Frontend displays these as an expandable list. Please test the /api/admin/users endpoint to verify it returns the course details correctly."
