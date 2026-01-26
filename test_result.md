@@ -149,3 +149,5 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Implemented feature to show enrolled courses on admin users page. Backend now returns enrolled_courses_details array with course id and title for each user. Frontend displays these as an expandable list. Please test the /api/admin/users endpoint to verify it returns the course details correctly."
+  - agent: "testing"
+    message: "✅ BACKEND TESTING COMPLETE: Admin users endpoint working perfectly. Comprehensive test performed - created test user, enrolled in course, verified GET /api/admin/users returns proper enrolled_courses_details structure with required 'id' and 'title' fields. Authentication, user creation, course creation, enrollment, and data retrieval all functioning correctly. Backend implementation is solid and ready for frontend integration."
