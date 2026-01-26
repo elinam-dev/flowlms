@@ -21,7 +21,7 @@
         "issue": "Frontend making HTTP requests to HTTPS backend causing browser blocks",
         "affected_selectors": ["Certificate API calls", "Dashboard data fetching"],
         "fix_priority": "CRITICAL",
-        "details": "Console error: 'Mixed Content: The page at 'https://flowitec-lms.preview.emergentagent.com/dashboard' was loaded over HTTPS, but requested an insecure XMLHttpRequest endpoint 'http://flowitec-lms.preview.emergentagent.com/api/certificates/'. This request has been blocked; the content must be served over HTTPS.'"
+        "details": "Console error: 'Mixed Content: The page at 'https://course-registry-5.preview.emergentagent.com/dashboard' was loaded over HTTPS, but requested an insecure XMLHttpRequest endpoint 'http://flowitec-lms.preview.emergentagent.com/api/certificates/'. This request has been blocked; the content must be served over HTTPS.'"
       }
     ],
     "design_issues": []

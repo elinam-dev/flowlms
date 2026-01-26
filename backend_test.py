@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 class FlowitecLMSTester:
-    def __init__(self, base_url="https://flowitec-lms.preview.emergentagent.com"):
+    def __init__(self, base_url="https://course-registry-5.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_token = None
         self.learner_token = None

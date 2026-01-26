@@ -14,7 +14,7 @@
         "issue": "Mixed Content Error - Frontend making HTTP requests to HTTPS backend",
         "affected_selectors": ["Course management page", "Course catalog"],
         "fix_priority": "CRITICAL",
-        "details": "Browser blocks HTTP requests from HTTPS pages. Error: 'Mixed Content: The page at 'https://flowitec-lms.preview.emergentagent.com/admin/courses' was loaded over HTTPS, but requested an insecure XMLHttpRequest endpoint 'http://flowitec-lms.preview.emergentagent.com/api/courses/'"
+        "details": "Browser blocks HTTP requests from HTTPS pages. Error: 'Mixed Content: The page at 'https://course-registry-5.preview.emergentagent.com/admin/courses' was loaded over HTTPS, but requested an insecure XMLHttpRequest endpoint 'http://flowitec-lms.preview.emergentagent.com/api/courses/'"
       }
     ],
     "design_issues": []
