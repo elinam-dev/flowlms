@@ -134,13 +134,19 @@ export default function CourseDetail() {
     }
   };
 
-  const getContentIcon = (type) => {
+  const getContentIcon = (type, content) => {
+    // Check if it's a document file
+    const contentLower = (content || '').toLowerCase();
+    const isDocument = contentLower.endsWith('.pdf') || contentLower.endsWith('.docx') || contentLower.endsWith('.doc');
+    
+    if (isDocument || type === 'pdf') {
+      return <FileText className="w-4 h-4" />;
+    }
+    
     switch (type) {
       case 'video':
       case 'embed':
         return <PlayCircle className="w-4 h-4" />;
-      case 'pdf':
-        return <FileText className="w-4 h-4" />;
       default:
         return <BookOpen className="w-4 h-4" />;
     }
