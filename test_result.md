@@ -144,6 +144,18 @@ backend:
         agent: "main"
         comment: "Modified create_user endpoint to auto-enroll new users in all compulsory courses and initialize their progress"
 
+  - task: "Document viewer functionality for compulsory courses"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Tested all 5 document viewer endpoints: health-safety-policy.docx (HTML), code-of-ethics.pdf (PDF), disciplinary-code.pdf (PDF), leave-policy-nigeria.docx (HTML), leave-policy-ghana.pdf (PDF). All endpoints working correctly with proper content types and headers."
+
 frontend:
   - task: "Display enrolled courses on admin users page"
     implemented: true
