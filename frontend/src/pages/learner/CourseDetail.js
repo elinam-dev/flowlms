@@ -149,12 +149,27 @@ export default function CourseDetail() {
   const renderLessonContent = () => {
     if (!activeLesson) return null;
 
+    // Get the full URL for the content
+    const getContentUrl = () => {
+      if (activeLesson.content.startsWith('/')) {
+        return `${process.env.REACT_APP_BACKEND_URL}${activeLesson.content}`;
+      }
+      return activeLesson.content;
+    };
+
+    // Check if the file is a Word document
+    const isWordDoc = activeLesson.content.toLowerCase().endsWith('.docx') || 
+                      activeLesson.content.toLowerCase().endsWith('.doc');
+    
+    // Check if the file is a PDF
+    const isPdf = activeLesson.content.toLowerCase().endsWith('.pdf');
+
     switch (activeLesson.content_type) {
       case 'video':
         return (
           <div className="video-container rounded-lg overflow-hidden bg-black">
             <video 
-              src={activeLesson.content.startsWith('/') ? `${process.env.REACT_APP_BACKEND_URL}${activeLesson.content}` : activeLesson.content}
+              src={getContentUrl()}
               controls 
               className="w-full"
             />
@@ -172,15 +187,47 @@ export default function CourseDetail() {
           </div>
         );
       case 'pdf':
-        return (
-          <div className="aspect-[4/3] rounded-lg overflow-hidden">
-            <iframe
-              src={activeLesson.content.startsWith('/') ? `${process.env.REACT_APP_BACKEND_URL}${activeLesson.content}` : activeLesson.content}
-              title={activeLesson.title}
-              className="w-full h-full"
-            />
-          </div>
-        );
+        const contentUrl = getContentUrl();
+        
+        if (isWordDoc) {
+          // Use Microsoft Office Online Viewer for Word documents
+          const encodedUrl = encodeURIComponent(contentUrl);
+          return (
+            <div className="rounded-lg overflow-hidden border bg-white" style={{ height: '80vh' }}>
+              <iframe
+                src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodedUrl}`}
+                title={activeLesson.title}
+                className="w-full h-full"
+                frameBorder="0"
+              />
+            </div>
+          );
+        } else if (isPdf) {
+          // Use Google Docs Viewer for PDFs (more reliable cross-browser)
+          const encodedUrl = encodeURIComponent(contentUrl);
+          return (
+            <div className="rounded-lg overflow-hidden border bg-white" style={{ height: '80vh' }}>
+              <iframe
+                src={`https://docs.google.com/viewer?url=${encodedUrl}&embedded=true`}
+                title={activeLesson.title}
+                className="w-full h-full"
+                frameBorder="0"
+              />
+            </div>
+          );
+        } else {
+          // Fallback for other file types
+          return (
+            <div className="rounded-lg overflow-hidden border bg-white" style={{ height: '80vh' }}>
+              <iframe
+                src={contentUrl}
+                title={activeLesson.title}
+                className="w-full h-full"
+                frameBorder="0"
+              />
+            </div>
+          );
+        }
       default:
         return (
           <div className="prose max-w-none p-6 bg-white rounded-lg border">
