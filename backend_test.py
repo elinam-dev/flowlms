@@ -108,7 +108,7 @@ class FlowitecLMSTester:
             "POST",
             "auth/login",
             200,
-            data={"email": "learner@flowitec.com", "password": "learner123"},
+            data={"identifier": "learner@flowitec.com", "password": "learner123"},
             description="Login with learner credentials"
         )
         if success and 'access_token' in response:
