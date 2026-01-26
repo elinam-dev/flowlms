@@ -698,6 +698,13 @@ async def create_user(user_data: AdminUserCreate, admin: dict = Depends(get_admi
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
     
+    # Get all compulsory courses to auto-enroll the new user
+    compulsory_courses = await db.courses.find(
+        {"course_type": "compulsory", "is_published": True},
+        {"_id": 0, "id": 1}
+    ).to_list(100)
+    compulsory_course_ids = [c["id"] for c in compulsory_courses]
+    
     user_id = str(uuid.uuid4())
     user_doc = {
         "id": user_id,
@@ -708,7 +715,7 @@ async def create_user(user_data: AdminUserCreate, admin: dict = Depends(get_admi
         "employee_id": user_data.employee_id or f"EMP-{user_id[:8].upper()}",
         "role": user_data.role,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "enrolled_courses": [],
+        "enrolled_courses": compulsory_course_ids,  # Auto-enroll in compulsory courses
         "completed_courses": [],
         "certificates": [],
         "check_ins": [],
