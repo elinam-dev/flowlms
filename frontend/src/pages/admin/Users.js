@@ -249,7 +249,39 @@ export default function AdminUsers() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <span className="text-slate-600">{user.enrolled_courses?.length || 0}</span>
+                        <div className="min-w-[200px]">
+                          {user.enrolled_courses_details?.length > 0 ? (
+                            <div>
+                              <button
+                                onClick={() => toggleUserExpanded(user.id)}
+                                className="flex items-center gap-2 text-sm text-[#095EB1] hover:text-[#074A8C] font-medium"
+                              >
+                                <BookOpen className="w-4 h-4" />
+                                <span>{user.enrolled_courses_details.length} Course{user.enrolled_courses_details.length !== 1 ? 's' : ''}</span>
+                                {expandedUsers[user.id] ? (
+                                  <ChevronUp className="w-4 h-4" />
+                                ) : (
+                                  <ChevronDown className="w-4 h-4" />
+                                )}
+                              </button>
+                              {expandedUsers[user.id] && (
+                                <div className="mt-2 space-y-1">
+                                  {user.enrolled_courses_details.map((course) => (
+                                    <Badge 
+                                      key={course.id} 
+                                      variant="outline"
+                                      className="block w-fit bg-blue-50 text-blue-700 border-blue-200 text-xs"
+                                    >
+                                      {course.title}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-slate-400 text-sm">No courses</span>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
