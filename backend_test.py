@@ -539,6 +539,117 @@ class FlowitecLMSTester:
         
         return False
 
+    def test_document_viewer_endpoints(self):
+        """Test document viewer functionality for compulsory courses"""
+        print("\n" + "="*50)
+        print("TESTING DOCUMENT VIEWER ENDPOINTS")
+        print("="*50)
+        
+        # List of documents to test based on the review request
+        documents_to_test = [
+            {
+                "filename": "health-safety-policy.docx",
+                "expected_type": "HTML",
+                "description": "Health and Safety Policy document (DOCX -> HTML)"
+            },
+            {
+                "filename": "code-of-ethics.pdf", 
+                "expected_type": "PDF",
+                "description": "Code of Ethics document (PDF)"
+            },
+            {
+                "filename": "disciplinary-code.pdf",
+                "expected_type": "PDF", 
+                "description": "Disciplinary Code document (PDF)"
+            },
+            {
+                "filename": "leave-policy-nigeria.docx",
+                "expected_type": "HTML",
+                "description": "Leave Policy Nigeria document (DOCX -> HTML)"
+            },
+            {
+                "filename": "leave-policy-ghana.pdf",
+                "expected_type": "PDF",
+                "description": "Leave Policy Ghana document (PDF)"
+            }
+        ]
+        
+        all_tests_passed = True
+        
+        for doc in documents_to_test:
+            print(f"\n🔍 Testing document viewer for {doc['filename']}...")
+            print(f"   Description: {doc['description']}")
+            
+            url = f"{self.base_url}/api/upload/view/{doc['filename']}"
+            
+            try:
+                response = requests.get(url, timeout=30)
+                
+                if response.status_code == 200:
+                    content_type = response.headers.get('content-type', '').lower()
+                    
+                    if doc['expected_type'] == 'HTML':
+                        # For DOCX files, expect HTML content
+                        if 'text/html' in content_type:
+                            # Check if it's a proper HTML document
+                            content = response.text
+                            if '<!DOCTYPE html>' in content and '<html>' in content:
+                                print(f"✅ Passed - {doc['filename']} returned valid HTML content")
+                                print(f"   Content-Type: {content_type}")
+                                print(f"   Content length: {len(content)} characters")
+                            else:
+                                print(f"❌ Failed - {doc['filename']} returned HTML but invalid structure")
+                                all_tests_passed = False
+                        else:
+                            print(f"❌ Failed - {doc['filename']} expected HTML but got {content_type}")
+                            all_tests_passed = False
+                    
+                    elif doc['expected_type'] == 'PDF':
+                        # For PDF files, expect PDF content
+                        if 'application/pdf' in content_type:
+                            # Check if content starts with PDF signature
+                            content = response.content
+                            if content.startswith(b'%PDF'):
+                                print(f"✅ Passed - {doc['filename']} returned valid PDF content")
+                                print(f"   Content-Type: {content_type}")
+                                print(f"   Content length: {len(content)} bytes")
+                                
+                                # Check for proper PDF headers
+                                headers = response.headers
+                                if 'content-disposition' in headers:
+                                    print(f"   Content-Disposition: {headers['content-disposition']}")
+                            else:
+                                print(f"❌ Failed - {doc['filename']} returned PDF content-type but invalid PDF signature")
+                                all_tests_passed = False
+                        else:
+                            print(f"❌ Failed - {doc['filename']} expected PDF but got {content_type}")
+                            all_tests_passed = False
+                
+                elif response.status_code == 404:
+                    print(f"❌ Failed - {doc['filename']} not found (404)")
+                    print(f"   This indicates the document file is missing from the uploads/documents directory")
+                    all_tests_passed = False
+                
+                else:
+                    print(f"❌ Failed - {doc['filename']} returned status {response.status_code}")
+                    try:
+                        error_detail = response.json()
+                        print(f"   Error: {error_detail}")
+                    except:
+                        print(f"   Response: {response.text[:200]}")
+                    all_tests_passed = False
+                    
+            except Exception as e:
+                print(f"❌ Failed - Error accessing {doc['filename']}: {str(e)}")
+                all_tests_passed = False
+        
+        if all_tests_passed:
+            print(f"\n✅ All document viewer tests passed!")
+        else:
+            print(f"\n❌ Some document viewer tests failed")
+            
+        return all_tests_passed
+
     def run_all_tests(self):
         """Run all tests in sequence"""
         print("🚀 Starting Flowitec LMS Backend Testing")
