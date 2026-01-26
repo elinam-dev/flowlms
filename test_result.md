@@ -107,15 +107,18 @@ user_problem_statement: "Add already registered courses on all users page"
 backend:
   - task: "Admin users endpoint returns enrolled courses details"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Modified /admin/users endpoint to enrich user data with enrolled_courses_details containing course id and title"
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTED SUCCESSFULLY: Admin users endpoint correctly returns enrolled_courses_details array. Created test user, enrolled in course, verified endpoint returns proper structure with 'id' and 'title' fields for each enrolled course. All authentication, enrollment, and data retrieval working correctly."
 
 frontend:
   - task: "Display enrolled courses on admin users page"
