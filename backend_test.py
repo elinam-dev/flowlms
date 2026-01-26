@@ -493,6 +493,52 @@ class FlowitecLMSTester:
         
         return success
 
+    def test_admin_users_with_enrolled_courses(self):
+        """Test admin users endpoint returns enrolled courses details"""
+        print("\n" + "="*50)
+        print("TESTING ADMIN USERS ENDPOINT WITH ENROLLED COURSES")
+        print("="*50)
+        
+        success, response = self.run_test(
+            "Get All Users with Enrolled Courses",
+            "GET",
+            "admin/users",
+            200,
+            token=self.admin_token,
+            description="Get all users with enrolled_courses_details array"
+        )
+        
+        if success:
+            print(f"   Found {len(response)} users")
+            
+            # Verify the response structure
+            users_with_courses = 0
+            for user in response:
+                # Check if enrolled_courses_details field exists
+                if "enrolled_courses_details" not in user:
+                    print(f"❌ User {user.get('email', 'unknown')} missing enrolled_courses_details field")
+                    return False
+                
+                enrolled_courses = user["enrolled_courses_details"]
+                if enrolled_courses:
+                    users_with_courses += 1
+                    print(f"   User {user.get('email', 'unknown')} has {len(enrolled_courses)} enrolled courses")
+                    
+                    # Verify each course has id and title
+                    for course in enrolled_courses:
+                        if "id" not in course or "title" not in course:
+                            print(f"❌ Course missing required fields (id, title): {course}")
+                            return False
+                        print(f"     - Course: {course['title']} (ID: {course['id']})")
+                else:
+                    print(f"   User {user.get('email', 'unknown')} has no enrolled courses")
+            
+            print(f"✅ All users have enrolled_courses_details field")
+            print(f"   {users_with_courses} users have enrolled courses")
+            return True
+        
+        return False
+
     def run_all_tests(self):
         """Run all tests in sequence"""
         print("🚀 Starting Flowitec LMS Backend Testing")
