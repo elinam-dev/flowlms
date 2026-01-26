@@ -299,57 +299,83 @@ export default function LearnerDashboard() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {enrolledCourses.map((course) => (
-                      <Link 
-                        key={course.id} 
-                        to={`/courses/${course.id}`}
-                        className="block"
-                        data-testid={`course-card-${course.id}`}
-                      >
-                        <div className="p-4 border border-slate-200 rounded-xl hover:border-[#095EB1]/30 hover:shadow-lg hover:shadow-blue-100 transition-all group">
-                          <div className="flex items-start gap-4">
-                            <div className="w-20 h-14 bg-gradient-to-br from-[#095EB1]/10 to-[#0EA5E9]/10 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
-                              {course.thumbnail ? (
-                                <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover" />
+                    {enrolledCourses.map((course) => {
+                      const isCompleted = course.progress >= 100;
+                      
+                      return (
+                        <Link 
+                          key={course.id} 
+                          to={`/courses/${course.id}`}
+                          className="block"
+                          data-testid={`course-card-${course.id}`}
+                        >
+                          <div className={`p-4 border rounded-xl hover:shadow-lg transition-all group ${
+                            isCompleted 
+                              ? 'border-emerald-300 bg-emerald-50/50 hover:border-emerald-400 hover:shadow-emerald-100' 
+                              : 'border-slate-200 hover:border-[#095EB1]/30 hover:shadow-blue-100'
+                          }`}>
+                            <div className="flex items-start gap-4">
+                              <div className={`w-20 h-14 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center ${
+                                isCompleted 
+                                  ? 'bg-gradient-to-br from-emerald-100 to-emerald-200' 
+                                  : 'bg-gradient-to-br from-[#095EB1]/10 to-[#0EA5E9]/10'
+                              }`}>
+                                {course.thumbnail ? (
+                                  <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover" />
+                                ) : isCompleted ? (
+                                  <CheckCircle className="w-6 h-6 text-emerald-600" />
+                                ) : (
+                                  <BookOpen className="w-6 h-6 text-[#095EB1]" />
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                  {isCompleted ? (
+                                    <Badge className="bg-emerald-500 text-white text-xs">
+                                      <CheckCircle className="w-3 h-3 mr-1" />
+                                      Completed
+                                    </Badge>
+                                  ) : (
+                                    <Badge className="bg-blue-100 text-blue-700 text-xs">
+                                      <BookOpen className="w-3 h-3 mr-1" />
+                                      In Progress
+                                    </Badge>
+                                  )}
+                                  {course.course_type === 'compulsory' && (
+                                    <Badge className="bg-red-100 text-red-700 text-xs">Required</Badge>
+                                  )}
+                                  {course.course_type === 'assigned' && (
+                                    <Badge className="bg-purple-100 text-purple-700 text-xs">Assigned</Badge>
+                                  )}
+                                </div>
+                                <h3 className={`font-semibold transition-colors truncate ${
+                                  isCompleted 
+                                    ? 'text-emerald-800 group-hover:text-emerald-600' 
+                                    : 'text-[#0F172A] group-hover:text-[#095EB1]'
+                                }`}>
+                                  {course.title}
+                                </h3>
+                                <p className="text-sm text-slate-500 truncate">{course.description}</p>
+                                <div className="mt-2 flex items-center gap-3">
+                                  <Progress 
+                                    value={course.progress} 
+                                    className={`flex-1 h-2 ${isCompleted ? '[&>div]:bg-emerald-500' : ''}`} 
+                                  />
+                                  <span className={`text-sm font-bold ${isCompleted ? 'text-emerald-600' : 'text-[#095EB1]'}`}>
+                                    {course.progress}%
+                                  </span>
+                                </div>
+                              </div>
+                              {isCompleted ? (
+                                <Award className="w-5 h-5 text-emerald-500" />
                               ) : (
-                                <BookOpen className="w-6 h-6 text-[#095EB1]" />
+                                <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-[#095EB1] transition-colors" />
                               )}
                             </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                {course.course_type === 'compulsory' && (
-                                  <Badge className="bg-red-100 text-red-700 text-xs">Required</Badge>
-                                )}
-                                {course.course_type === 'assigned' && (
-                                  <Badge className="bg-purple-100 text-purple-700 text-xs">Assigned</Badge>
-                                )}
-                                <Badge className="bg-emerald-100 text-emerald-700 text-xs">
-                                  <CheckCircle className="w-3 h-3 mr-1" />
-                                  Enrolled
-                                </Badge>
-                              </div>
-                              <h3 className="font-semibold text-[#0F172A] group-hover:text-[#095EB1] transition-colors truncate">
-                                {course.title}
-                              </h3>
-                              <p className="text-sm text-slate-500 truncate">{course.description}</p>
-                              <div className="mt-2 flex items-center gap-3">
-                                <Progress value={course.progress} className="flex-1 h-2" />
-                                <span className={`text-sm font-semibold ${course.progress >= 100 ? 'text-emerald-600' : 'text-[#095EB1]'}`}>
-                                  {course.progress}%
-                                </span>
-                                {course.progress >= 100 && (
-                                  <Badge className="bg-emerald-100 text-emerald-700 text-xs">
-                                    <CheckCircle className="w-3 h-3 mr-1" />
-                                    Completed
-                                  </Badge>
-                                )}
-                              </div>
-                            </div>
-                            <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-[#095EB1] transition-colors" />
                           </div>
-                        </div>
-                      </Link>
-                    ))}
+                        </Link>
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
