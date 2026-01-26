@@ -676,6 +676,19 @@ async def get_admin_stats(admin: dict = Depends(get_admin_user)):
 @admin_router.get("/users")
 async def get_all_users(admin: dict = Depends(get_admin_user)):
     users = await db.users.find({}, {"_id": 0, "password": 0}).to_list(1000)
+    
+    # Enrich users with enrolled course details
+    for user in users:
+        enrolled_course_ids = user.get("enrolled_courses", [])
+        if enrolled_course_ids:
+            courses = await db.courses.find(
+                {"id": {"$in": enrolled_course_ids}},
+                {"_id": 0, "id": 1, "title": 1}
+            ).to_list(100)
+            user["enrolled_courses_details"] = courses
+        else:
+            user["enrolled_courses_details"] = []
+    
     return users
 
 @admin_router.post("/users")
