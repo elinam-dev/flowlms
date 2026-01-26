@@ -268,14 +268,14 @@ export default function LearnerDashboard() {
 
         {/* Main Content Grid */}
         <div className="bento-grid">
-          {/* Continue Learning - Larger Section */}
+          {/* All Enrolled Courses with Progress - Larger Section */}
           <div className="col-span-1 md:col-span-8">
             <Card className="card-base">
               <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-[#095EB1]" />
-                    Continue Learning
+                    <BookOpen className="w-5 h-5 text-[#095EB1]" />
+                    My Enrolled Courses
                   </CardTitle>
                   <Link to="/courses">
                     <Button variant="ghost" size="sm" className="text-[#095EB1]" data-testid="view-all-courses">
@@ -285,12 +285,12 @@ export default function LearnerDashboard() {
                 </div>
               </CardHeader>
               <CardContent className="p-6">
-                {inProgressCourses.length === 0 ? (
+                {enrolledCourses.length === 0 ? (
                   <div className="text-center py-12">
                     <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
                       <BookOpen className="w-10 h-10 text-slate-400" />
                     </div>
-                    <p className="text-slate-500 mb-4">No courses in progress</p>
+                    <p className="text-slate-500 mb-4">No courses enrolled yet</p>
                     <Link to="/courses">
                       <Button className="bg-gradient-to-r from-[#095EB1] to-[#0EA5E9] hover:from-[#074A8C] hover:to-[#0284C7]" data-testid="browse-courses-btn">
                         Browse Courses
@@ -299,7 +299,7 @@ export default function LearnerDashboard() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {inProgressCourses.slice(0, 3).map((course) => (
+                    {enrolledCourses.map((course) => (
                       <Link 
                         key={course.id} 
                         to={`/courses/${course.id}`}
@@ -323,6 +323,10 @@ export default function LearnerDashboard() {
                                 {course.course_type === 'assigned' && (
                                   <Badge className="bg-purple-100 text-purple-700 text-xs">Assigned</Badge>
                                 )}
+                                <Badge className="bg-emerald-100 text-emerald-700 text-xs">
+                                  <CheckCircle className="w-3 h-3 mr-1" />
+                                  Enrolled
+                                </Badge>
                               </div>
                               <h3 className="font-semibold text-[#0F172A] group-hover:text-[#095EB1] transition-colors truncate">
                                 {course.title}
@@ -330,7 +334,15 @@ export default function LearnerDashboard() {
                               <p className="text-sm text-slate-500 truncate">{course.description}</p>
                               <div className="mt-2 flex items-center gap-3">
                                 <Progress value={course.progress} className="flex-1 h-2" />
-                                <span className="text-sm font-semibold text-[#095EB1]">{course.progress}%</span>
+                                <span className={`text-sm font-semibold ${course.progress >= 100 ? 'text-emerald-600' : 'text-[#095EB1]'}`}>
+                                  {course.progress}%
+                                </span>
+                                {course.progress >= 100 && (
+                                  <Badge className="bg-emerald-100 text-emerald-700 text-xs">
+                                    <CheckCircle className="w-3 h-3 mr-1" />
+                                    Completed
+                                  </Badge>
+                                )}
                               </div>
                             </div>
                             <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-[#095EB1] transition-colors" />
