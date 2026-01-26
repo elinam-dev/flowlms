@@ -66,7 +66,9 @@ export default function Courses() {
     
     try {
       await courseApi.enroll(courseId);
-      setEnrolledIds([...enrolledIds, courseId]);
+      // Refresh enrolled courses to get progress data
+      const enrolledRes = await courseApi.getEnrolled();
+      setEnrolledCourses(enrolledRes.data);
       toast.success('Successfully enrolled in course!');
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Failed to enroll');
