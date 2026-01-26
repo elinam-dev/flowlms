@@ -29,7 +29,7 @@ import {
 
 export default function Courses() {
   const [courses, setCourses] = useState([]);
-  const [enrolledIds, setEnrolledIds] = useState([]);
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -46,12 +46,17 @@ export default function Courses() {
         courseApi.getEnrolled()
       ]);
       setCourses(allCoursesRes.data);
-      setEnrolledIds(enrolledRes.data.map(c => c.id));
+      setEnrolledCourses(enrolledRes.data);
     } catch (error) {
       console.error('Failed to fetch courses:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Helper to get enrolled course with progress
+  const getEnrolledCourse = (courseId) => {
+    return enrolledCourses.find(c => c.id === courseId);
   };
 
   const handleEnroll = async (courseId, e) => {
