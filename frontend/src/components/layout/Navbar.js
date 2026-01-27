@@ -40,9 +40,11 @@ export const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to={isAdmin() ? '/admin' : '/dashboard'} className="flex items-center gap-3" data-testid="navbar-logo">
-            <div className="w-10 h-10 bg-[#095EB1] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">F</span>
-            </div>
+            <img 
+              src="/images/flowitec-logo.png" 
+              alt="Flowitec" 
+              className="h-10 w-auto"
+            />
             <div className="hidden sm:block">
               <span className="font-semibold text-[#0F172A] text-lg">Flowitec</span>
               <span className="text-[#095EB1] font-bold ml-1">Go & Grow</span>
