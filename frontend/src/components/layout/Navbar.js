@@ -35,7 +35,7 @@ export const Navbar = () => {
   const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/');
 
   return (
-    <nav className="bg-white border-b border-slate-200 sticky top-0 z-50" data-testid="navbar">
+    <nav className="bg-white shadow-sm border-b border-slate-100 sticky top-0 z-50" data-testid="navbar">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}

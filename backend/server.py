@@ -1092,9 +1092,9 @@ async def view_document(filename: str):
                         body {{
                             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                             line-height: 1.6;
-                            max-width: 900px;
+                            max-width: 1200px;
                             margin: 0 auto;
-                            padding: 40px 20px;
+                            padding: 20px;
                             background: #fff;
                             color: #333;
                         }}
@@ -1158,58 +1158,14 @@ async def view_document(filename: str):
             content=content,
             media_type="application/pdf",
             headers={
-                "Content-Disposition": f"inline; filename={filename}",
-                "X-Frame-Options": "SAMEORIGIN"
+                "Content-Disposition": f"inline; filename={filename}#toolbar=0&navpanes=0&scrollbar=0&view=FitH",
+                "X-Frame-Options": "SAMEORIGIN",
+                "Content-Security-Policy": "frame-ancestors 'self'"
             }
         )
     
     else:
         raise HTTPException(status_code=400, detail="Unsupported file type")
-
-# Document serving route
-@app.get("/api/uploads/documents/{filename}")
-async def serve_document(filename: str):
-    try:
-        file_path = ROOT_DIR / "uploads" / "documents" / filename
-        logger.info(f"Trying to serve document: {file_path}")
-        
-        if not file_path.exists():
-            logger.error(f"Document not found: {file_path}")
-            raise HTTPException(status_code=404, detail="Document not found")
-        
-        # Serve PDF files directly
-        if filename.lower().endswith('.pdf'):
-            async with aiofiles.open(file_path, 'rb') as f:
-                content = await f.read()
-            return Response(
-                content=content,
-                media_type="application/pdf",
-                headers={
-                    "Content-Disposition": f"inline; filename={filename}",
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Methods": "GET",
-                    "Access-Control-Allow-Headers": "*"
-                }
-            )
-        
-        # Serve DOCX files by converting to HTML
-        elif filename.lower().endswith('.docx'):
-            with open(file_path, 'rb') as docx_file:
-                result = mammoth.convert_to_html(docx_file)
-                html_content = result.value
-                return HTMLResponse(
-                    content=html_content,
-                    headers={
-                        "Access-Control-Allow-Origin": "*"
-                    }
-                )
-        
-        else:
-            raise HTTPException(status_code=400, detail="Unsupported file type")
-            
-    except Exception as e:
-        logger.error(f"Error serving document {filename}: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error serving document: {str(e)}")
 
 # ======================= SETUP =======================
 
@@ -1223,10 +1179,47 @@ api_router.include_router(certificate_router)
 api_router.include_router(quiz_router)
 api_router.include_router(upload_router)
 
+# Include courses service router
+from services.courses.routes import courses_router
+api_router.include_router(courses_router, prefix="/courses-service")
+
 app.include_router(api_router)
 
 # Serve uploaded files
+app.mount("/uploads", StaticFiles(directory=str(ROOT_DIR / "uploads")), name="static_uploads")
 app.mount("/api/uploads", StaticFiles(directory=str(ROOT_DIR / "uploads")), name="uploads")
+
+# Add a simple documents endpoint
+@app.get("/api/documents/{filename}")
+async def serve_document(filename: str):
+    """Serve documents directly"""
+    file_path = ROOT_DIR / "uploads" / "documents" / filename
+    
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    # Determine content type
+    if filename.lower().endswith('.pdf'):
+        media_type = "application/pdf"
+    elif filename.lower().endswith('.docx'):
+        media_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    elif filename.lower().endswith('.doc'):
+        media_type = "application/msword"
+    else:
+        media_type = "application/octet-stream"
+    
+    async with aiofiles.open(file_path, 'rb') as f:
+        content = await f.read()
+    
+    return Response(
+        content=content,
+        media_type=media_type,
+        headers={
+            "Content-Disposition": f"inline; filename={filename}#toolbar=0&navpanes=0&scrollbar=0&view=FitH",
+            "X-Frame-Options": "SAMEORIGIN",
+            "Content-Security-Policy": "frame-ancestors 'self'"
+        }
+    )
 
 app.add_middleware(
     CORSMiddleware,
@@ -1242,6 +1235,11 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+@app.get("/debug/lesson/{lesson_id}")
+async def debug_lesson(lesson_id: str):
+    lesson = await db.lessons.find_one({"id": lesson_id}, {"_id": 0})
+    return {"found": lesson is not None, "lesson": lesson}
 
 @app.on_event("startup")
 async def startup():
@@ -1292,13 +1290,137 @@ async def startup():
     await db.lessons.delete_many({})
     await db.progress.delete_many({})
     
+    # Create Incoterms course first
+    incoterms_course_id = str(uuid.uuid4())
+    incoterms_course = {
+        "id": incoterms_course_id,
+        "title": "Introduction to International Commercial Terms (Incoterms)",
+        "description": "Learn the essential international trade terms used in global commerce and shipping",
+        "thumbnail": f"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop&auto=format",
+        "category": "International Trade",
+        "duration_hours": 2.0,
+        "is_published": True,
+        "course_type": "optional",
+        "enrolled_users": [],
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_by": "admin-001"
+    }
+    await db.courses.insert_one(incoterms_course)
+    
+    # Create module for Incoterms
+    incoterms_module_id = str(uuid.uuid4())
+    incoterms_module = {
+        "id": incoterms_module_id,
+        "course_id": incoterms_course_id,
+        "title": "Incoterms 2020 Overview",
+        "description": "Complete guide to International Commercial Terms",
+        "order": 1
+    }
+    await db.modules.insert_one(incoterms_module)
+    
+    # Create lesson with full lecture content
+    incoterms_lesson_id = str(uuid.uuid4())
+    lecture_content = """
+    <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
+        <h1 style="color: #2563eb; text-align: center; margin-bottom: 30px;">Introduction to International Commercial Terms (Incoterms)</h1>
+        
+        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+            <h2 style="color: #1e40af;">What are Incoterms?</h2>
+            <p>International Commercial Terms (Incoterms) are standardized trade terms published by the International Chamber of Commerce (ICC). They define the responsibilities of buyers and sellers in international trade transactions.</p>
+        </div>
+        
+        <div style="margin-bottom: 30px;">
+            <h2 style="color: #1e40af;">Key Benefits</h2>
+            <ul style="line-height: 1.8;">
+                <li>Reduce misunderstandings between trading partners</li>
+                <li>Clearly define cost and risk allocation</li>
+                <li>Standardize international trade practices</li>
+                <li>Facilitate smoother customs procedures</li>
+            </ul>
+        </div>
+        
+        <div style="margin-bottom: 30px;">
+            <h2 style="color: #1e40af;">Incoterms 2020 Categories</h2>
+            
+            <div style="background: #ecfdf5; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="color: #059669;">Group E - Departure</h3>
+                <p><strong>EXW (Ex Works):</strong> Seller makes goods available at their premises. Buyer bears all costs and risks.</p>
+            </div>
+            
+            <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="color: #d97706;">Group F - Main Carriage Unpaid</h3>
+                <p><strong>FCA (Free Carrier):</strong> Seller delivers goods to carrier nominated by buyer.</p>
+                <p><strong>FAS (Free Alongside Ship):</strong> Seller delivers goods alongside the ship at port.</p>
+                <p><strong>FOB (Free On Board):</strong> Seller delivers goods on board the ship.</p>
+            </div>
+            
+            <div style="background: #dbeafe; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="color: #2563eb;">Group C - Main Carriage Paid</h3>
+                <p><strong>CFR (Cost and Freight):</strong> Seller pays freight to destination port.</p>
+                <p><strong>CIF (Cost, Insurance and Freight):</strong> Seller pays freight and insurance.</p>
+                <p><strong>CPT (Carriage Paid To):</strong> Seller pays carriage to named destination.</p>
+                <p><strong>CIP (Carriage and Insurance Paid To):</strong> Seller pays carriage and insurance.</p>
+            </div>
+            
+            <div style="background: #fce7f3; padding: 15px; border-radius: 8px;">
+                <h3 style="color: #be185d;">Group D - Arrival</h3>
+                <p><strong>DAP (Delivered at Place):</strong> Seller delivers goods ready for unloading.</p>
+                <p><strong>DPU (Delivered at Place Unloaded):</strong> Seller delivers and unloads goods.</p>
+                <p><strong>DDP (Delivered Duty Paid):</strong> Seller bears all costs including import duties.</p>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 30px;">
+            <h2 style="color: #1e40af;">Risk Transfer Points</h2>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <tr style="background: #f1f5f9;">
+                    <th style="border: 1px solid #cbd5e1; padding: 10px; text-align: left;">Incoterm</th>
+                    <th style="border: 1px solid #cbd5e1; padding: 10px; text-align: left;">Risk Transfer Point</th>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #cbd5e1; padding: 10px;">EXW</td>
+                    <td style="border: 1px solid #cbd5e1; padding: 10px;">Seller's premises</td>
+                </tr>
+                <tr style="background: #f8fafc;">
+                    <td style="border: 1px solid #cbd5e1; padding: 10px;">FOB</td>
+                    <td style="border: 1px solid #cbd5e1; padding: 10px;">When goods pass ship's rail</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #cbd5e1; padding: 10px;">CIF</td>
+                    <td style="border: 1px solid #cbd5e1; padding: 10px;">When goods pass ship's rail</td>
+                </tr>
+                <tr style="background: #f8fafc;">
+                    <td style="border: 1px solid #cbd5e1; padding: 10px;">DDP</td>
+                    <td style="border: 1px solid #cbd5e1; padding: 10px;">Destination premises</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; text-align: center;">
+            <h3 style="color: #0369a1; margin-top: 0;">Key Takeaway</h3>
+            <p style="color: #0c4a6e; font-size: 16px; margin-bottom: 0;">Proper understanding and application of Incoterms is essential for successful international trade operations and risk management.</p>
+        </div>
+    </div>
+    """
+    
+    incoterms_lesson = {
+        "id": incoterms_lesson_id,
+        "module_id": incoterms_module_id,
+        "title": "Incoterms 2020: Complete Guide",
+        "content_type": "text",
+        "content": lecture_content,
+        "duration_minutes": 60,
+        "order": 1
+    }
+    await db.lessons.insert_one(incoterms_lesson)
+    
     # Create courses from uploaded documents
     documents = [
-        {"file": "Flowitec Code of Ethics & Conduct updated.pdf", "title": "Code of Ethics & Conduct", "category": "Ethics", "type": "compulsory"},
-        {"file": "Disciplinary Code.pdf", "title": "Disciplinary Code", "category": "HR Policy", "type": "compulsory"},
-        {"file": "Health and Safety Policy 1.docx", "title": "Health & Safety Policy", "category": "Safety", "type": "compulsory"},
-        {"file": "Leave Policy -Ghana.pdf", "title": "Leave Policy - Ghana", "category": "HR Policy", "type": "compulsory"},
-        {"file": "Leave Policy - Nigeria.docx", "title": "Leave Policy - Nigeria", "category": "HR Policy", "type": "optional"}
+        {"file": "Flowitec_Code_of_Ethics_Conduct_updated.pdf", "title": "Code of Ethics & Conduct", "category": "Ethics", "type": "compulsory"},
+        {"file": "Disciplinary_Code.pdf", "title": "Disciplinary Code", "category": "HR Policy", "type": "compulsory"},
+        {"file": "Health_and_Safety_Policy_1.docx", "title": "Health & Safety Policy", "category": "Safety", "type": "compulsory"},
+        {"file": "Leave_Policy_Ghana.pdf", "title": "Leave Policy - Ghana", "category": "HR Policy", "type": "compulsory"},
+        {"file": "Leave_Policy_Nigeria.docx", "title": "Leave Policy - Nigeria", "category": "HR Policy", "type": "optional"}
     ]
     
     compulsory_course_ids = []
@@ -1342,7 +1464,7 @@ async def startup():
             "module_id": module_id,
             "title": f"{doc['title']} Document",
             "content_type": content_type,
-            "content": f"/api/uploads/documents/{doc['file']}",
+            "content": f"/uploads/documents/{doc['file']}",
             "duration_minutes": 45,
             "order": 1
         }

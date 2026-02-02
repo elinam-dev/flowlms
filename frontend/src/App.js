@@ -19,6 +19,9 @@ import AdminCourses from "./pages/admin/Courses";
 import AdminCourseDetail from "./pages/admin/CourseDetail";
 import AdminUsers from "./pages/admin/Users";
 
+// Other Pages
+import ReadMe from "./pages/ReadMe";
+
 // Protected Route Component
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { user, loading, isAuthenticated, isAdmin } = useAuth();
@@ -85,6 +88,9 @@ function AppRoutes() {
       <Route path="/admin/courses" element={<ProtectedRoute adminOnly><AdminCourses /></ProtectedRoute>} />
       <Route path="/admin/courses/:courseId" element={<ProtectedRoute adminOnly><AdminCourseDetail /></ProtectedRoute>} />
       <Route path="/admin/users" element={<ProtectedRoute adminOnly><AdminUsers /></ProtectedRoute>} />
+
+      {/* Other Routes */}
+      <Route path="/readme" element={<ReadMe />} />
 
       {/* Default Redirect */}
       <Route path="/" element={<Navigate to="/login" replace />} />

@@ -3,7 +3,7 @@ import { Toaster } from '../ui/sonner';
 
 export const Layout = ({ children }) => {
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-white">
       <Navbar />
       <main className="animate-fade-in">
         {children}

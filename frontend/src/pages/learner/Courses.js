@@ -103,15 +103,15 @@ export default function Courses() {
     <Layout>
       <div className="page-container" data-testid="courses-page">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Course Catalog</h1>
-          <p className="text-slate-500">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">Course Catalog</h1>
+          <p className="text-slate-600">
             Explore our professional courses and start learning today.
           </p>
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <Input
@@ -144,7 +144,7 @@ export default function Courses() {
             <p className="text-slate-500">Try adjusting your search or filters.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {filteredCourses.map((course) => {
               const enrolledCourse = getEnrolledCourse(course.id);
               const isEnrolled = !!enrolledCourse;
@@ -157,7 +157,7 @@ export default function Courses() {
                   to={`/courses/${course.id}`}
                   data-testid={`course-${course.id}`}
                 >
-                  <Card className={`card-base card-interactive h-full group ${isCompleted ? 'border-emerald-200' : ''}`}>
+                  <Card className={`border border-slate-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-200 h-full group ${isCompleted ? 'border-emerald-200' : ''}`}>
                     {/* Thumbnail */}
                     <div className="aspect-video bg-slate-100 relative overflow-hidden">
                       {course.thumbnail ? (
@@ -197,28 +197,28 @@ export default function Courses() {
                       ) : null}
                     </div>
 
-                    <CardContent className="p-5">
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold text-base text-slate-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
+                        {course.title}
+                      </h3>
+                      
                       {/* Course Type Badge */}
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2 mb-3">
                         {course.course_type === 'compulsory' && (
                           <Badge className="bg-red-100 text-red-700 text-xs">Required</Badge>
                         )}
                         {course.course_type === 'assigned' && (
                           <Badge className="bg-purple-100 text-purple-700 text-xs">Assigned</Badge>
                         )}
+                        {course.category && (
+                          <Badge className="bg-slate-100 text-slate-600 text-xs">{course.category}</Badge>
+                        )}
                       </div>
-                      
-                      <h3 className="font-semibold text-lg text-[#0F172A] mb-2 group-hover:text-[#095EB1] transition-colors line-clamp-2">
-                        {course.title}
-                      </h3>
-                      <p className="text-sm text-slate-500 mb-4 line-clamp-2">
-                        {course.description}
-                      </p>
 
                       {/* Progress bar for enrolled courses */}
                       {isEnrolled && (
-                        <div className="mb-4">
-                          <div className="flex items-center justify-between text-sm mb-1">
+                        <div className="mb-3">
+                          <div className="flex items-center justify-between text-xs mb-1">
                             <span className="text-slate-500">Progress</span>
                             <span className={`font-semibold ${isCompleted ? 'text-emerald-600' : 'text-[#095EB1]'}`}>
                               {progress}%
@@ -226,29 +226,29 @@ export default function Courses() {
                           </div>
                           <Progress 
                             value={progress} 
-                            className={`h-2 ${isCompleted ? '[&>div]:bg-emerald-500' : ''}`} 
+                            className={`h-1.5 ${isCompleted ? '[&>div]:bg-emerald-500' : ''}`} 
                           />
                         </div>
                       )}
 
                       {/* Meta info */}
-                      <div className="flex items-center gap-4 text-sm text-slate-500 mb-4">
+                      <div className="flex items-center gap-3 text-xs text-slate-500 mb-3">
                         {course.duration_hours > 0 && (
                           <div className="flex items-center gap-1">
-                            <Clock className="w-4 h-4" />
+                            <Clock className="w-3 h-3" />
                             <span>{course.duration_hours}h</span>
                           </div>
                         )}
                         <div className="flex items-center gap-1">
-                          <Users className="w-4 h-4" />
-                          <span>{course.enrolled_users?.length || 0} enrolled</span>
+                          <Users className="w-3 h-3" />
+                          <span>{course.enrolled_users?.length || 0}</span>
                         </div>
                       </div>
 
                       {/* Action Button */}
                       {isCompleted ? (
                         <Button 
-                          className="w-full bg-emerald-500 hover:bg-emerald-600 text-white"
+                          className="w-full bg-emerald-500 hover:bg-emerald-600 text-white text-sm py-2"
                           data-testid={`completed-course-${course.id}`}
                         >
                           <CheckCircle className="w-4 h-4 mr-2" />
@@ -256,20 +256,20 @@ export default function Courses() {
                         </Button>
                       ) : isEnrolled ? (
                         <Button 
-                          className="w-full bg-[#095EB1] hover:bg-[#074A8C]"
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2"
                           data-testid={`continue-course-${course.id}`}
                         >
-                          Continue Learning
+                          Continue
                           <ChevronRight className="w-4 h-4 ml-2" />
                         </Button>
                       ) : (
                         <Button
-                          className="w-full bg-slate-100 text-slate-700 hover:bg-[#095EB1] hover:text-white"
+                          className="w-full bg-green-600 hover:bg-green-700 text-white text-sm py-2"
                           onClick={(e) => handleEnroll(course.id, e)}
                           disabled={enrollingId === course.id}
                           data-testid={`enroll-course-${course.id}`}
                         >
-                          {enrollingId === course.id ? 'Enrolling...' : 'Enroll Now'}
+                          {enrollingId === course.id ? 'Enrolling...' : 'Enroll Free'}
                         </Button>
                       )}
                     </CardContent>

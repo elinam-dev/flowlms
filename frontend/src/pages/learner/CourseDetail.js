@@ -174,6 +174,12 @@ export default function CourseDetail() {
       return getContentUrl();
     };
 
+    // Get PDF URL with parameters to hide toolbar
+    const getPdfUrl = () => {
+      const url = getContentUrl();
+      return `${url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&zoom=page-width`;
+    };
+
     // Check file types
     const contentLower = activeLesson.content.toLowerCase();
     const isWordDoc = contentLower.endsWith('.docx') || contentLower.endsWith('.doc');
@@ -206,7 +212,7 @@ export default function CourseDetail() {
         if (isDocument) {
           // Use the viewer endpoint for documents
           return (
-            <div className="rounded-lg overflow-hidden border bg-white" style={{ height: '80vh' }}>
+            <div className="rounded-lg overflow-hidden border bg-white" style={{ height: '90vh' }}>
               <iframe
                 src={getViewerUrl()}
                 title={activeLesson.title}
@@ -219,12 +225,13 @@ export default function CourseDetail() {
         }
         // Fallback for other file types
         return (
-          <div className="rounded-lg overflow-hidden border bg-white" style={{ height: '80vh' }}>
+          <div className="rounded-lg overflow-hidden border bg-white" style={{ height: '90vh' }}>
             <iframe
-              src={getContentUrl()}
+              src={isPdf ? getPdfUrl() : getContentUrl()}
               title={activeLesson.title}
               className="w-full h-full"
               frameBorder="0"
+              sandbox="allow-same-origin allow-scripts"
             />
           </div>
         );
@@ -490,9 +497,9 @@ export default function CourseDetail() {
         </div>
 
         {/* Course Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Content Viewer */}
-          <div className="lg:col-span-2 order-2 lg:order-1">
+          <div className="lg:col-span-3 order-2 lg:order-1">
             {activeQuiz ? (
               renderQuizContent()
             ) : activeLesson ? (
