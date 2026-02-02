@@ -181,7 +181,7 @@ async def register(user_data: UserCreate):
 
 @auth_router.post("/login", response_model=TokenResponse)
 async def login(credentials: UserLogin):
-    # Try to find user by email or employee_id
+    # Find user by email or employee ID
     user = await db.users.find_one({
         "$or": [
             {"email": credentials.identifier},
@@ -192,17 +192,21 @@ async def login(credentials: UserLogin):
     if not user or not verify_password(credentials.password, user["password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
+    # Create token
     token = create_token(user["id"], user["role"])
-    user_response = UserResponse(
-        id=user["id"],
-        email=user["email"],
-        first_name=user["first_name"],
-        last_name=user["last_name"],
-        employee_id=user.get("employee_id"),
-        role=user["role"],
-        created_at=user["created_at"]
-    )
     
+    # Return user data without password
+    user_data = {
+        "id": user["id"],
+        "email": user["email"],
+        "first_name": user["first_name"],
+        "last_name": user["last_name"],
+        "employee_id": user.get("employee_id"),
+        "role": user["role"],
+        "created_at": user["created_at"]
+    }
+    
+    user_response = UserResponse(**user_data)
     return TokenResponse(access_token=token, user=user_response)
 
 @auth_router.get("/me", response_model=UserResponse)
@@ -1162,6 +1166,51 @@ async def view_document(filename: str):
     else:
         raise HTTPException(status_code=400, detail="Unsupported file type")
 
+# Document serving route
+@app.get("/api/uploads/documents/{filename}")
+async def serve_document(filename: str):
+    try:
+        file_path = ROOT_DIR / "uploads" / "documents" / filename
+        logger.info(f"Trying to serve document: {file_path}")
+        
+        if not file_path.exists():
+            logger.error(f"Document not found: {file_path}")
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        # Serve PDF files directly
+        if filename.lower().endswith('.pdf'):
+            async with aiofiles.open(file_path, 'rb') as f:
+                content = await f.read()
+            return Response(
+                content=content,
+                media_type="application/pdf",
+                headers={
+                    "Content-Disposition": f"inline; filename={filename}",
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "GET",
+                    "Access-Control-Allow-Headers": "*"
+                }
+            )
+        
+        # Serve DOCX files by converting to HTML
+        elif filename.lower().endswith('.docx'):
+            with open(file_path, 'rb') as docx_file:
+                result = mammoth.convert_to_html(docx_file)
+                html_content = result.value
+                return HTMLResponse(
+                    content=html_content,
+                    headers={
+                        "Access-Control-Allow-Origin": "*"
+                    }
+                )
+        
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported file type")
+            
+    except Exception as e:
+        logger.error(f"Error serving document {filename}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error serving document: {str(e)}")
+
 # ======================= SETUP =======================
 
 # Include routers
@@ -1214,6 +1263,119 @@ async def startup():
         }
         await db.users.insert_one(admin_doc)
         logger.info("Admin user created: admin@flowitec.com / admin123")
+    
+    # Create test learner user if not exists
+    learner = await db.users.find_one({"employee_id": "EMP-TEST-01"})
+    if not learner:
+        learner_doc = {
+            "id": str(uuid.uuid4()),
+            "email": "learner@test.com",
+            "password": hash_password("learner123"),
+            "first_name": "Test",
+            "last_name": "Learner",
+            "employee_id": "EMP-TEST-01",
+            "role": "learner",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "enrolled_courses": [],
+            "completed_courses": [],
+            "certificates": [],
+            "check_ins": [],
+            "streak": 0,
+            "last_check_in": None
+        }
+        await db.users.insert_one(learner_doc)
+        logger.info("Test learner created: EMP-TEST-01 / learner123")
+    
+    # Clean up any existing courses first
+    await db.courses.delete_many({})
+    await db.modules.delete_many({})
+    await db.lessons.delete_many({})
+    await db.progress.delete_many({})
+    
+    # Create courses from uploaded documents
+    documents = [
+        {"file": "Flowitec Code of Ethics & Conduct updated.pdf", "title": "Code of Ethics & Conduct", "category": "Ethics", "type": "compulsory"},
+        {"file": "Disciplinary Code.pdf", "title": "Disciplinary Code", "category": "HR Policy", "type": "compulsory"},
+        {"file": "Health and Safety Policy 1.docx", "title": "Health & Safety Policy", "category": "Safety", "type": "compulsory"},
+        {"file": "Leave Policy -Ghana.pdf", "title": "Leave Policy - Ghana", "category": "HR Policy", "type": "compulsory"},
+        {"file": "Leave Policy - Nigeria.docx", "title": "Leave Policy - Nigeria", "category": "HR Policy", "type": "optional"}
+    ]
+    
+    compulsory_course_ids = []
+    
+    for doc in documents:
+        course_id = str(uuid.uuid4())
+        course_doc = {
+            "id": course_id,
+            "title": doc["title"],
+            "description": f"Company policy document: {doc['title']}",
+            "thumbnail": None,
+            "category": doc["category"],
+            "duration_hours": 1.0,
+            "is_published": True,
+            "course_type": doc["type"],
+            "enrolled_users": [],
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_by": "admin-001"
+        }
+        await db.courses.insert_one(course_doc)
+        
+        if doc["type"] == "compulsory":
+            compulsory_course_ids.append(course_id)
+        
+        # Create module
+        module_id = str(uuid.uuid4())
+        module_doc = {
+            "id": module_id,
+            "course_id": course_id,
+            "title": f"{doc['title']} - Policy Document",
+            "description": f"Read and understand the {doc['title']} policy",
+            "order": 1
+        }
+        await db.modules.insert_one(module_doc)
+        
+        # Create document lesson
+        lesson_id = str(uuid.uuid4())
+        content_type = "pdf" if doc["file"].endswith(".pdf") else "document"
+        lesson_doc = {
+            "id": lesson_id,
+            "module_id": module_id,
+            "title": f"{doc['title']} Document",
+            "content_type": content_type,
+            "content": f"/api/uploads/documents/{doc['file']}",
+            "duration_minutes": 45,
+            "order": 1
+        }
+        await db.lessons.insert_one(lesson_doc)
+        
+        logger.info(f"Created course: {doc['title']}")
+    
+    # Auto-enroll all existing users in compulsory courses
+    all_users = await db.users.find({"role": "learner"}).to_list(1000)
+    for user in all_users:
+        await db.users.update_one(
+            {"id": user["id"]},
+            {"$set": {"enrolled_courses": compulsory_course_ids}}
+        )
+        
+        # Create progress for each compulsory course
+        for course_id in compulsory_course_ids:
+            await db.courses.update_one(
+                {"id": course_id},
+                {"$addToSet": {"enrolled_users": user["id"]}}
+            )
+            
+            progress_doc = {
+                "id": str(uuid.uuid4()),
+                "user_id": user["id"],
+                "course_id": course_id,
+                "completed_lessons": [],
+                "quiz_scores": {},
+                "percentage": 0,
+                "started_at": datetime.now(timezone.utc).isoformat(),
+                "last_accessed": datetime.now(timezone.utc).isoformat()
+            }
+            await db.progress.insert_one(progress_doc)
     
     # Create indexes
     await db.users.create_index("email", unique=True)

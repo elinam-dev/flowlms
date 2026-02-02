@@ -58,8 +58,12 @@ export default function Login() {
           {/* Logo */}
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-14 h-14 bg-gradient-to-br from-[#095EB1] to-[#0EA5E9] rounded-xl flex items-center justify-center shadow-lg shadow-[#095EB1]/20">
-                <span className="text-white font-bold text-2xl">F</span>
+              <div className="w-20 h-20 flex items-center justify-center">
+                <img 
+                  src="/images/flowitec-logo.png" 
+                  alt="Flowitec Logo" 
+                  className="w-20 h-20 object-contain"
+                />
               </div>
               <div>
                 <span className="font-bold text-[#0F172A] text-2xl">Flowitec</span>
@@ -137,13 +141,6 @@ export default function Login() {
                 <p className="text-xs text-slate-500">
                   Contact your administrator to create an account for you.
                 </p>
-              </div>
-
-              {/* Demo credentials */}
-              <div className="mt-4 p-4 bg-amber-50 rounded-xl border border-amber-200">
-                <p className="text-xs font-semibold text-amber-700 mb-2">Demo Credentials:</p>
-                <p className="text-xs text-amber-600"><span className="font-medium">Admin:</span> admin@flowitec.com / admin123</p>
-                <p className="text-xs text-amber-600"><span className="font-medium">Learner:</span> EMP-TEST-01 / learner123</p>
               </div>
             </CardContent>
           </Card>
