@@ -1234,6 +1234,7 @@ api_router.include_router(progress_router)
 api_router.include_router(certificate_router)
 api_router.include_router(quiz_router)
 api_router.include_router(upload_router)
+api_router.include_router(career_router)
 
 # Include courses service router
 from services.courses.routes import courses_router
