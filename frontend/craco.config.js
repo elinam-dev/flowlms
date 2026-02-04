@@ -78,6 +78,10 @@ if (config.enableVisualEdits && babelMetadataPlugin) {
 }
 
 webpackConfig.devServer = (devServerConfig) => {
+  // Fix host header validation for preview environments
+  devServerConfig.allowedHosts = 'all';
+  devServerConfig.host = '0.0.0.0';
+  
   // Add proxy configuration for API calls
   devServerConfig.proxy = [
     {
