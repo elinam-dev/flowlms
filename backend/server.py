@@ -1168,6 +1168,61 @@ async def view_document(filename: str):
     else:
         raise HTTPException(status_code=400, detail="Unsupported file type")
 
+# ======================= CAREER BEETLE ROUTES =======================
+
+@career_router.get("")
+@career_router.get("/")
+async def get_career_beetle(current_user: dict = Depends(get_current_user)):
+    """Get the complete career beetle/succession plan data"""
+    career_data = await db.career_beetle.find_one({}, {"_id": 0})
+    if not career_data:
+        return {"departments": []}
+    return career_data
+
+@career_router.get("/departments")
+async def get_departments(current_user: dict = Depends(get_current_user)):
+    """Get list of all departments"""
+    career_data = await db.career_beetle.find_one({}, {"_id": 0})
+    if not career_data:
+        return []
+    return [{"id": d["id"], "name": d["name"]} for d in career_data.get("departments", [])]
+
+@career_router.get("/departments/{dept_id}")
+async def get_department_roles(dept_id: str, current_user: dict = Depends(get_current_user)):
+    """Get roles for a specific department"""
+    career_data = await db.career_beetle.find_one({}, {"_id": 0})
+    if not career_data:
+        raise HTTPException(status_code=404, detail="Career data not found")
+    
+    for dept in career_data.get("departments", []):
+        if dept["id"] == dept_id:
+            return dept
+    
+    raise HTTPException(status_code=404, detail="Department not found")
+
+@career_router.get("/my-path")
+async def get_my_career_path(current_user: dict = Depends(get_current_user)):
+    """Get the career path for the current user based on their role"""
+    # For now, return a suggested path based on user's department if assigned
+    user_dept = current_user.get("department", "sales")
+    career_data = await db.career_beetle.find_one({}, {"_id": 0})
+    
+    if not career_data:
+        return {"current_role": None, "next_steps": [], "department": None}
+    
+    for dept in career_data.get("departments", []):
+        if dept["id"] == user_dept:
+            return {
+                "department": dept,
+                "message": "Explore career progression within your department"
+            }
+    
+    # Default to first department if user's dept not found
+    return {
+        "department": career_data["departments"][0] if career_data.get("departments") else None,
+        "message": "Explore career opportunities"
+    }
+
 # ======================= SETUP =======================
 
 # Include routers
