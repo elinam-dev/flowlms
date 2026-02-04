@@ -4,7 +4,7 @@ import json
 
 def test_admin_users_endpoint():
     """Test the admin users endpoint to verify it returns enrolled courses details"""
-    base_url = "https://course-registry-5.preview.emergentagent.com"
+    base_url = "https://edu-display-1.preview.emergentagent.com"
     
     print("🔍 Testing Admin Users Endpoint with Enrolled Courses Details")
     print("=" * 60)
