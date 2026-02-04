@@ -108,8 +108,8 @@ class FlowitecLMSTester:
             "POST",
             "auth/login",
             200,
-            data={"identifier": "learner@flowitec.com", "password": "learner123"},
-            description="Login with learner credentials"
+            data={"identifier": "EMP-TEST-01", "password": "learner123"},
+            description="Login with learner credentials from review request"
         )
         if success and 'access_token' in response:
             self.learner_token = response['access_token']
