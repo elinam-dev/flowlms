@@ -29,6 +29,7 @@ export const Navbar = () => {
   ] : [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/courses', label: 'Courses', icon: BookOpen },
+    { href: '/career-beetle', label: 'Career Beetle', icon: TrendingUp },
     { href: '/certificates', label: 'Certificates', icon: Award },
   ];
 
