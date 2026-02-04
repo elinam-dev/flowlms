@@ -9,33 +9,268 @@ import { Progress } from '../../components/ui/progress';
 import { Badge } from '../../components/ui/badge';
 import { Skeleton } from '../../components/ui/skeleton';
 import { toast } from 'sonner';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import { 
   BookOpen, 
   PlayCircle,
-  FileText,
   CheckCircle,
   ChevronRight,
+  ChevronLeft,
   Clock,
   Users,
   Award,
   ArrowLeft,
-  Lock,
-  ChevronDown,
-  ChevronUp,
+  FileText,
   ClipboardList,
   Target,
-  GraduationCap,
-  ThumbsUp,
-  Share2,
-  Calendar,
   BarChart3
 } from 'lucide-react';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '../../components/ui/collapsible';
+
+// CSS for policy content styling
+const policyStyles = `
+  .policy-page {
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.8;
+  }
+  .policy-page h2 {
+    color: #095EB1;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    border-bottom: 3px solid #095EB1;
+    padding-bottom: 0.5rem;
+  }
+  .policy-page h3 {
+    color: #1e293b;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.75rem;
+  }
+  .policy-page h4 {
+    color: #475569;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 1rem 0 0.5rem;
+  }
+  .policy-page p {
+    color: #334155;
+    margin-bottom: 1rem;
+  }
+  .policy-page ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .policy-page li {
+    color: #334155;
+    margin-bottom: 0.5rem;
+  }
+  .policy-page .highlight-box {
+    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+    border-left: 4px solid #095EB1;
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+    margin: 1.5rem 0;
+  }
+  .policy-page .warning-box {
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    border-left: 4px solid #F59E0B;
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+    margin: 1.5rem 0;
+  }
+  .policy-page .info-box {
+    background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+    border-left: 4px solid #10B981;
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+    margin: 1.5rem 0;
+  }
+  .policy-page .legal-note {
+    font-style: italic;
+    color: #64748b;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1rem;
+    margin-top: 1.5rem;
+  }
+  .policy-page .document-code {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+  }
+  .policy-page .leave-type {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  .policy-page .days-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #095EB1;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+  .policy-page .days-badge.special {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  }
+  .policy-page .bonus {
+    color: #10B981;
+    font-weight: 500;
+  }
+  .policy-page .summary-box {
+    background: linear-gradient(135deg, #095EB1 0%, #0369A1 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin-top: 2rem;
+  }
+  .policy-page .summary-box h4 {
+    color: white;
+  }
+  .policy-page .summary-box li {
+    color: rgba(255,255,255,0.9);
+  }
+  .policy-page .principle-card {
+    background: #F8FAFC;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .policy-page .principle-card.warning {
+    background: #FEF3C7;
+  }
+  .policy-page .principle-card.highlight {
+    background: #EFF6FF;
+    border: 2px solid #095EB1;
+  }
+  .policy-page .conclusion-box {
+    background: linear-gradient(135deg, #095EB1 0%, #0369A1 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 0.75rem;
+    text-align: center;
+    margin-top: 2rem;
+  }
+  .policy-page .conclusion-box p {
+    color: rgba(255,255,255,0.95);
+  }
+  .policy-page .conclusion-box .emphasis {
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+  .policy-page .purpose-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .policy-page .purpose-item, .policy-page .guideline-item, .policy-page .procedure-item, .policy-page .training-item, .policy-page .monitoring-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    background: #F8FAFC;
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+  .policy-page .purpose-item .number, .policy-page .guideline-item .number, .policy-page .procedure-item .number, .policy-page .training-item .number, .policy-page .monitoring-item .number {
+    background: #095EB1;
+    color: white;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .policy-page .guideline-item.important {
+    background: #FEF3C7;
+    border-left: 4px solid #F59E0B;
+  }
+  .policy-page .procedure-item.important {
+    background: #FEE2E2;
+    border-left: 4px solid #EF4444;
+  }
+  .policy-page .misconduct-grid, .policy-page .behavior-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .policy-page .misconduct-item {
+    background: #FEE2E2;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  .policy-page .misconduct-item .number {
+    background: #EF4444;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+  }
+  .policy-page .behavior-item {
+    background: #FEF3C7;
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+  .policy-page .penalty-section {
+    background: #F8FAFC;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .policy-page .penalty-section.moderate {
+    background: #FEF3C7;
+    border-left: 4px solid #F59E0B;
+  }
+  .policy-page .penalty-section.severe {
+    background: #FEE2E2;
+    border-left: 4px solid #EF4444;
+  }
+  .policy-page .penalty-section .examples {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+  }
+  .policy-page .role-section {
+    background: #F8FAFC;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .policy-page .declaration-box {
+    background: linear-gradient(135deg, #095EB1 0%, #0369A1 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin-top: 2rem;
+  }
+  .policy-page .declaration-box h3, .policy-page .declaration-box p {
+    color: white;
+  }
+  .policy-page .purpose-box {
+    background: #EFF6FF;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .policy-page .policy-statement {
+    font-size: 1.1rem;
+  }
+`;
 
 export default function CourseDetail() {
   const { courseId } = useParams();
@@ -44,19 +279,27 @@ export default function CourseDetail() {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);
-  const [activeLesson, setActiveLesson] = useState(null);
-  const [openModules, setOpenModules] = useState({});
-  const [completingLesson, setCompletingLesson] = useState(null);
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [completingPage, setCompletingPage] = useState(false);
   const [activeQuiz, setActiveQuiz] = useState(null);
   const [quizAnswers, setQuizAnswers] = useState({});
   const [quizSubmitting, setQuizSubmitting] = useState(false);
   const [quizResults, setQuizResults] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview');
 
   const isEnrolled = user && course?.enrolled_users?.includes(user.id);
   const userProgress = course?.user_progress;
   const progressPercentage = userProgress?.percentage || 0;
   const isCompleted = progressPercentage >= 100;
+
+  // Get all lessons (pages) from all modules
+  const getAllPages = () => {
+    if (!course?.modules) return [];
+    return course.modules.flatMap(m => m.lessons || []).sort((a, b) => a.order - b.order);
+  };
+
+  const pages = getAllPages();
+  const currentPage = pages[currentPageIndex];
+  const totalPages = pages.length;
 
   useEffect(() => {
     fetchCourse();
@@ -67,8 +310,12 @@ export default function CourseDetail() {
       const response = await courseApi.getById(courseId);
       setCourse(response.data);
       
-      if (response.data.modules?.length > 0) {
-        setOpenModules({ [response.data.modules[0].id]: true });
+      // Find the first incomplete page to start from
+      const allPages = response.data.modules?.flatMap(m => m.lessons || []).sort((a, b) => a.order - b.order) || [];
+      const completedLessons = response.data.user_progress?.completed_lessons || [];
+      const firstIncompleteIndex = allPages.findIndex(p => !completedLessons.includes(p.id));
+      if (firstIncompleteIndex > 0) {
+        setCurrentPageIndex(firstIncompleteIndex);
       }
     } catch (error) {
       console.error('Failed to fetch course:', error);
@@ -82,7 +329,7 @@ export default function CourseDetail() {
     setEnrolling(true);
     try {
       await courseApi.enroll(courseId);
-      toast.success('Successfully enrolled!');
+      toast.success('Successfully enrolled! Let\'s begin learning.');
       fetchCourse();
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Failed to enroll');
@@ -91,94 +338,41 @@ export default function CourseDetail() {
     }
   };
 
-  const handleCompleteLesson = async (lessonId) => {
-    setCompletingLesson(lessonId);
+  const handleCompletePage = async () => {
+    if (!currentPage) return;
+    setCompletingPage(true);
+    
     try {
-      await progressApi.updateLesson(lessonId, true);
-      toast.success('Lesson marked as complete!');
-      fetchCourse();
-    } catch (error) {
-      toast.error('Failed to update progress');
-    } finally {
-      setCompletingLesson(null);
-    }
-  };
-
-  const toggleModule = (moduleId) => {
-    setOpenModules(prev => ({ ...prev, [moduleId]: !prev[moduleId] }));
-  };
-
-  const isLessonCompleted = (lessonId) => {
-    return userProgress?.completed_lessons?.includes(lessonId);
-  };
-
-  const startQuiz = async (quiz) => {
-    try {
-      const response = await quizApi.getById(quiz.id);
-      setActiveQuiz(response.data);
-      setQuizAnswers({});
-      setQuizResults(null);
-      setActiveLesson(null);
-      setActiveTab('content');
-    } catch (error) {
-      toast.error('Failed to load quiz');
-    }
-  };
-
-  const submitQuiz = async () => {
-    setQuizSubmitting(true);
-    try {
-      const response = await quizApi.submit(activeQuiz.id, quizAnswers);
-      setQuizResults(response.data);
-      if (response.data.passed) {
-        toast.success(`Congratulations! You passed with ${response.data.score}%`);
+      await progressApi.updateLesson(currentPage.id, true);
+      
+      // Move to next page
+      if (currentPageIndex < totalPages - 1) {
+        setCurrentPageIndex(currentPageIndex + 1);
+        toast.success('Page completed! Moving to next page.');
       } else {
-        toast.error(`You scored ${response.data.score}%. Required: ${activeQuiz.passing_score}%`);
+        toast.success('Congratulations! You\'ve completed this course!');
       }
+      
       fetchCourse();
     } catch (error) {
-      toast.error('Failed to submit quiz');
+      toast.error('Failed to save progress');
     } finally {
-      setQuizSubmitting(false);
+      setCompletingPage(false);
     }
   };
 
-  const getContentIcon = (type, content) => {
-    const contentLower = (content || '').toLowerCase();
-    const isDocument = contentLower.endsWith('.pdf') || contentLower.endsWith('.docx') || contentLower.endsWith('.doc');
-    
-    if (isDocument || type === 'pdf') {
-      return <FileText className="w-4 h-4" />;
-    }
-    
-    switch (type) {
-      case 'video':
-      case 'embed':
-        return <PlayCircle className="w-4 h-4" />;
-      default:
-        return <BookOpen className="w-4 h-4" />;
+  const isPageCompleted = (pageId) => {
+    return userProgress?.completed_lessons?.includes(pageId);
+  };
+
+  const goToPage = (index) => {
+    if (index >= 0 && index < totalPages) {
+      setCurrentPageIndex(index);
     }
   };
 
-  // Get total lessons count
-  const getTotalLessons = () => {
-    return course?.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || 0;
-  };
-
-  // Get completed lessons count
-  const getCompletedLessons = () => {
-    return userProgress?.completed_lessons?.length || 0;
-  };
-
-  // Generate learning outcomes from course
+  // Get learning outcomes
   const getLearningOutcomes = () => {
-    const outcomes = [
-      'Understand the key concepts and principles covered in this course',
-      'Apply practical knowledge to real-world scenarios',
-      'Demonstrate competency through assessments and quizzes',
-      'Earn a certificate upon successful completion'
-    ];
-    
     if (course?.category === 'Safety') {
       return [
         'Identify workplace hazards and safety risks',
@@ -187,7 +381,6 @@ export default function CourseDetail() {
         'Maintain compliance with safety regulations'
       ];
     }
-    
     if (course?.category === 'HR Policy') {
       return [
         'Understand company policies and procedures',
@@ -196,7 +389,6 @@ export default function CourseDetail() {
         'Ensure compliance with organizational standards'
       ];
     }
-    
     if (course?.category === 'Ethics') {
       return [
         'Recognize ethical dilemmas in the workplace',
@@ -205,201 +397,21 @@ export default function CourseDetail() {
         'Maintain professional integrity standards'
       ];
     }
-    
-    return outcomes;
-  };
-
-  const renderLessonContent = () => {
-    if (!activeLesson) return null;
-
-    const getContentUrl = () => {
-      if (activeLesson.content.startsWith('/')) {
-        const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
-        return `${backendUrl}${activeLesson.content}`;
-      }
-      return activeLesson.content;
-    };
-
-    const getViewerUrl = () => {
-      if (activeLesson.content.startsWith('/api/uploads/documents/')) {
-        const filename = activeLesson.content.split('/').pop();
-        const backendUrl = process.env.REACT_APP_BACKEND_URL || '';
-        return `${backendUrl}/api/upload/view/${filename}`;
-      }
-      return getContentUrl();
-    };
-
-    const getPdfUrl = () => {
-      const url = getContentUrl();
-      return `${url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH&zoom=page-width`;
-    };
-
-    const contentLower = activeLesson.content.toLowerCase();
-    const isWordDoc = contentLower.endsWith('.docx') || contentLower.endsWith('.doc');
-    const isPdf = contentLower.endsWith('.pdf');
-    const isDocument = isWordDoc || isPdf;
-
-    switch (activeLesson.content_type) {
-      case 'video':
-        return (
-          <div className="video-container rounded-xl overflow-hidden bg-black">
-            <video src={getContentUrl()} controls className="w-full" />
-          </div>
-        );
-      case 'embed':
-        return (
-          <div className="video-container rounded-xl overflow-hidden">
-            <iframe src={activeLesson.content} title={activeLesson.title} allowFullScreen className="w-full h-full" />
-          </div>
-        );
-      case 'pdf':
-        if (isDocument) {
-          return (
-            <div className="rounded-xl overflow-hidden border bg-white" style={{ height: '80vh' }}>
-              <iframe src={getViewerUrl()} title={activeLesson.title} className="w-full h-full" frameBorder="0" style={{ border: 'none' }} />
-            </div>
-          );
-        }
-        return (
-          <div className="rounded-xl overflow-hidden border bg-white" style={{ height: '80vh' }}>
-            <iframe src={isPdf ? getPdfUrl() : getContentUrl()} title={activeLesson.title} className="w-full h-full" frameBorder="0" sandbox="allow-same-origin allow-scripts" />
-          </div>
-        );
-      default:
-        return (
-          <div className="prose max-w-none p-8 bg-white rounded-xl border">
-            <div dangerouslySetInnerHTML={{ __html: activeLesson.content }} />
-          </div>
-        );
-    }
-  };
-
-  const renderQuizContent = () => {
-    if (!activeQuiz) return null;
-
-    if (quizResults) {
-      return (
-        <div className="space-y-6">
-          <Card className={`border-2 ${quizResults.passed ? 'border-emerald-500 bg-emerald-50/50' : 'border-red-500 bg-red-50/50'}`}>
-            <CardContent className="p-8 text-center">
-              <div className={`w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center ${quizResults.passed ? 'bg-emerald-100' : 'bg-red-100'}`}>
-                {quizResults.passed ? (
-                  <CheckCircle className="w-10 h-10 text-emerald-600" />
-                ) : (
-                  <ClipboardList className="w-10 h-10 text-red-600" />
-                )}
-              </div>
-              <h3 className="text-3xl font-bold mb-2">{quizResults.passed ? 'Congratulations!' : 'Keep Trying!'}</h3>
-              <p className="text-5xl font-bold text-[#095EB1] mb-4">{quizResults.score}%</p>
-              <p className="text-slate-500">You scored {quizResults.earned_points} out of {quizResults.total_points} points</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Review Answers</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {quizResults.results.map((result, index) => (
-                <div key={index} className={`p-4 rounded-xl border ${result.correct ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'}`}>
-                  <p className="font-medium mb-2">Q{index + 1}: {result.question}</p>
-                  <p className="text-sm">
-                    <span className="text-slate-500">Your answer:</span>{' '}
-                    <span className={result.correct ? 'text-emerald-600 font-medium' : 'text-red-600 font-medium'}>{result.user_answer || '(no answer)'}</span>
-                  </p>
-                  {!result.correct && (
-                    <p className="text-sm mt-1">
-                      <span className="text-slate-500">Correct answer:</span>{' '}
-                      <span className="text-emerald-600 font-medium">{result.correct_answer}</span>
-                    </p>
-                  )}
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          <Button onClick={() => { setActiveQuiz(null); setQuizResults(null); }} variant="outline" className="w-full h-12 rounded-xl">
-            Back to Course
-          </Button>
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-6">
-        <Card>
-          <CardHeader className="bg-slate-50 border-b">
-            <CardTitle className="flex items-center gap-2">
-              <ClipboardList className="w-5 h-5 text-[#095EB1]" />
-              {activeQuiz.title}
-            </CardTitle>
-            {activeQuiz.description && <p className="text-sm text-slate-500 mt-1">{activeQuiz.description}</p>}
-            <Badge className="w-fit mt-2 bg-[#095EB1]/10 text-[#095EB1]">Passing Score: {activeQuiz.passing_score}%</Badge>
-          </CardHeader>
-          <CardContent className="p-6 space-y-6">
-            {activeQuiz.questions?.map((question, qIndex) => (
-              <div key={qIndex} className="p-5 bg-slate-50 rounded-xl">
-                <p className="font-semibold mb-4">
-                  Q{qIndex + 1}: {question.question}
-                  <span className="text-sm text-slate-500 font-normal ml-2">({question.points} pt{question.points > 1 ? 's' : ''})</span>
-                </p>
-                
-                {question.question_type === 'multiple_choice' && (
-                  <div className="space-y-2">
-                    {question.options?.map((option, oIndex) => (
-                      <label key={oIndex} className={`flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-all ${quizAnswers[qIndex] === option ? 'bg-[#095EB1]/10 border-[#095EB1] shadow-sm' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
-                        <input type="radio" name={`q${qIndex}`} value={option} checked={quizAnswers[qIndex] === option} onChange={() => setQuizAnswers({ ...quizAnswers, [qIndex]: option })} className="w-4 h-4 text-[#095EB1]" />
-                        <span>{option}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-
-                {question.question_type === 'true_false' && (
-                  <div className="flex gap-4">
-                    {['True', 'False'].map((option) => (
-                      <label key={option} className={`flex-1 flex items-center justify-center gap-2 p-4 rounded-lg border cursor-pointer transition-all ${quizAnswers[qIndex] === option ? 'bg-[#095EB1]/10 border-[#095EB1] shadow-sm' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
-                        <input type="radio" name={`q${qIndex}`} value={option} checked={quizAnswers[qIndex] === option} onChange={() => setQuizAnswers({ ...quizAnswers, [qIndex]: option })} className="w-4 h-4 text-[#095EB1]" />
-                        <span className="font-medium">{option}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-
-                {question.question_type === 'short_answer' && (
-                  <input type="text" value={quizAnswers[qIndex] || ''} onChange={(e) => setQuizAnswers({ ...quizAnswers, [qIndex]: e.target.value })} className="w-full p-4 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#095EB1]/20 focus:border-[#095EB1]" placeholder="Type your answer..." />
-                )}
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <div className="flex gap-4">
-          <Button variant="outline" onClick={() => setActiveQuiz(null)} className="flex-1 h-12 rounded-xl">Cancel</Button>
-          <Button onClick={submitQuiz} disabled={quizSubmitting} className="flex-1 h-12 rounded-xl bg-[#095EB1] hover:bg-[#074A8C]">
-            {quizSubmitting ? 'Submitting...' : 'Submit Quiz'}
-          </Button>
-        </div>
-      </div>
-    );
+    return [
+      'Understand the key concepts and principles',
+      'Apply practical knowledge to real-world scenarios',
+      'Demonstrate competency through assessments',
+      'Earn a certificate upon completion'
+    ];
   };
 
   if (loading) {
     return (
       <Layout>
-        <div className="bg-slate-50 py-8">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Skeleton className="h-8 w-32 mb-6" />
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              <div className="lg:col-span-8">
-                <Skeleton className="h-64 rounded-xl mb-4" />
-                <Skeleton className="h-8 w-3/4 mb-2" />
-                <Skeleton className="h-4 w-full mb-4" />
-              </div>
-              <div className="lg:col-span-4">
-                <Skeleton className="h-96 rounded-xl" />
-              </div>
-            </div>
+        <div className="bg-slate-50 min-h-screen py-8">
+          <div className="max-w-5xl mx-auto px-4">
+            <Skeleton className="h-8 w-64 mb-4" />
+            <Skeleton className="h-96 rounded-xl" />
           </div>
         </div>
       </Layout>
@@ -421,466 +433,304 @@ export default function CourseDetail() {
     );
   }
 
-  return (
-    <Layout>
-      <div data-testid="course-detail" className="bg-slate-50 min-h-screen">
-        {/* Breadcrumb */}
-        <div className="bg-white border-b border-slate-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <nav className="flex items-center gap-2 text-sm">
-              <Link to="/courses" className="text-slate-500 hover:text-[#095EB1] transition-colors">Courses</Link>
-              <ChevronRight className="w-4 h-4 text-slate-400" />
-              <span className="text-slate-900 font-medium truncate max-w-xs">{course.title}</span>
-            </nav>
+  // If not enrolled, show course overview with enroll option
+  if (!isEnrolled) {
+    return (
+      <Layout>
+        <style>{policyStyles}</style>
+        <div data-testid="course-detail" className="bg-slate-50 min-h-screen">
+          {/* Breadcrumb */}
+          <div className="bg-white border-b border-slate-200">
+            <div className="max-w-5xl mx-auto px-4 py-4">
+              <nav className="flex items-center gap-2 text-sm">
+                <Link to="/courses" className="text-slate-500 hover:text-[#095EB1]">Courses</Link>
+                <ChevronRight className="w-4 h-4 text-slate-400" />
+                <span className="text-slate-900 font-medium truncate">{course.title}</span>
+              </nav>
+            </div>
           </div>
-        </div>
 
-        {/* Course Header - Alison Style */}
-        <div className="bg-white border-b border-slate-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              {/* Left Content */}
-              <div className="lg:col-span-8">
-                {/* Badges */}
-                <div className="flex flex-wrap items-center gap-2 mb-4">
-                  {course.course_type === 'compulsory' && (
-                    <Badge className="bg-red-100 text-red-700 font-medium">Required Course</Badge>
-                  )}
-                  {course.category && (
-                    <Badge className="bg-slate-100 text-slate-700">{course.category}</Badge>
-                  )}
-                  {isCompleted && (
-                    <Badge className="bg-emerald-100 text-emerald-700">
-                      <CheckCircle className="w-3 h-3 mr-1" />
-                      Completed
-                    </Badge>
-                  )}
+          <div className="max-w-5xl mx-auto px-4 py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Main Content */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Course Header */}
+                <div className="bg-white rounded-xl p-8 border border-slate-200">
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {course.course_type === 'compulsory' && (
+                      <Badge className="bg-red-100 text-red-700">Required</Badge>
+                    )}
+                    {course.category && (
+                      <Badge className="bg-slate-100 text-slate-700">{course.category}</Badge>
+                    )}
+                    {course.code && (
+                      <Badge variant="outline">{course.code}</Badge>
+                    )}
+                  </div>
+                  <h1 className="text-3xl font-bold text-slate-900 mb-4">{course.title}</h1>
+                  <p className="text-lg text-slate-600 leading-relaxed">{course.description}</p>
+                  
+                  <div className="flex flex-wrap gap-6 mt-6 pt-6 border-t border-slate-100">
+                    <div className="flex items-center gap-2 text-slate-600">
+                      <FileText className="w-5 h-5 text-slate-400" />
+                      <span>{totalPages} pages</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-slate-600">
+                      <Clock className="w-5 h-5 text-slate-400" />
+                      <span>{course.duration_hours || 1} hour{course.duration_hours !== 1 ? 's' : ''}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-slate-600">
+                      <Users className="w-5 h-5 text-slate-400" />
+                      <span>{(course.enrolled_users?.length || 0).toLocaleString()} enrolled</span>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Title */}
-                <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight mb-4">
-                  {course.title}
-                </h1>
-
-                {/* Description */}
-                <p className="text-lg text-slate-600 mb-6 leading-relaxed">
-                  {course.description}
-                </p>
-
-                {/* Stats Row - Alison Style */}
-                <div className="flex flex-wrap items-center gap-6 text-sm">
-                  {course.duration_hours > 0 && (
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <Clock className="w-4 h-4 text-slate-400" />
-                      <span>{course.duration_hours} hours</span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <Users className="w-4 h-4 text-slate-400" />
-                    <span>{(course.enrolled_users?.length || 0).toLocaleString()} learners</span>
+                {/* What You'll Learn */}
+                <div className="bg-white rounded-xl p-8 border border-slate-200">
+                  <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                    <Target className="w-5 h-5 text-[#095EB1]" />
+                    What You'll Learn
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {getLearningOutcomes().map((outcome, i) => (
+                      <div key={i} className="flex items-start gap-3">
+                        <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                        <span className="text-slate-600">{outcome}</span>
+                      </div>
+                    ))}
                   </div>
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <BookOpen className="w-4 h-4 text-slate-400" />
-                    <span>{getTotalLessons()} lessons</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <BarChart3 className="w-4 h-4 text-slate-400" />
-                    <span>{course.modules?.length || 0} modules</span>
+                </div>
+
+                {/* Course Content Preview */}
+                <div className="bg-white rounded-xl p-8 border border-slate-200">
+                  <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                    <BookOpen className="w-5 h-5 text-[#095EB1]" />
+                    Course Content
+                  </h2>
+                  <div className="space-y-2">
+                    {pages.slice(0, 5).map((page, i) => (
+                      <div key={page.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                        <span className="w-8 h-8 bg-[#095EB1] text-white rounded-lg flex items-center justify-center text-sm font-bold">
+                          {i + 1}
+                        </span>
+                        <span className="text-slate-700">{page.title}</span>
+                      </div>
+                    ))}
+                    {pages.length > 5 && (
+                      <p className="text-sm text-slate-500 pl-11">+ {pages.length - 5} more pages</p>
+                    )}
                   </div>
                 </div>
               </div>
 
-              {/* Right Sidebar - Enrollment Card */}
-              <div className="lg:col-span-4">
-                <Card className="sticky top-24 shadow-xl shadow-slate-200/50 border-slate-200 overflow-hidden">
-                  {/* Course Thumbnail */}
+              {/* Sidebar */}
+              <div className="lg:col-span-1">
+                <Card className="sticky top-24 shadow-xl border-slate-200">
                   {course.thumbnail && (
-                    <div className="aspect-video overflow-hidden">
+                    <div className="aspect-video overflow-hidden rounded-t-xl">
                       <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover" />
                     </div>
                   )}
-                  
                   <CardContent className="p-6">
-                    {isEnrolled ? (
-                      <div className="space-y-4">
-                        {/* Progress Circle */}
-                        <div className="text-center py-4">
-                          <div className="relative w-24 h-24 mx-auto mb-3">
-                            <svg className="w-full h-full transform -rotate-90">
-                              <circle cx="48" cy="48" r="42" fill="none" stroke="#E2E8F0" strokeWidth="8" />
-                              <circle cx="48" cy="48" r="42" fill="none" stroke={isCompleted ? '#10B981' : '#095EB1'} strokeWidth="8" strokeLinecap="round" strokeDasharray={`${progressPercentage * 2.64} 264`} />
-                            </svg>
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <span className={`text-2xl font-bold ${isCompleted ? 'text-emerald-600' : 'text-[#095EB1]'}`}>{progressPercentage}%</span>
-                            </div>
-                          </div>
-                          <p className="text-slate-500 text-sm">{getCompletedLessons()} of {getTotalLessons()} lessons completed</p>
-                        </div>
+                    <div className="text-center py-4">
+                      <p className="text-3xl font-bold text-[#095EB1] mb-1">Free</p>
+                      <p className="text-slate-500 text-sm">Enroll to start learning</p>
+                    </div>
 
-                        <Button 
-                          className={`w-full h-12 rounded-xl font-semibold ${isCompleted ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-[#095EB1] hover:bg-[#074A8C]'}`}
-                          onClick={() => setActiveTab('content')}
-                          data-testid="continue-learning-btn"
-                        >
-                          {isCompleted ? (
-                            <>
-                              <Award className="w-5 h-5 mr-2" />
-                              Review Course
-                            </>
-                          ) : (
-                            <>
-                              <PlayCircle className="w-5 h-5 mr-2" />
-                              Continue Learning
-                            </>
-                          )}
-                        </Button>
+                    <Button 
+                      className="w-full h-12 rounded-xl font-semibold bg-[#095EB1] hover:bg-[#074A8C]"
+                      onClick={handleEnroll}
+                      disabled={enrolling}
+                      data-testid="enroll-btn"
+                    >
+                      {enrolling ? 'Enrolling...' : 'Start Course'}
+                    </Button>
 
-                        {isCompleted && (
-                          <p className="text-center text-sm text-emerald-600 font-medium">
-                            <CheckCircle className="w-4 h-4 inline mr-1" />
-                            You've completed this course!
-                          </p>
-                        )}
+                    <div className="mt-6 pt-6 border-t border-slate-100 space-y-3">
+                      <div className="flex items-center gap-3 text-sm text-slate-600">
+                        <CheckCircle className="w-4 h-4 text-emerald-500" />
+                        <span>Full access to all content</span>
                       </div>
-                    ) : (
-                      <div className="space-y-4">
-                        <div className="text-center py-4">
-                          <p className="text-3xl font-bold text-[#095EB1] mb-1">Free</p>
-                          <p className="text-slate-500 text-sm">Enroll to start learning</p>
-                        </div>
-
-                        <Button 
-                          className="w-full h-12 rounded-xl font-semibold bg-[#095EB1] hover:bg-[#074A8C] animate-pulse-ring"
-                          onClick={handleEnroll}
-                          disabled={enrolling}
-                          data-testid="enroll-btn"
-                        >
-                          {enrolling ? 'Enrolling...' : 'Start Learning'}
-                        </Button>
-
-                        <div className="pt-4 border-t border-slate-100 space-y-3">
-                          <div className="flex items-center gap-3 text-sm text-slate-600">
-                            <CheckCircle className="w-4 h-4 text-emerald-500" />
-                            <span>Full lifetime access</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-sm text-slate-600">
-                            <CheckCircle className="w-4 h-4 text-emerald-500" />
-                            <span>Certificate on completion</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-sm text-slate-600">
-                            <CheckCircle className="w-4 h-4 text-emerald-500" />
-                            <span>Track your progress</span>
-                          </div>
-                        </div>
+                      <div className="flex items-center gap-3 text-sm text-slate-600">
+                        <CheckCircle className="w-4 h-4 text-emerald-500" />
+                        <span>Certificate on completion</span>
                       </div>
-                    )}
+                      <div className="flex items-center gap-3 text-sm text-slate-600">
+                        <CheckCircle className="w-4 h-4 text-emerald-500" />
+                        <span>Track your progress</span>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
             </div>
           </div>
         </div>
+      </Layout>
+    );
+  }
 
-        {/* Tabs Navigation */}
-        <div className="bg-white border-b border-slate-200 sticky top-16 z-30">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="bg-transparent h-auto p-0 border-b-0">
-                <TabsTrigger 
-                  value="overview" 
-                  className="px-6 py-4 rounded-none border-b-2 border-transparent data-[state=active]:border-[#095EB1] data-[state=active]:text-[#095EB1] font-medium"
-                  data-testid="tab-overview"
-                >
-                  Overview
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="content" 
-                  className="px-6 py-4 rounded-none border-b-2 border-transparent data-[state=active]:border-[#095EB1] data-[state=active]:text-[#095EB1] font-medium"
-                  data-testid="tab-content"
-                >
-                  Course Content
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+  // Enrolled - Show page-based content viewer
+  return (
+    <Layout>
+      <style>{policyStyles}</style>
+      <div data-testid="course-detail" className="bg-slate-50 min-h-screen">
+        {/* Top Progress Bar */}
+        <div className="bg-white border-b border-slate-200 sticky top-16 z-40">
+          <div className="max-w-5xl mx-auto px-4">
+            {/* Breadcrumb & Title */}
+            <div className="flex items-center justify-between py-3">
+              <div className="flex items-center gap-4">
+                <Link to="/courses" className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+                  <ArrowLeft className="w-5 h-5 text-slate-600" />
+                </Link>
+                <div>
+                  <h1 className="font-semibold text-slate-900 line-clamp-1">{course.title}</h1>
+                  <p className="text-sm text-slate-500">
+                    Page {currentPageIndex + 1} of {totalPages}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className={`text-lg font-bold ${isCompleted ? 'text-emerald-600' : 'text-[#095EB1]'}`}>
+                  {Math.round(progressPercentage)}%
+                </span>
+                {isCompleted && (
+                  <Badge className="bg-emerald-100 text-emerald-700">
+                    <CheckCircle className="w-3 h-3 mr-1" />
+                    Complete
+                  </Badge>
+                )}
+              </div>
+            </div>
+            
+            {/* Progress Bar */}
+            <div className="pb-3">
+              <Progress value={progressPercentage} className={`h-2 ${isCompleted ? '[&>div]:bg-emerald-500' : ''}`} />
+            </div>
+
+            {/* Page Dots Navigation */}
+            <div className="flex items-center justify-center gap-2 pb-4">
+              {pages.map((page, index) => (
+                <button
+                  key={page.id}
+                  onClick={() => goToPage(index)}
+                  className={`w-3 h-3 rounded-full transition-all ${
+                    index === currentPageIndex 
+                      ? 'bg-[#095EB1] w-6' 
+                      : isPageCompleted(page.id)
+                        ? 'bg-emerald-500'
+                        : 'bg-slate-300 hover:bg-slate-400'
+                  }`}
+                  title={page.title}
+                  data-testid={`page-dot-${index}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Tab Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {activeTab === 'overview' ? (
-            /* Overview Tab - Alison Style */
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              <div className="lg:col-span-8 space-y-8">
-                {/* You Will Learn Section */}
-                <Card className="border-slate-200">
-                  <CardHeader className="bg-gradient-to-r from-[#095EB1]/5 to-transparent">
-                    <CardTitle className="flex items-center gap-2 text-xl">
-                      <Target className="w-5 h-5 text-[#095EB1]" />
-                      What You Will Learn
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {getLearningOutcomes().map((outcome, index) => (
-                        <div key={index} className="flex items-start gap-3">
-                          <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <CheckCircle className="w-4 h-4 text-emerald-600" />
-                          </div>
-                          <p className="text-slate-600">{outcome}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Course Curriculum Preview */}
-                <Card className="border-slate-200">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-xl">
-                      <BookOpen className="w-5 h-5 text-[#095EB1]" />
-                      Course Curriculum
-                    </CardTitle>
-                    <p className="text-slate-500 text-sm mt-1">
-                      {course.modules?.length || 0} modules · {getTotalLessons()} lessons
-                    </p>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    <div className="divide-y divide-slate-100">
-                      {course.modules?.slice(0, 3).map((module, mIndex) => (
-                        <div key={module.id} className="p-4">
-                          <div className="flex items-center gap-3">
-                            <span className="w-8 h-8 bg-[#095EB1] text-white rounded-lg flex items-center justify-center text-sm font-bold">
-                              {mIndex + 1}
-                            </span>
-                            <div>
-                              <h4 className="font-semibold text-slate-900">{module.title}</h4>
-                              <p className="text-sm text-slate-500">{module.lessons?.length || 0} lessons</p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      {course.modules?.length > 3 && (
-                        <div className="p-4 text-center">
-                          <Button variant="ghost" onClick={() => setActiveTab('content')} className="text-[#095EB1]">
-                            View all {course.modules.length} modules
-                            <ChevronRight className="w-4 h-4 ml-1" />
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+        {/* Page Content */}
+        <div className="max-w-5xl mx-auto px-4 py-8">
+          {currentPage ? (
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+              {/* Page Header */}
+              <div className="bg-gradient-to-r from-[#095EB1] to-[#0369A1] px-8 py-6 text-white">
+                <div className="flex items-center gap-2 text-white/70 text-sm mb-2">
+                  <span>Page {currentPageIndex + 1}</span>
+                  <span>•</span>
+                  <span>{course.title}</span>
+                </div>
+                <h2 className="text-2xl font-bold">{currentPage.title}</h2>
               </div>
 
-              {/* Right Column */}
-              <div className="lg:col-span-4 space-y-6">
-                {/* Course Details */}
-                <Card className="border-slate-200">
-                  <CardHeader>
-                    <CardTitle className="text-lg">Course Details</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between py-2 border-b border-slate-100">
-                      <span className="text-slate-500 flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        Duration
+              {/* Page Content */}
+              <div className="p-8">
+                <div 
+                  className="prose prose-slate max-w-none"
+                  dangerouslySetInnerHTML={{ __html: currentPage.content }}
+                />
+              </div>
+
+              {/* Navigation Footer */}
+              <div className="border-t border-slate-200 bg-slate-50 px-8 py-6">
+                <div className="flex items-center justify-between">
+                  {/* Previous Button */}
+                  <Button
+                    variant="outline"
+                    onClick={() => goToPage(currentPageIndex - 1)}
+                    disabled={currentPageIndex === 0}
+                    className="h-12 px-6 rounded-xl"
+                    data-testid="prev-page-btn"
+                  >
+                    <ChevronLeft className="w-5 h-5 mr-2" />
+                    Previous
+                  </Button>
+
+                  {/* Page Status */}
+                  <div className="flex items-center gap-2">
+                    {isPageCompleted(currentPage.id) ? (
+                      <Badge className="bg-emerald-100 text-emerald-700 py-2 px-4">
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Completed
+                      </Badge>
+                    ) : (
+                      <span className="text-slate-500">
+                        Mark as complete to continue
                       </span>
-                      <span className="font-medium">{course.duration_hours || 1} hours</span>
-                    </div>
-                    <div className="flex items-center justify-between py-2 border-b border-slate-100">
-                      <span className="text-slate-500 flex items-center gap-2">
-                        <BookOpen className="w-4 h-4" />
-                        Modules
-                      </span>
-                      <span className="font-medium">{course.modules?.length || 0}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-2 border-b border-slate-100">
-                      <span className="text-slate-500 flex items-center gap-2">
-                        <FileText className="w-4 h-4" />
-                        Lessons
-                      </span>
-                      <span className="font-medium">{getTotalLessons()}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-2 border-b border-slate-100">
-                      <span className="text-slate-500 flex items-center gap-2">
-                        <Users className="w-4 h-4" />
-                        Enrolled
-                      </span>
-                      <span className="font-medium">{(course.enrolled_users?.length || 0).toLocaleString()}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-2">
-                      <span className="text-slate-500 flex items-center gap-2">
-                        <Award className="w-4 h-4" />
-                        Certificate
-                      </span>
-                      <span className="font-medium text-emerald-600">Yes</span>
-                    </div>
-                  </CardContent>
-                </Card>
+                    )}
+                  </div>
+
+                  {/* Next/Complete Button */}
+                  {currentPageIndex < totalPages - 1 ? (
+                    isPageCompleted(currentPage.id) ? (
+                      <Button
+                        onClick={() => goToPage(currentPageIndex + 1)}
+                        className="h-12 px-6 rounded-xl bg-[#095EB1] hover:bg-[#074A8C]"
+                        data-testid="next-page-btn"
+                      >
+                        Next Page
+                        <ChevronRight className="w-5 h-5 ml-2" />
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={handleCompletePage}
+                        disabled={completingPage}
+                        className="h-12 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700"
+                        data-testid="complete-page-btn"
+                      >
+                        {completingPage ? 'Saving...' : 'Complete & Continue'}
+                        <ChevronRight className="w-5 h-5 ml-2" />
+                      </Button>
+                    )
+                  ) : (
+                    isPageCompleted(currentPage.id) ? (
+                      <Link to="/courses">
+                        <Button className="h-12 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700">
+                          <Award className="w-5 h-5 mr-2" />
+                          Course Complete!
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Button
+                        onClick={handleCompletePage}
+                        disabled={completingPage}
+                        className="h-12 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700"
+                        data-testid="finish-course-btn"
+                      >
+                        {completingPage ? 'Saving...' : 'Finish Course'}
+                        <CheckCircle className="w-5 h-5 ml-2" />
+                      </Button>
+                    )
+                  )}
+                </div>
               </div>
             </div>
           ) : (
-            /* Content Tab - Course Player */
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              {/* Content Viewer */}
-              <div className="lg:col-span-8">
-                {activeQuiz ? (
-                  renderQuizContent()
-                ) : activeLesson ? (
-                  <div className="space-y-4">
-                    <Card className="border-slate-200 overflow-hidden">
-                      <CardHeader className="bg-slate-50 border-b">
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="flex items-center gap-2">
-                            {getContentIcon(activeLesson.content_type, activeLesson.content)}
-                            {activeLesson.title}
-                          </CardTitle>
-                          {activeLesson.duration_minutes > 0 && (
-                            <Badge variant="outline">{activeLesson.duration_minutes} min</Badge>
-                          )}
-                        </div>
-                      </CardHeader>
-                      <CardContent className="p-6">
-                        {renderLessonContent()}
-                      </CardContent>
-                    </Card>
-
-                    {isEnrolled && !isLessonCompleted(activeLesson.id) && (
-                      <Button 
-                        className="w-full h-12 rounded-xl bg-[#095EB1] hover:bg-[#074A8C] font-semibold"
-                        onClick={() => handleCompleteLesson(activeLesson.id)}
-                        disabled={completingLesson === activeLesson.id}
-                        data-testid="complete-lesson-btn"
-                      >
-                        {completingLesson === activeLesson.id ? 'Marking...' : 'Mark as Complete'}
-                        <CheckCircle className="w-5 h-5 ml-2" />
-                      </Button>
-                    )}
-                  </div>
-                ) : (
-                  <Card className="border-slate-200">
-                    <CardContent className="p-16 text-center">
-                      <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <PlayCircle className="w-10 h-10 text-slate-400" />
-                      </div>
-                      <h3 className="text-xl font-semibold text-slate-700 mb-2">Select a lesson to start</h3>
-                      <p className="text-slate-500 max-w-md mx-auto">
-                        Choose a lesson from the curriculum on the right to begin learning.
-                      </p>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-
-              {/* Curriculum Sidebar */}
-              <div className="lg:col-span-4">
-                <Card className="border-slate-200 sticky top-32">
-                  <CardHeader className="bg-slate-50 border-b">
-                    <CardTitle className="text-lg">Course Content</CardTitle>
-                    {isEnrolled && (
-                      <div className="mt-2">
-                        <div className="flex items-center justify-between text-sm mb-1">
-                          <span className="text-slate-500">Progress</span>
-                          <span className={`font-bold ${isCompleted ? 'text-emerald-600' : 'text-[#095EB1]'}`}>{progressPercentage}%</span>
-                        </div>
-                        <Progress value={progressPercentage} className={`h-2 ${isCompleted ? '[&>div]:bg-emerald-500' : ''}`} />
-                      </div>
-                    )}
-                  </CardHeader>
-                  <CardContent className="p-0 max-h-[60vh] overflow-y-auto">
-                    {course.modules?.length === 0 ? (
-                      <div className="p-6 text-center text-slate-500">No content available yet</div>
-                    ) : (
-                      <div className="divide-y divide-slate-100">
-                        {course.modules?.map((module, mIndex) => (
-                          <Collapsible key={module.id} open={openModules[module.id]} onOpenChange={() => toggleModule(module.id)}>
-                            <CollapsibleTrigger className="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
-                              <div className="flex items-center gap-3">
-                                <span className="w-7 h-7 bg-[#095EB1] text-white rounded-lg flex items-center justify-center text-xs font-bold">
-                                  {mIndex + 1}
-                                </span>
-                                <span className="font-medium text-left text-sm">{module.title}</span>
-                              </div>
-                              {openModules[module.id] ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-                            </CollapsibleTrigger>
-                            <CollapsibleContent>
-                              <div className="pl-4 pr-2 pb-3 space-y-1">
-                                {module.lessons?.map((lesson) => {
-                                  const completed = isLessonCompleted(lesson.id);
-                                  const isActive = activeLesson?.id === lesson.id;
-                                  
-                                  return (
-                                    <button
-                                      key={lesson.id}
-                                      onClick={() => { setActiveLesson(lesson); setActiveQuiz(null); }}
-                                      disabled={!isEnrolled}
-                                      className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all ${
-                                        isActive 
-                                          ? 'bg-[#095EB1]/10 text-[#095EB1] shadow-sm' 
-                                          : isEnrolled 
-                                            ? 'hover:bg-slate-50' 
-                                            : 'opacity-60 cursor-not-allowed'
-                                      }`}
-                                      data-testid={`lesson-${lesson.id}`}
-                                    >
-                                      {completed ? (
-                                        <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                                      ) : isEnrolled ? (
-                                        getContentIcon(lesson.content_type, lesson.content)
-                                      ) : (
-                                        <Lock className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                                      )}
-                                      <span className="flex-1 text-sm truncate">{lesson.title}</span>
-                                      {lesson.duration_minutes > 0 && (
-                                        <span className="text-xs text-slate-400">{lesson.duration_minutes}m</span>
-                                      )}
-                                    </button>
-                                  );
-                                })}
-                                
-                                {module.quizzes?.map((quiz) => {
-                                  const quizScore = userProgress?.quiz_scores?.[quiz.id];
-                                  const passed = quizScore?.passed;
-                                  
-                                  return (
-                                    <button
-                                      key={quiz.id}
-                                      onClick={() => startQuiz(quiz)}
-                                      disabled={!isEnrolled}
-                                      className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all ${
-                                        activeQuiz?.id === quiz.id 
-                                          ? 'bg-[#095EB1]/10 text-[#095EB1] shadow-sm' 
-                                          : isEnrolled 
-                                            ? 'hover:bg-slate-50' 
-                                            : 'opacity-60 cursor-not-allowed'
-                                      }`}
-                                      data-testid={`quiz-${quiz.id}`}
-                                    >
-                                      {passed ? (
-                                        <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                                      ) : isEnrolled ? (
-                                        <ClipboardList className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                                      ) : (
-                                        <Lock className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                                      )}
-                                      <span className="flex-1 text-sm truncate">{quiz.title}</span>
-                                      {quizScore && (
-                                        <Badge className={`text-xs ${passed ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
-                                          {quizScore.score}%
-                                        </Badge>
-                                      )}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            </CollapsibleContent>
-                          </Collapsible>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
+            <div className="text-center py-20">
+              <BookOpen className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+              <p className="text-slate-500">No content available</p>
             </div>
           )}
         </div>
