@@ -1,104 +1,109 @@
 # Flowitec Go & Grow LMS - Product Requirements Document
 
 ## Overview
-Corporate Learning Management System (LMS) with Alison.com-style modern UI/UX redesign.
+Corporate Learning Management System (LMS) with Alison.com-style modern UI/UX design featuring page-based course navigation and Career Beetle succession planning.
 
 ## Original Problem Statement
-Redesign the LMS to look more like Alison.com in terms of:
-- Scrolling behavior
-- Course display (horizontal carousels)
-- Course card interactions (hover overlays)
-- Course detail page layout
+1. Redesign LMS to look like Alison.com with horizontal scrolling and page-based course viewing
+2. Delete all existing courses and replace with 4 Flowitec policy courses
+3. Create Career Beetle feature based on succession plan Excel data
 
 ## User Choices
 - Keep Flowitec blue (#095EB1) branding
-- All pages redesigned: Dashboard, Courses, Course Detail, Certificates, Profile
-- Full Alison-style features: carousels, tabs, hover overlays, "You Will Learn" section
+- Page-by-page course navigation (not scroll) with Next/Previous buttons
+- Progress tracked per page
+- Career Beetle with 5 departments from Excel data
 
 ## User Personas
-1. **Learner** - Corporate employees seeking training and certifications
-2. **Admin** - Administrators managing courses, users, and content
+1. **Learner** - Corporate employees completing required training
+2. **Admin** - Administrators managing courses and users
 
 ## Core Requirements (Static)
-- User authentication (Employee ID or Email login)
-- Course catalog with categories
-- Course enrollment and progress tracking
-- Video/Document content support
-- Quiz assessments
+- User authentication (Employee ID or Email)
+- Course catalog with horizontal carousels
+- Page-based course content viewer
+- Progress tracking per page
 - Certificate generation
-- Daily check-in with streaks
-- Admin course management
+- Career Beetle succession planning
 
 ## Architecture
-- **Frontend**: React.js + Tailwind CSS + shadcn/ui components
+- **Frontend**: React.js + Tailwind CSS + shadcn/ui
 - **Backend**: FastAPI (Python)
 - **Database**: MongoDB
-- **File Storage**: Local uploads directory
 
 ## What's Been Implemented (Feb 4, 2026)
 
-### Alison.com Style Redesign ✅
-1. **New Components Created**
-   - `CourseCard.js` - Course cards with hover overlay showing "More Info" and "Start Learning" buttons
-   - `CourseCarousel.js` - Horizontal scrolling carousel using Embla Carousel
+### Phase 1: Alison.com Style Redesign ✅
+- Horizontal scrolling course carousels
+- Course cards with hover overlays
+- Category tabs (All, Popular, Required, Optional, My Courses)
+- Hero sections with search
 
-2. **Courses Page Redesign**
-   - Large hero section with search bar
-   - Category tabs (All Courses, Popular, Required, Optional, My Courses)
-   - Category filter dropdown
-   - Horizontal scrolling course carousels with navigation arrows
-   - Course cards with progress bars, badges, and stats
+### Phase 2: New Courses & Page-Based Navigation ✅
+1. **4 New Policy Courses Created**:
+   - Leave Policy - Ghana (6 pages)
+   - Code of Ethics & Conduct (7 pages)
+   - Disciplinary Code (4 pages)
+   - Health & Safety Policy (6 pages)
 
-3. **Course Detail Page Redesign**
-   - Breadcrumb navigation
-   - "What You Will Learn" section with learning outcomes
-   - Course stats row (duration, learners, lessons, modules)
-   - Sidebar enrollment card with progress circle
-   - Tabs: Overview and Course Content
-   - Course curriculum with collapsible modules
+2. **Page-Based Course Viewer**:
+   - Next/Previous button navigation
+   - Page dots for visual progress
+   - "Complete & Continue" button per page
+   - Progress bar updates as pages complete
+   - Styled policy content with highlight boxes
 
-4. **Dashboard Page Redesign**
-   - Personalized greeting with time-based salutation
-   - Daily Check-in card with streak counter
-   - Last 7 Days check-in calendar
-   - Colorful gradient stat cards (Enrolled, In Progress, Completed, Certificates)
-   - Continue Learning carousel
-   - Recommended For You carousel
+3. **Course Detail Redesign**:
+   - "What You'll Learn" section before enrollment
+   - Page count display
+   - Start Course enrollment button
 
-5. **CSS Enhancements**
-   - Smooth scrolling animations
-   - Hero pattern backgrounds
-   - Glass morphism effects
-   - Staggered fade-up animations
-   - Tab indicator animations
-   - Course card lift hover effect
+### Phase 3: Career Beetle Feature ✅
+1. **5 Departments**:
+   - Sales (8 roles)
+   - Supply Chain (6 roles)
+   - Finance (5 roles)
+   - Human Resource (5 roles)
+   - Facilities (5 roles)
 
-### Technical Fixes
-- Added proxy configuration in craco.config.js for API routing
-- Disabled visual-edits middleware to fix body parsing issues with proxy
-- Created necessary upload directories
+2. **Career Ladder Visualization**:
+   - Vertical progression line
+   - Level badges (Entry → Senior Level)
+   - Expandable role cards
+   - Key Skills, Qualifications, Timeline
+
+3. **Navigation Integration**:
+   - Career Beetle in main nav menu
+   - Department tab switching
+   - CTA "Start Learning" button
+
+## Files Created/Updated
+- `/app/seed_courses.py` - Database seeding script
+- `/app/frontend/src/pages/learner/CourseDetail.js` - Page-based viewer
+- `/app/frontend/src/pages/learner/CareerBeetle.js` - Career progression
+- `/app/frontend/src/components/layout/Navbar.js` - Navigation update
+- `/app/frontend/src/App.js` - Routes update
+- `/app/backend/server.py` - Career Beetle API endpoints
 
 ## Prioritized Backlog
 
-### P0 (Critical)
-- ✅ Alison-style horizontal carousels
-- ✅ Course card hover overlays
-- ✅ Course detail "You Will Learn" section
-- ✅ Category tabs and filtering
+### P0 (Completed) ✅
+- Page-based course navigation
+- Career Beetle with all 5 departments
+- 4 policy courses with formatted content
 
 ### P1 (Important)
-- [ ] Admin dashboard redesign to match Alison style
-- [ ] Certificate viewer enhancement
-- [ ] Mobile responsive improvements
+- [ ] Course completion certificate for policy courses
+- [ ] Admin ability to edit/add Career Beetle roles
+- [ ] Mobile responsive Career Beetle
 
 ### P2 (Nice to Have)
-- [ ] Course search with autocomplete
-- [ ] Course recommendations based on history
-- [ ] Social sharing features
-- [ ] Course reviews/ratings
+- [ ] Quiz at end of each course
+- [ ] Career path recommendation based on current role
+- [ ] PDF export of Career Beetle progression
 
 ## Next Tasks
-1. Test all pages on mobile viewports
-2. Add more course content/seed data
-3. Enhance certificate download experience
-4. Add course completion celebrations/animations
+1. Add quizzes to policy courses
+2. Certificate generation after course completion
+3. Career path recommendation algorithm
+4. Admin dashboard for Career Beetle management
