@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
-import { User, LogOut, Settings, BookOpen, Award, LayoutDashboard, Menu, X } from 'lucide-react';
+import { User, LogOut, Settings, BookOpen, Award, LayoutDashboard, Menu, X, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 
 export const Navbar = () => {
