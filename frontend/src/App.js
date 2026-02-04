@@ -12,6 +12,7 @@ import Courses from "./pages/learner/Courses";
 import CourseDetail from "./pages/learner/CourseDetail";
 import Certificates from "./pages/learner/Certificates";
 import Profile from "./pages/learner/Profile";
+import CareerBeetle from "./pages/learner/CareerBeetle";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/Dashboard";
