@@ -1,133 +1,104 @@
 # Flowitec Go & Grow LMS - Product Requirements Document
 
 ## Overview
-A professional Learning Management System (LMS) for Flowitec, a corporate engineering company. The system enables learners to enroll in courses, track progress, take quizzes, and earn certificates. Admins can create and manage courses, modules, lessons, and quizzes.
+Corporate Learning Management System (LMS) with Alison.com-style modern UI/UX redesign.
+
+## Original Problem Statement
+Redesign the LMS to look more like Alison.com in terms of:
+- Scrolling behavior
+- Course display (horizontal carousels)
+- Course card interactions (hover overlays)
+- Course detail page layout
+
+## User Choices
+- Keep Flowitec blue (#095EB1) branding
+- All pages redesigned: Dashboard, Courses, Course Detail, Certificates, Profile
+- Full Alison-style features: carousels, tabs, hover overlays, "You Will Learn" section
 
 ## User Personas
+1. **Learner** - Corporate employees seeking training and certifications
+2. **Admin** - Administrators managing courses, users, and content
 
-### 1. Admin
-- Full access to all system features
-- Can create, edit, and delete courses
-- Can manage users and assign roles
-- Can create modules, lessons, and quizzes
-- Can assign courses to users
-- Can view analytics and progress reports
+## Core Requirements (Static)
+- User authentication (Employee ID or Email login)
+- Course catalog with categories
+- Course enrollment and progress tracking
+- Video/Document content support
+- Quiz assessments
+- Certificate generation
+- Daily check-in with streaks
+- Admin course management
 
-### 2. Learner (Engineer/Technician/Corporate Staff)
-- Can browse and enroll in published courses
-- Can view course content (video, PDF, text)
-- Can complete lessons and track progress
-- Can take quizzes (multiple choice, true/false, short answer)
-- Can earn and download certificates upon course completion
-
-## Core Requirements
-
-### Authentication (Implemented)
-- [x] JWT-based authentication
-- [x] User registration with employee ID
-- [x] Secure login/logout
-- [x] Role-based access control (Admin vs Learner)
-
-### Course Management (Implemented)
-- [x] Course CRUD operations
-- [x] Module creation within courses
-- [x] Lesson creation (text, video, PDF, embed)
-- [x] Course publishing/draft status
-- [x] Course enrollment
-- [x] Progress tracking
-
-### Quiz System (Implemented)
-- [x] Multiple choice questions
-- [x] True/False questions
-- [x] Short answer questions
-- [x] Passing score configuration
-- [x] Quiz submission and scoring
-
-### Certificate System (Implemented)
-- [x] Auto-generation on course completion
-- [x] PDF download with ReportLab
-- [x] Flowitec branding
-- [x] Unique certificate numbers
-
-### Admin Dashboard (Implemented)
-- [x] Statistics overview
-- [x] User management
-- [x] Course management
-- [x] Progress monitoring
-
-## What's Been Implemented (January 16, 2026)
-
-### Backend (FastAPI + MongoDB)
-- Complete REST API with 20+ endpoints
-- JWT authentication with role-based access
-- Course, Module, Lesson, Quiz CRUD
-- Course types: Compulsory, Optional, Assigned
-- Progress tracking with auto-calculation
-- Certificate generation with ReportLab PDF
-- File upload support (video, document, image)
-- Daily check-in with streak tracking
-- Admin-only user creation (self-registration disabled)
-
-### Frontend (React + Tailwind)
-- Flowitec branded UI with professional design
-- Login page (no self-registration)
-- Welcome back popup on login
-- Learner Dashboard with:
-  - Daily check-in feature with streak tracking
-  - 7-day check-in calendar
-  - Colorful gradient stats cards
-  - Course progress tracking
-- Course Catalog with search and filter
-- Course Detail with lesson player
-- Quiz component with all question types
-- Certificate download
-- Admin Dashboard with analytics
-- Admin Course Management with course types
-- Admin Course Detail (module/lesson/quiz builder)
-- Admin User Management with user creation
-
-## Tech Stack
-- **Backend**: FastAPI, Python 3.11, Motor (MongoDB async)
+## Architecture
+- **Frontend**: React.js + Tailwind CSS + shadcn/ui components
+- **Backend**: FastAPI (Python)
 - **Database**: MongoDB
-- **Frontend**: React 19, Tailwind CSS, Shadcn/UI
-- **Auth**: JWT with bcrypt password hashing
-- **PDF**: ReportLab
+- **File Storage**: Local uploads directory
+
+## What's Been Implemented (Feb 4, 2026)
+
+### Alison.com Style Redesign ✅
+1. **New Components Created**
+   - `CourseCard.js` - Course cards with hover overlay showing "More Info" and "Start Learning" buttons
+   - `CourseCarousel.js` - Horizontal scrolling carousel using Embla Carousel
+
+2. **Courses Page Redesign**
+   - Large hero section with search bar
+   - Category tabs (All Courses, Popular, Required, Optional, My Courses)
+   - Category filter dropdown
+   - Horizontal scrolling course carousels with navigation arrows
+   - Course cards with progress bars, badges, and stats
+
+3. **Course Detail Page Redesign**
+   - Breadcrumb navigation
+   - "What You Will Learn" section with learning outcomes
+   - Course stats row (duration, learners, lessons, modules)
+   - Sidebar enrollment card with progress circle
+   - Tabs: Overview and Course Content
+   - Course curriculum with collapsible modules
+
+4. **Dashboard Page Redesign**
+   - Personalized greeting with time-based salutation
+   - Daily Check-in card with streak counter
+   - Last 7 Days check-in calendar
+   - Colorful gradient stat cards (Enrolled, In Progress, Completed, Certificates)
+   - Continue Learning carousel
+   - Recommended For You carousel
+
+5. **CSS Enhancements**
+   - Smooth scrolling animations
+   - Hero pattern backgrounds
+   - Glass morphism effects
+   - Staggered fade-up animations
+   - Tab indicator animations
+   - Course card lift hover effect
+
+### Technical Fixes
+- Added proxy configuration in craco.config.js for API routing
+- Disabled visual-edits middleware to fix body parsing issues with proxy
+- Created necessary upload directories
 
 ## Prioritized Backlog
 
 ### P0 (Critical)
-- ✅ Authentication flow
-- ✅ Course management
-- ✅ Learner enrollment
-- ✅ Quiz system
-- ✅ Certificate generation
+- ✅ Alison-style horizontal carousels
+- ✅ Course card hover overlays
+- ✅ Course detail "You Will Learn" section
+- ✅ Category tabs and filtering
 
-### P1 (High Priority)
-- [ ] Add course thumbnails (image upload)
-- [ ] Video upload with progress bar
-- [ ] Email notifications on enrollment/completion
-- [ ] Due dates for assignments
+### P1 (Important)
+- [ ] Admin dashboard redesign to match Alison style
+- [ ] Certificate viewer enhancement
+- [ ] Mobile responsive improvements
 
-### P2 (Medium Priority)
-- [ ] Course analytics dashboard
-- [ ] Learner leaderboards
-- [ ] Discussion forums per course
-- [ ] Course ratings/reviews
-- [ ] Batch user import (CSV)
-
-### P3 (Nice to Have)
-- [ ] Mobile app (React Native)
-- [ ] SCORM compliance
-- [ ] Single Sign-On (SSO)
-- [ ] Multi-language support
-- [ ] Gamification (badges, points)
+### P2 (Nice to Have)
+- [ ] Course search with autocomplete
+- [ ] Course recommendations based on history
+- [ ] Social sharing features
+- [ ] Course reviews/ratings
 
 ## Next Tasks
-1. Add sample course content with modules and lessons
-2. Implement email notifications (SendGrid/Resend)
-3. Add course analytics for admins
-4. Implement file upload for course thumbnails
-5. Add video progress tracking
-
-## Credentials
-- **Admin**: admin@flowitec.com / admin123
+1. Test all pages on mobile viewports
+2. Add more course content/seed data
+3. Enhance certificate download experience
+4. Add course completion celebrations/animations
