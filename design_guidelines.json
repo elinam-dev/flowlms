@@ -1,143 +1,142 @@
 {
   "identity": {
-    "name": "Flowitec Go & Grow",
-    "brand_voice": "Precision, Industrial, Professional, Efficient",
-    "emotional_archetype": "The Performance Pro",
-    "theme_mode": "light"
+    "persona": "E1 - The Anti-AI Designer",
+    "mission": "Create a professional, high-trust corporate LMS that feels alive, not static.",
+    "principles": [
+      "Fusion over Imitation: Blend Alison's utility with Flowitec's brand.",
+      "Emotion First: Confidence, Growth, and Clarity.",
+      "Content is King: Course content drives the design.",
+      "Zoom In: Focus on course outcomes and learner progress.",
+      "Negative Space: Use whitespace to reduce cognitive load."
+    ]
   },
   "typography": {
-    "headings": {
-      "family": "Manrope, sans-serif",
-      "weights": ["600", "700", "800"],
-      "tracking": "tracking-tight",
-      "usage": "All section headers, page titles, and metric values."
+    "fonts": {
+      "headings": "Manrope, sans-serif",
+      "body": "Inter, sans-serif",
+      "code": "JetBrains Mono, monospace"
     },
-    "body": {
-      "family": "Inter, sans-serif",
-      "weights": ["400", "500"],
-      "tracking": "tracking-normal",
-      "usage": "Paragraphs, labels, data tables."
-    },
-    "mono": {
-      "family": "JetBrains Mono, monospace",
-      "usage": "IDs, code snippets, technical data."
+    "usage": {
+      "h1": "text-4xl md:text-5xl font-bold tracking-tight text-slate-900",
+      "h2": "text-3xl font-bold tracking-tight text-slate-900",
+      "h3": "text-2xl font-semibold text-slate-900",
+      "body": "text-base text-slate-600 leading-relaxed",
+      "caption": "text-sm text-slate-500",
+      "button": "font-semibold tracking-wide"
     }
   },
   "colors": {
     "primary": {
-      "DEFAULT": "#095EB1",
-      "foreground": "#FFFFFF",
+      "default": "#095EB1",
       "hover": "#074A8C",
-      "description": "Flowitec Endeavour Blue. Use for primary actions, active states, and brand accents."
+      "light": "#E0F2FE"
     },
     "secondary": {
-      "DEFAULT": "#F1F5F9",
-      "foreground": "#0F172A",
-      "description": "Slate 100. Use for secondary buttons and background areas."
-    },
-    "accent": {
-      "DEFAULT": "#0EA5E9",
-      "foreground": "#FFFFFF",
-      "description": "Sky 500. Use for progress bars and non-critical highlights."
-    },
-    "background": {
-      "DEFAULT": "#F8FAFC",
-      "paper": "#FFFFFF",
-      "subtle": "#F1F5F9"
+      "default": "#F8FAFC",
+      "dark": "#E2E8F0"
     },
     "text": {
       "primary": "#0F172A",
-      "secondary": "#64748B",
-      "muted": "#94A3B8"
+      "secondary": "#475569",
+      "muted": "#94A3B8",
+      "inverted": "#FFFFFF"
     },
     "status": {
       "success": "#10B981",
       "warning": "#F59E0B",
       "error": "#EF4444",
       "info": "#3B82F6"
+    },
+    "background": {
+      "default": "#F8FAFC",
+      "paper": "#FFFFFF",
+      "subtle": "#F1F5F9"
     }
   },
-  "visual_enhancers": {
-    "borders": {
-      "default": "1px solid #E2E8F0",
-      "active": "1px solid #095EB1",
-      "radius": "rounded-md"
+  "layout": {
+    "spacing": {
+      "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+      "section_gap": "py-16 md:py-24",
+      "component_gap": "gap-6 md:gap-8"
     },
-    "shadows": {
-      "card": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
-      "hover": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-      "glow": "0 0 15px rgba(9, 94, 177, 0.15)"
-    },
-    "textures": {
-      "noise": "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E\")"
-    }
-  },
-  "layout_strategies": {
-    "dashboard_grid": {
-      "type": "Bento Grid",
-      "classes": "grid grid-cols-1 md:grid-cols-12 gap-6 p-6",
-      "rules": [
-        "Hero/Welcome section spans full width or col-span-8",
-        "Quick stats use col-span-4 or col-span-3",
-        "Course lists use col-span-8 row-span-2",
-        "Sidebar/Progress uses col-span-4 row-span-2"
-      ]
-    },
-    "container": {
-      "maxWidth": "max-w-7xl",
-      "padding": "px-4 sm:px-6 lg:px-8",
-      "center": "mx-auto"
+    "grids": {
+      "dashboard": "grid grid-cols-1 md:grid-cols-12 gap-6",
+      "course_list": "flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 scrollbar-hide",
+      "detail_page": "grid grid-cols-1 lg:grid-cols-12 gap-12"
     }
   },
   "components": {
-    "buttons": {
-      "primary": "bg-[#095EB1] hover:bg-[#074A8C] text-white font-semibold py-2.5 px-5 rounded-md shadow-sm transition-all duration-200 flex items-center justify-center gap-2",
-      "secondary": "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-medium py-2.5 px-5 rounded-md transition-all duration-200",
-      "ghost": "bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900 py-2 px-4 rounded-md"
+    "CourseCard": {
+      "description": "Alison-style card with hover reveal actions",
+      "specs": [
+        "Base: White bg, rounded-lg, shadow-sm, border border-slate-200",
+        "Image: Aspect ratio 16:9, object-cover",
+        "Content: Title (line-clamp-2), Rating (Stars), Duration, Learner Count",
+        "Hover State: Card lifts (-translate-y-2), Shadow increases (shadow-xl)",
+        "Overlay: 'Start Learning' (Primary Btn) and 'More Info' (Secondary Btn) slide up from bottom or fade in on hover",
+        "Transition: all 0.3s ease-in-out"
+      ]
     },
-    "cards": {
-      "base": "bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden",
-      "interactive": "hover:shadow-md hover:border-blue-200 transition-all duration-200 cursor-pointer group",
-      "header": "px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50"
+    "CourseCarousel": {
+      "description": "Horizontal scrolling container for course cards",
+      "specs": [
+        "Library: embla-carousel-react",
+        "Navigation: Chevron Left/Right buttons positioned absolute outside or on edges",
+        "Behavior: Snap to slide, smooth scroll",
+        "Responsive: 1 slide (mobile), 2 (tablet), 3-4 (desktop)"
+      ]
     },
-    "inputs": {
-      "base": "flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#095EB1] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    "HeroSection": {
+      "description": "Large search-focused hero",
+      "specs": [
+        "Background: Gradient from Primary/10 to Transparent or subtle pattern",
+        "Content: H1 Headline, Subtext, Large Search Bar with Category Dropdown",
+        "Image: Right-aligned hero image (Corporate Team)"
+      ]
+    },
+    "CategoryTabs": {
+      "description": "Filter tabs for course lists",
+      "specs": [
+        "Style: Pill-shaped or Underline tabs",
+        "State: Active tab gets Primary Color background/text",
+        "Categories: Popular, Top Diplomas, Top Certificates, New Courses"
+      ]
     }
   },
-  "image_urls": {
-    "login_hero": {
-      "url": "https://images.pexels.com/photos/380768/pexels-photo-380768.jpeg",
-      "alt": "Modern corporate office space",
-      "category": "auth"
-    },
-    "dashboard_banner": {
-      "url": "https://images.pexels.com/photos/546819/pexels-photo-546819.jpeg",
-      "alt": "Technology and code abstract",
-      "category": "dashboard"
-    },
-    "course_thumbnails": [
-      {
-        "url": "https://images.pexels.com/photos/35545649/pexels-photo-35545649.jpeg",
-        "alt": "Corporate meeting",
-        "category": "course"
+  "assets": {
+    "images": {
+      "hero": {
+        "corporate_team": "https://images.unsplash.com/photo-1758518731468-98e90ffd7430?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "office_work": "https://images.unsplash.com/photo-1758876022356-9e7597f556d8?crop=entropy&cs=srgb&fm=jpg&q=85"
       },
-      {
-        "url": "https://images.pexels.com/photos/35528546/pexels-photo-35528546.jpeg",
-        "alt": "Team collaboration",
-        "category": "course"
+      "courses": {
+        "tech": [
+          "https://images.unsplash.com/photo-1567641091594-71640a68f847?crop=entropy&cs=srgb&fm=jpg&q=85",
+          "https://images.unsplash.com/photo-1753998943619-b9cd910887e5?crop=entropy&cs=srgb&fm=jpg&q=85"
+        ],
+        "business": [
+          "https://images.unsplash.com/photo-1758691736498-422201cc57da?crop=entropy&cs=srgb&fm=jpg&q=85",
+          "https://images.unsplash.com/photo-1758691736493-aa6d22c0f8a6?crop=entropy&cs=srgb&fm=jpg&q=85"
+        ],
+        "health": [
+          "https://images.unsplash.com/photo-1655313719612-8248b2c4d1e7?crop=entropy&cs=srgb&fm=jpg&q=85",
+          "https://images.unsplash.com/photo-1655313719493-16ebe4906441?crop=entropy&cs=srgb&fm=jpg&q=85"
+        ],
+        "language": [
+          "https://images.unsplash.com/photo-1712732581664-7c8c1a4ab4b6?crop=entropy&cs=srgb&fm=jpg&q=85",
+          "https://images.unsplash.com/photo-1667980432734-0e662dd989c4?crop=entropy&cs=srgb&fm=jpg&q=85"
+        ]
       }
-    ]
+    }
   },
   "instructions_to_main_agent": [
-    "Use 'Manrope' for all headings. Import it from Google Fonts.",
-    "Implement the 'Flowitec Blue' (#095EB1) as the core brand color. Do not use default Tailwind blue.",
-    "For the Dashboard, use a 'Bento Grid' layout. Do not just stack cards vertically.",
-    "Use the 'noise' texture overlay on the Login page background to give it a premium feel.",
-    "Ensure all interactive elements have a 'data-testid' attribute.",
-    "Use 'sonner' for toast notifications.",
-    "For charts, use Recharts with the custom color palette defined in 'colors'.",
-    "Do not use gradients for backgrounds. Use solid colors or subtle patterns.",
-    "Maintain a 'Light Mode' default. Dark mode is optional but should be high-contrast if implemented."
+    "1. Implement 'CourseCard' with the specific hover effect described. This is the core 'Alison-style' feature.",
+    "2. Use 'embla-carousel-react' for all course lists. Do not use standard overflow-scroll without snap.",
+    "3. Redesign the 'CourseDetail' page to have a sidebar for enrollment and a main content area for 'You Will Learn' outcomes.",
+    "4. Ensure the 'Dashboard' uses a Bento grid layout for stats.",
+    "5. Keep the primary color #095EB1 strictly.",
+    "6. Use 'lucide-react' for all icons.",
+    "7. Ensure all interactive elements have 'data-testid' attributes."
   ],
   "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
     "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
@@ -157,6 +156,6 @@
     "Examine existing components to understand the project's component patterns before creating new ones",
     "Components MUST use named exports (export const ComponentName = ...)",
     "Pages MUST use default exports (export default function PageName() {...})",
-    "Use sonner for toasts. Sonner component are located in /app/src/components/ui/sonner.tsx"
+    "Use 'sonner' for toasts"
   ]
 }
