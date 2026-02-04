@@ -44,6 +44,7 @@ progress_router = APIRouter(prefix="/progress", tags=["Progress"])
 certificate_router = APIRouter(prefix="/certificates", tags=["Certificates"])
 quiz_router = APIRouter(prefix="/quizzes", tags=["Quizzes"])
 upload_router = APIRouter(prefix="/upload", tags=["Upload"])
+career_router = APIRouter(prefix="/career-beetle", tags=["Career Beetle"])
 
 security = HTTPBearer()
 
