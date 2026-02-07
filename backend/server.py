@@ -19,6 +19,11 @@ from bson import ObjectId
 import mammoth
 
 ROOT_DIR = Path(__file__).parent
+UPLOADS_DIR = ROOT_DIR / "uploads"
+# Create uploads directory only if needed
+if not UPLOADS_DIR.exists():
+    UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+
 load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
@@ -1242,9 +1247,10 @@ api_router.include_router(courses_router, prefix="/courses-service")
 
 app.include_router(api_router)
 
-# Serve uploaded files
-app.mount("/uploads", StaticFiles(directory=str(ROOT_DIR / "uploads")), name="static_uploads")
-app.mount("/api/uploads", StaticFiles(directory=str(ROOT_DIR / "uploads")), name="uploads")
+# Serve uploaded files (only if directory exists)
+if UPLOADS_DIR.exists():
+    app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="static_uploads")
+    app.mount("/api/uploads", StaticFiles(directory=str(ROOT_DIR / "uploads")), name="uploads")
 
 # Add a simple documents endpoint
 @app.get("/api/documents/{filename}")
@@ -1281,7 +1287,7 @@ async def serve_document(filename: str):
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=[origin.strip() for origin in os.environ.get('CORS_ORIGINS', '*').split(',')],
     allow_methods=["*"],
     allow_headers=["*"],
 )
