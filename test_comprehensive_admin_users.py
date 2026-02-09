@@ -5,7 +5,7 @@ from datetime import datetime
 
 def comprehensive_admin_users_test():
     """Comprehensive test for admin users endpoint with enrolled courses"""
-    base_url = "https://edu-display-1.preview.emergentagent.com"
+    base_url = "https://learnvalves.preview.emergentagent.com"
     
     print("🔍 Comprehensive Admin Users Endpoint Test")
     print("=" * 60)
