@@ -19,6 +19,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import AdminCourses from "./pages/admin/Courses";
 import AdminCourseDetail from "./pages/admin/CourseDetail";
 import AdminUsers from "./pages/admin/Users";
+import Analytics from "./pages/admin/Analytics";
 
 // Other Pages
 import ReadMe from "./pages/ReadMe";
