@@ -1,0 +1,123 @@
+/* Lesson Content Styles */
+.lesson-content, .policy-page {
+  max-width: 900px !important;
+  margin: 0 auto !important;
+  line-height: 1.8 !important;
+}
+
+.lesson-content h2, .policy-page h2 {
+  color: #095EB1 !important;
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  margin: 2rem 0 1.5rem !important;
+  border-bottom: 3px solid #095EB1 !important;
+  padding-bottom: 0.75rem !important;
+}
+
+.lesson-content h3, .policy-page h3 {
+  color: #1e293b !important;
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  margin: 2rem 0 1rem !important;
+}
+
+.lesson-content h4, .policy-page h4 {
+  color: #475569 !important;
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+  margin: 1.5rem 0 0.75rem !important;
+}
+
+.lesson-content p, .policy-page p {
+  color: #334155 !important;
+  margin-bottom: 1.25rem !important;
+  font-size: 1.0625rem !important;
+}
+
+.lesson-content ul, .policy-page ul {
+  list-style-type: disc !important;
+  padding-left: 2rem !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.lesson-content ol, .policy-page ol {
+  list-style-type: decimal !important;
+  padding-left: 2rem !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.lesson-content li, .policy-page li {
+  color: #334155 !important;
+  margin-bottom: 0.75rem !important;
+  line-height: 1.7 !important;
+}
+
+.lesson-content strong, .policy-page strong {
+  color: #0F172A !important;
+  font-weight: 600 !important;
+}
+
+.lesson-content table, .policy-page table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 2rem 0 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+  border-radius: 0.5rem !important;
+}
+
+.lesson-content th, .policy-page th {
+  background: linear-gradient(135deg, #095EB1 0%, #0369A1 100%) !important;
+  color: white !important;
+  padding: 1rem !important;
+  text-align: left !important;
+  font-weight: 600 !important;
+}
+
+.lesson-content td, .policy-page td {
+  padding: 1rem !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+.lesson-content tr:nth-child(even), .policy-page tr:nth-child(even) {
+  background: #f8fafc !important;
+}
+
+.lesson-content .highlight-box, .policy-page .highlight-box {
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%) !important;
+  border-left: 4px solid #095EB1 !important;
+  padding: 1.5rem !important;
+  border-radius: 0.75rem !important;
+  margin: 2rem 0 !important;
+}
+
+.lesson-content .info-box, .policy-page .info-box {
+  background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%) !important;
+  border-left: 4px solid #10B981 !important;
+  padding: 1.5rem !important;
+  border-radius: 0.75rem !important;
+  margin: 2rem 0 !important;
+}
+
+.lesson-content .example-box, .policy-page .example-box {
+  background: #F8FAFC !important;
+  border: 2px solid #e2e8f0 !important;
+  padding: 1.5rem !important;
+  border-radius: 0.75rem !important;
+  margin: 2rem 0 !important;
+}
+
+.lesson-content .responsibilities-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+  gap: 1.5rem !important;
+  margin: 2rem 0 !important;
+}
+
+.lesson-content .resp-card {
+  background: white !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0.75rem !important;
+  padding: 1.5rem !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+}

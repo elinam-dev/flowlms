@@ -9,6 +9,7 @@ import { Progress } from '../../components/ui/progress';
 import { Badge } from '../../components/ui/badge';
 import { Skeleton } from '../../components/ui/skeleton';
 import { toast } from 'sonner';
+import '../../lesson-styles.css';
 import { 
   BookOpen, 
   PlayCircle,
