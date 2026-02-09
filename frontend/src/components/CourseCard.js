@@ -109,7 +109,7 @@ export const CourseCard = ({
                   </Button>
                 </Link>
               ) : isEnrolled ? (
-                <Link to={`/courses/${course.id}`} className="flex-1">
+                <Link to={`/courses/${course.id}?action=learn`} className="flex-1">
                   <Button 
                     className="w-full bg-[#095EB1] hover:bg-[#074A8C] text-white font-semibold text-sm h-10"
                     data-testid={`continue-${course.id}`}

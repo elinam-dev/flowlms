@@ -287,6 +287,11 @@ export default function CourseDetail() {
   const [quizResults, setQuizResults] = useState(null);
 
   const isEnrolled = user && course?.enrolled_users?.includes(user.id);
+  
+  // Check URL for action parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const action = urlParams.get('action');
+  const [showOverview, setShowOverview] = useState(action !== 'learn');
   const userProgress = course?.user_progress;
   const progressPercentage = userProgress?.percentage || 0;
   const isCompleted = progressPercentage >= 100;
@@ -433,8 +438,8 @@ export default function CourseDetail() {
     );
   }
 
-  // If not enrolled, show course overview with enroll option
-  if (!isEnrolled) {
+  // If showing overview or not enrolled, show course overview
+  if (showOverview || !isEnrolled) {
     return (
       <Layout>
         <style>{policyStyles}</style>
@@ -540,11 +545,11 @@ export default function CourseDetail() {
 
                     <Button 
                       className="w-full h-12 rounded-xl font-semibold bg-[#095EB1] hover:bg-[#074A8C]"
-                      onClick={handleEnroll}
+                      onClick={isEnrolled ? () => setShowOverview(false) : handleEnroll}
                       disabled={enrolling}
                       data-testid="enroll-btn"
                     >
-                      {enrolling ? 'Enrolling...' : 'Start Course'}
+                      {enrolling ? 'Enrolling...' : isEnrolled ? 'Start Learning' : 'Start Course'}
                     </Button>
 
                     <div className="mt-6 pt-6 border-t border-slate-100 space-y-3">
