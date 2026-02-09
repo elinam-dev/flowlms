@@ -965,6 +965,16 @@ async def delete_quiz(quiz_id: str, admin: dict = Depends(get_admin_user)):
     await db.quizzes.delete_one({"id": quiz_id})
     return {"message": "Quiz deleted"}
 
+
+@admin_router.post("/seed-sales-courses")
+async def seed_sales_courses_endpoint(admin: dict = Depends(get_admin_user)):
+    """Admin endpoint to seed the 17 SALES (ENGINEER) courses. WARNING: This will delete all existing courses!"""
+    from seed_sales_courses_full import seed_sales_courses
+    await seed_sales_courses(db)
+    return {"message": "Successfully seeded 17 SALES (ENGINEER) courses"}
+
+
+
 @admin_router.post("/courses/{course_id}/assign")
 async def assign_course_to_users(course_id: str, user_ids: List[str], admin: dict = Depends(get_admin_user)):
     course = await db.courses.find_one({"id": course_id})
