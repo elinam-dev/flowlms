@@ -409,7 +409,7 @@ export default function CourseDetail() {
               {/* Page Content */}
               <div className="p-8 bg-white">
                 <div 
-                  className="prose prose-slate max-w-none lesson-content"
+                  className="lesson-content"
                   dangerouslySetInnerHTML={{ __html: currentPage.content }}
                 />
               </div>
