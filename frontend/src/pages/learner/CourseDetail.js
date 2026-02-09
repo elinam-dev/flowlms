@@ -25,189 +25,267 @@ import {
   BarChart3
 } from 'lucide-react';
 
-// CSS for policy content styling
+// CSS for professional lesson content styling
 const policyStyles = `
-  .policy-page {
-    max-width: 800px;
+  /* Base Lesson Content Styles */
+  .lesson-content, .policy-page {
+    max-width: 900px;
     margin: 0 auto;
     line-height: 1.8;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   }
-  .policy-page h2 {
+  
+  /* Typography */
+  .lesson-content h2, .policy-page h2 {
     color: #095EB1;
-    font-size: 1.75rem;
+    font-size: 2rem;
     font-weight: 700;
-    margin-bottom: 1rem;
+    margin: 2rem 0 1.5rem;
     border-bottom: 3px solid #095EB1;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.75rem;
   }
-  .policy-page h3 {
+  .lesson-content h3, .policy-page h3 {
     color: #1e293b;
-    font-size: 1.25rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem;
+  }
+  .lesson-content h4, .policy-page h4 {
+    color: #475569;
+    font-size: 1.125rem;
     font-weight: 600;
     margin: 1.5rem 0 0.75rem;
   }
-  .policy-page h4 {
-    color: #475569;
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 1rem 0 0.5rem;
-  }
-  .policy-page p {
+  .lesson-content p, .policy-page p {
     color: #334155;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    font-size: 1.0625rem;
   }
-  .policy-page ul {
+  .lesson-content ul, .policy-page ul {
     list-style-type: disc;
-    padding-left: 1.5rem;
-    margin-bottom: 1rem;
-  }
-  .policy-page li {
-    color: #334155;
-    margin-bottom: 0.5rem;
-  }
-  .policy-page .highlight-box {
-    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
-    border-left: 4px solid #095EB1;
-    padding: 1.25rem;
-    border-radius: 0.5rem;
-    margin: 1.5rem 0;
-  }
-  .policy-page .warning-box {
-    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
-    border-left: 4px solid #F59E0B;
-    padding: 1.25rem;
-    border-radius: 0.5rem;
-    margin: 1.5rem 0;
-  }
-  .policy-page .info-box {
-    background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
-    border-left: 4px solid #10B981;
-    padding: 1.25rem;
-    border-radius: 0.5rem;
-    margin: 1.5rem 0;
-  }
-  .policy-page .legal-note {
-    font-style: italic;
-    color: #64748b;
-    border-top: 1px solid #e2e8f0;
-    padding-top: 1rem;
-    margin-top: 1.5rem;
-  }
-  .policy-page .document-code {
-    color: #64748b;
-    font-size: 0.875rem;
+    padding-left: 2rem;
     margin-bottom: 1.5rem;
   }
-  .policy-page .leave-type {
+  .lesson-content ol, .policy-page ol {
+    list-style-type: decimal;
+    padding-left: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  .lesson-content li, .policy-page li {
+    color: #334155;
+    margin-bottom: 0.75rem;
+    line-height: 1.7;
+  }
+  .lesson-content strong, .policy-page strong {
+    color: #0F172A;
+    font-weight: 600;
+  }
+  .lesson-content em, .policy-page em {
+    font-style: italic;
+    color: #64748b;
+  }
+  
+  /* Tables */
+  .lesson-content table, .policy-page table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+  .lesson-content th, .policy-page th {
+    background: linear-gradient(135deg, #095EB1 0%, #0369A1 100%);
+    color: white;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9375rem;
+  }
+  .lesson-content td, .policy-page td {
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    color: #334155;
+  }
+  .lesson-content tr:last-child td, .policy-page tr:last-child td {
+    border-bottom: none;
+  }
+  .lesson-content tr:nth-child(even), .policy-page tr:nth-child(even) {
+    background: #f8fafc;
+  }
+  
+  /* Highlight Boxes */
+  .lesson-content .highlight-box, .policy-page .highlight-box {
+    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+    border-left: 4px solid #095EB1;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin: 2rem 0;
+    box-shadow: 0 2px 4px rgba(9, 94, 177, 0.1);
+  }
+  .lesson-content .warning-box, .policy-page .warning-box {
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    border-left: 4px solid #F59E0B;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin: 2rem 0;
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.1);
+  }
+  .lesson-content .info-box, .policy-page .info-box {
+    background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+    border-left: 4px solid #10B981;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin: 2rem 0;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.1);
+  }
+  .lesson-content .example-box, .policy-page .example-box {
+    background: #F8FAFC;
+    border: 2px solid #e2e8f0;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin: 2rem 0;
+  }
+  
+  /* Cards and Grids */
+  .lesson-content .responsibilities-grid, .lesson-content .functions-grid,
+  .lesson-content .advantages, .lesson-content .applications {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .lesson-content .resp-card, .lesson-content .function-card,
+  .lesson-content .advantage-card, .lesson-content .app-card,
+  .lesson-content .principle-card {
     background: white;
     border: 1px solid #e2e8f0;
     border-radius: 0.75rem;
     padding: 1.5rem;
-    margin-bottom: 1rem;
-    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
   }
-  .policy-page .days-badge {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: #095EB1;
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-weight: 600;
-    font-size: 0.875rem;
+  .lesson-content .resp-card:hover, .lesson-content .function-card:hover,
+  .lesson-content .advantage-card:hover, .lesson-content .app-card:hover {
+    box-shadow: 0 4px 12px rgba(9, 94, 177, 0.15);
+    transform: translateY(-2px);
   }
-  .policy-page .days-badge.special {
-    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  .lesson-content .advantage-card.highlight {
+    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+    border: 2px solid #095EB1;
   }
-  .policy-page .bonus {
-    color: #10B981;
-    font-weight: 500;
-  }
-  .policy-page .summary-box {
-    background: linear-gradient(135deg, #095EB1 0%, #0369A1 100%);
-    color: white;
-    padding: 1.5rem;
-    border-radius: 0.75rem;
-    margin-top: 2rem;
-  }
-  .policy-page .summary-box h4 {
-    color: white;
-  }
-  .policy-page .summary-box li {
-    color: rgba(255,255,255,0.9);
-  }
-  .policy-page .principle-card {
-    background: #F8FAFC;
-    border-radius: 0.75rem;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-  }
-  .policy-page .principle-card.warning {
+  .lesson-content .principle-card.warning, .policy-page .principle-card.warning {
     background: #FEF3C7;
+    border-left: 4px solid #F59E0B;
   }
-  .policy-page .principle-card.highlight {
+  .lesson-content .principle-card.highlight, .policy-page .principle-card.highlight {
     background: #EFF6FF;
     border: 2px solid #095EB1;
   }
-  .policy-page .conclusion-box {
-    background: linear-gradient(135deg, #095EB1 0%, #0369A1 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 0.75rem;
-    text-align: center;
-    margin-top: 2rem;
-  }
-  .policy-page .conclusion-box p {
-    color: rgba(255,255,255,0.95);
-  }
-  .policy-page .conclusion-box .emphasis {
-    font-size: 1.125rem;
-    font-weight: 600;
-  }
-  .policy-page .purpose-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .policy-page .purpose-item, .policy-page .guideline-item, .policy-page .procedure-item, .policy-page .training-item, .policy-page .monitoring-item {
+  
+  /* Numbered Items */
+  .lesson-content .purpose-item, .lesson-content .guideline-item,
+  .lesson-content .procedure-item, .lesson-content .training-item,
+  .policy-page .purpose-item, .policy-page .guideline-item,
+  .policy-page .procedure-item, .policy-page .training-item {
     display: flex;
     gap: 1rem;
     align-items: flex-start;
     background: #F8FAFC;
-    padding: 1rem;
-    border-radius: 0.5rem;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #e2e8f0;
   }
-  .policy-page .purpose-item .number, .policy-page .guideline-item .number, .policy-page .procedure-item .number, .policy-page .training-item .number, .policy-page .monitoring-item .number {
-    background: #095EB1;
+  .lesson-content .purpose-item .number, .lesson-content .guideline-item .number,
+  .lesson-content .procedure-item .number, .lesson-content .training-item .number,
+  .policy-page .purpose-item .number, .policy-page .guideline-item .number,
+  .policy-page .procedure-item .number, .policy-page .training-item .number {
+    background: linear-gradient(135deg, #095EB1 0%, #0369A1 100%);
     color: white;
-    width: 2rem;
-    height: 2rem;
+    min-width: 2.5rem;
+    height: 2.5rem;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
+    font-weight: 700;
     flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(9, 94, 177, 0.2);
   }
-  .policy-page .guideline-item.important {
+  .lesson-content .guideline-item.important, .policy-page .guideline-item.important {
     background: #FEF3C7;
     border-left: 4px solid #F59E0B;
   }
-  .policy-page .procedure-item.important {
+  .lesson-content .procedure-item.important, .policy-page .procedure-item.important {
     background: #FEE2E2;
     border-left: 4px solid #EF4444;
   }
+  
+  /* Special Sections */
+  .lesson-content .summary-box, .policy-page .summary-box,
+  .lesson-content .conclusion-box, .policy-page .conclusion-box,
+  .lesson-content .declaration-box, .policy-page .declaration-box {
+    background: linear-gradient(135deg, #095EB1 0%, #0369A1 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    margin: 2rem 0;
+    box-shadow: 0 4px 12px rgba(9, 94, 177, 0.3);
+  }
+  .lesson-content .summary-box h4, .lesson-content .conclusion-box h4,
+  .policy-page .summary-box h4, .policy-page .conclusion-box h4,
+  .policy-page .declaration-box h3 {
+    color: white;
+    margin-top: 0;
+  }
+  .lesson-content .summary-box p, .lesson-content .conclusion-box p,
+  .policy-page .summary-box p, .policy-page .conclusion-box p,
+  .policy-page .declaration-box p {
+    color: rgba(255,255,255,0.95);
+  }
+  .lesson-content .summary-box li, .policy-page .summary-box li {
+    color: rgba(255,255,255,0.9);
+  }
+  
+  /* Leave Types & Badges */
+  .policy-page .leave-type {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .policy-page .days-badge {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: linear-gradient(135deg, #095EB1 0%, #0369A1 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    box-shadow: 0 2px 4px rgba(9, 94, 177, 0.3);
+  }
+  .policy-page .days-badge.special {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  }
+  
+  /* Misconduct & Behavior Grids */
   .policy-page .misconduct-grid, .policy-page .behavior-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1rem;
-    margin-top: 1rem;
+    margin: 2rem 0;
   }
   .policy-page .misconduct-item {
     background: #FEE2E2;
-    padding: 1rem;
-    border-radius: 0.5rem;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    border-left: 4px solid #EF4444;
     display: flex;
     gap: 0.75rem;
     align-items: flex-start;
@@ -216,20 +294,25 @@ const policyStyles = `
     background: #EF4444;
     color: white;
     padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-weight: 600;
+    border-radius: 0.375rem;
+    font-weight: 700;
     font-size: 0.75rem;
+    flex-shrink: 0;
   }
   .policy-page .behavior-item {
     background: #FEF3C7;
-    padding: 1rem;
-    border-radius: 0.5rem;
-  }
-  .policy-page .penalty-section {
-    background: #F8FAFC;
     padding: 1.25rem;
     border-radius: 0.75rem;
-    margin-bottom: 1rem;
+    border-left: 4px solid #F59E0B;
+  }
+  
+  /* Penalty Sections */
+  .policy-page .penalty-section {
+    background: #F8FAFC;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e2e8f0;
   }
   .policy-page .penalty-section.moderate {
     background: #FEF3C7;
@@ -240,35 +323,60 @@ const policyStyles = `
     border-left: 4px solid #EF4444;
   }
   .policy-page .penalty-section .examples {
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     color: #64748b;
     font-style: italic;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
   }
+  
+  /* Role Sections */
   .policy-page .role-section {
-    background: #F8FAFC;
-    padding: 1.25rem;
-    border-radius: 0.75rem;
-    margin-bottom: 1rem;
-  }
-  .policy-page .declaration-box {
-    background: linear-gradient(135deg, #095EB1 0%, #0369A1 100%);
-    color: white;
+    background: white;
+    border: 2px solid #e2e8f0;
     padding: 1.5rem;
-    border-radius: 0.75rem;
-    margin-top: 2rem;
-  }
-  .policy-page .declaration-box h3, .policy-page .declaration-box p {
-    color: white;
-  }
-  .policy-page .purpose-box {
-    background: #EFF6FF;
-    padding: 1.25rem;
     border-radius: 0.75rem;
     margin-bottom: 1.5rem;
   }
+  
+  /* Misc */
+  .policy-page .legal-note {
+    font-style: italic;
+    color: #64748b;
+    border-top: 2px solid #e2e8f0;
+    padding-top: 1.5rem;
+    margin-top: 2rem;
+    font-size: 0.9375rem;
+  }
+  .policy-page .document-code {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+  .policy-page .purpose-box {
+    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin-bottom: 2rem;
+    border: 2px solid #095EB1;
+  }
   .policy-page .policy-statement {
-    font-size: 1.1rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .lesson-content, .policy-page {
+      padding: 0 1rem;
+    }
+    .lesson-content h2, .policy-page h2 {
+      font-size: 1.5rem;
+    }
+    .lesson-content .responsibilities-grid, .lesson-content .functions-grid,
+    .lesson-content .advantages, .lesson-content .applications {
+      grid-template-columns: 1fr;
+    }
   }
 `;
 
@@ -309,6 +417,11 @@ export default function CourseDetail() {
   useEffect(() => {
     fetchCourse();
   }, [courseId]);
+
+  // Scroll to top when page changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPageIndex]);
 
   const fetchCourse = async () => {
     try {
@@ -651,9 +764,9 @@ export default function CourseDetail() {
               </div>
 
               {/* Page Content */}
-              <div className="p-8">
+              <div className="p-8 bg-white">
                 <div 
-                  className="prose prose-slate max-w-none"
+                  className="prose prose-slate max-w-none lesson-content"
                   dangerouslySetInnerHTML={{ __html: currentPage.content }}
                 />
               </div>

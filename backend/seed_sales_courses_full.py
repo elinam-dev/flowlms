@@ -10,14 +10,13 @@ from datetime import datetime, timezone
 async def seed_sales_courses(db):
     """Seed the 17 SALES (ENGINEER) courses with comprehensive content"""
     
-    # Clear existing courses, modules, lessons
-    await db.courses.delete_many({})
-    await db.modules.delete_many({})
-    await db.lessons.delete_many({})
-    await db.quizzes.delete_many({})
-    await db.progress.delete_many({})
+    # Check if SALES courses already exist
+    existing_sales = await db.courses.count_documents({"category": "SALES (ENGINEER)"})
+    if existing_sales > 0:
+        print(f"Found {existing_sales} existing SALES courses. Skipping seed.")
+        return
     
-    print("Cleared existing course data. Starting to seed new courses...")
+    print("No SALES courses found. Starting to seed new courses...")
     
     # Course 1: Customer Service Skills for Industrial Equipment
     course1_id = str(uuid.uuid4())
