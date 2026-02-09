@@ -72,6 +72,7 @@ export const certificateApi = {
 // Admin APIs
 export const adminApi = {
   getStats: () => axios.get(`${API}/admin/stats`),
+  getAnalytics: () => axios.get(`${API}/admin/analytics`),
   getUsers: () => axios.get(`${API}/admin/users`),
   createUser: (data) => axios.post(`${API}/admin/users`, data),
   deleteUser: (userId) => axios.delete(`${API}/admin/users/${userId}`),

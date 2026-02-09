@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
-import { User, LogOut, Settings, BookOpen, Award, LayoutDashboard, Menu, X, TrendingUp } from 'lucide-react';
+import { User, LogOut, Settings, BookOpen, Award, LayoutDashboard, Menu, X, TrendingUp, BarChart3 } from 'lucide-react';
 import { useState } from 'react';
 
 export const Navbar = () => {
@@ -24,6 +24,7 @@ export const Navbar = () => {
 
   const navLinks = isAdmin() ? [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
     { href: '/admin/courses', label: 'Courses', icon: BookOpen },
     { href: '/admin/users', label: 'Users', icon: User },
   ] : [

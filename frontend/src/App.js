@@ -19,6 +19,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import AdminCourses from "./pages/admin/Courses";
 import AdminCourseDetail from "./pages/admin/CourseDetail";
 import AdminUsers from "./pages/admin/Users";
+import Analytics from "./pages/admin/Analytics";
 
 // Other Pages
 import ReadMe from "./pages/ReadMe";
@@ -87,6 +88,7 @@ function AppRoutes() {
 
       {/* Admin Routes */}
       <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
+      <Route path="/admin/analytics" element={<ProtectedRoute adminOnly><Analytics /></ProtectedRoute>} />
       <Route path="/admin/courses" element={<ProtectedRoute adminOnly><AdminCourses /></ProtectedRoute>} />
       <Route path="/admin/courses/:courseId" element={<ProtectedRoute adminOnly><AdminCourseDetail /></ProtectedRoute>} />
       <Route path="/admin/users" element={<ProtectedRoute adminOnly><AdminUsers /></ProtectedRoute>} />
