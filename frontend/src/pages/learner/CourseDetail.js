@@ -59,6 +59,15 @@ export default function CourseDetail() {
   const pages = getAllPages();
   const currentPage = pages[currentPageIndex];
   const totalPages = pages.length;
+  
+  // Get all quizzes
+  const getAllQuizzes = () => {
+    if (!course?.modules) return [];
+    return course.modules.flatMap(m => m.quizzes || []);
+  };
+  
+  const quizzes = getAllQuizzes();
+  const allLessonsCompleted = pages.every(p => isPageCompleted(p.id));
 
   useEffect(() => {
     fetchCourse();
@@ -128,6 +137,50 @@ export default function CourseDetail() {
 
   const isPageCompleted = (pageId) => {
     return userProgress?.completed_lessons?.includes(pageId);
+  };
+  
+  const handleQuizAnswer = (questionIndex, answer) => {
+    setQuizAnswers({ ...quizAnswers, [questionIndex]: answer });
+  };
+  
+  const handleSubmitQuiz = async () => {
+    if (!activeQuiz) return;
+    
+    const answeredCount = Object.keys(quizAnswers).length;
+    if (answeredCount < activeQuiz.questions.length) {
+      toast.error('Please answer all questions');
+      return;
+    }
+    
+    setQuizSubmitting(true);
+    try {
+      const response = await quizApi.submit(activeQuiz.id, quizAnswers);
+      setQuizResults(response.data);
+      
+      if (response.data.passed) {
+        toast.success(`Congratulations! You scored ${response.data.score}%`);
+        fetchCourse();
+      } else {
+        toast.error(`You scored ${response.data.score}%. Pass mark is ${activeQuiz.passing_score}%`);
+      }
+    } catch (error) {
+      toast.error('Failed to submit quiz');
+    } finally {
+      setQuizSubmitting(false);
+    }
+  };
+  
+  const startQuiz = (quiz) => {
+    setActiveQuiz(quiz);
+    setQuizAnswers({});
+    setQuizResults(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
+  const closeQuiz = () => {
+    setActiveQuiz(null);
+    setQuizAnswers({});
+    setQuizResults(null);
   };
 
   const goToPage = (index) => {
@@ -396,7 +449,122 @@ export default function CourseDetail() {
 
         {/* Page Content */}
         <div className="max-w-5xl mx-auto px-4 py-8">
-          {currentPage ? (
+          {activeQuiz ? (
+            // Quiz View
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+              <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-8 py-6 text-white">
+                <div className="flex items-center gap-2 text-white/80 text-sm mb-2">
+                  <ClipboardList className="w-4 h-4" />
+                  <span>Final Assessment</span>
+                </div>
+                <h2 className="text-2xl font-bold">{activeQuiz.title}</h2>
+                <p className="text-white/90 mt-2">{activeQuiz.description}</p>
+              </div>
+              
+              {quizResults ? (
+                // Quiz Results
+                <div className="p-8">
+                  <div className={`text-center py-8 rounded-xl ${quizResults.passed ? 'bg-emerald-50' : 'bg-red-50'}`}>
+                    <div className={`w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center ${quizResults.passed ? 'bg-emerald-500' : 'bg-red-500'}`}>
+                      {quizResults.passed ? (
+                        <CheckCircle className="w-10 h-10 text-white" />
+                      ) : (
+                        <span className="text-3xl text-white">✗</span>
+                      )}
+                    </div>
+                    <h3 className="text-2xl font-bold mb-2">{quizResults.passed ? 'Congratulations!' : 'Not Passed'}</h3>
+                    <p className="text-lg mb-4">Your Score: <span className="font-bold">{quizResults.score}%</span></p>
+                    <p className="text-slate-600">Pass Mark: {activeQuiz.passing_score}%</p>
+                  </div>
+                  
+                  <div className="mt-6 flex gap-4 justify-center">
+                    {quizResults.passed ? (
+                      <Link to="/courses">
+                        <Button className="bg-emerald-600 hover:bg-emerald-700">
+                          <Award className="w-5 h-5 mr-2" />
+                          Back to Courses
+                        </Button>
+                      </Link>
+                    ) : (
+                      <>
+                        <Button variant="outline" onClick={closeQuiz}>Review Lessons</Button>
+                        <Button onClick={() => { setQuizResults(null); setQuizAnswers({}); }} className="bg-amber-600 hover:bg-amber-700">
+                          Retake Quiz
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                // Quiz Questions
+                <div className="p-8">
+                  <div className="space-y-6">
+                    {activeQuiz.questions.map((q, qIndex) => (
+                      <div key={qIndex} className="border border-slate-200 rounded-xl p-6 bg-slate-50">
+                        <div className="flex items-start gap-3 mb-4">
+                          <span className="w-8 h-8 bg-amber-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">
+                            {qIndex + 1}
+                          </span>
+                          <p className="text-lg font-medium flex-1">{q.question}</p>
+                        </div>
+                        
+                        <div className="space-y-2 ml-11">
+                          {q.question_type === 'multiple_choice' && q.options.map((option, oIndex) => (
+                            <label key={oIndex} className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-amber-500 transition-colors">
+                              <input
+                                type="radio"
+                                name={`question-${qIndex}`}
+                                value={option}
+                                checked={quizAnswers[qIndex] === option}
+                                onChange={() => handleQuizAnswer(qIndex, option)}
+                                className="w-4 h-4 text-amber-500"
+                              />
+                              <span>{option}</span>
+                            </label>
+                          ))}
+                          
+                          {q.question_type === 'true_false' && ['True', 'False'].map((option) => (
+                            <label key={option} className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-amber-500 transition-colors">
+                              <input
+                                type="radio"
+                                name={`question-${qIndex}`}
+                                value={option}
+                                checked={quizAnswers[qIndex] === option}
+                                onChange={() => handleQuizAnswer(qIndex, option)}
+                                className="w-4 h-4 text-amber-500"
+                              />
+                              <span>{option}</span>
+                            </label>
+                          ))}
+                          
+                          {q.question_type === 'short_answer' && (
+                            <input
+                              type="text"
+                              value={quizAnswers[qIndex] || ''}
+                              onChange={(e) => handleQuizAnswer(qIndex, e.target.value)}
+                              className="w-full p-3 border border-slate-200 rounded-lg"
+                              placeholder="Type your answer"
+                            />
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="mt-8 flex justify-between">
+                    <Button variant="outline" onClick={closeQuiz}>Cancel</Button>
+                    <Button 
+                      onClick={handleSubmitQuiz} 
+                      disabled={quizSubmitting}
+                      className="bg-amber-600 hover:bg-amber-700"
+                    >
+                      {quizSubmitting ? 'Submitting...' : 'Submit Quiz'}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : currentPage ? (
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
               {/* Page Header */}
               <div className="bg-gradient-to-r from-[#095EB1] to-[#0369A1] px-8 py-6 text-white">
@@ -468,13 +636,23 @@ export default function CourseDetail() {
                       </Button>
                     )
                   ) : (
-                    isPageCompleted(currentPage.id) ? (
-                      <Link to="/courses">
-                        <Button className="h-12 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700">
-                          <Award className="w-5 h-5 mr-2" />
-                          Course Complete!
+                    isPageCompleted(currentPage.id) && allLessonsCompleted ? (
+                      quizzes.length > 0 ? (
+                        <Button 
+                          onClick={() => startQuiz(quizzes[0])} 
+                          className="h-12 px-6 rounded-xl bg-amber-600 hover:bg-amber-700"
+                        >
+                          <ClipboardList className="w-5 h-5 mr-2" />
+                          Take Final Quiz
                         </Button>
-                      </Link>
+                      ) : (
+                        <Link to="/courses">
+                          <Button className="h-12 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700">
+                            <Award className="w-5 h-5 mr-2" />
+                            Course Complete!
+                          </Button>
+                        </Link>
+                      )
                     ) : (
                       <Button
                         onClick={handleCompletePage}
