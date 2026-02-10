@@ -60,6 +60,10 @@ export default function CourseDetail() {
   const currentPage = pages[currentPageIndex];
   const totalPages = pages.length;
   
+  const isPageCompleted = (pageId) => {
+    return userProgress?.completed_lessons?.includes(pageId);
+  };
+  
   // Get all quizzes
   const getAllQuizzes = () => {
     if (!course?.modules) return [];
@@ -133,10 +137,6 @@ export default function CourseDetail() {
     } finally {
       setCompletingPage(false);
     }
-  };
-
-  const isPageCompleted = (pageId) => {
-    return userProgress?.completed_lessons?.includes(pageId);
   };
   
   const handleQuizAnswer = (questionIndex, answer) => {
