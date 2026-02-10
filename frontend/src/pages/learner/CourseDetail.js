@@ -62,6 +62,7 @@ export default function CourseDetail() {
 
   useEffect(() => {
     fetchCourse();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId]);
 
   // Scroll to top when page changes
