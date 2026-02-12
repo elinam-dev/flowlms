@@ -1,0 +1,109 @@
+Database Overview:
+  Courses: 92
+  Modules: 97
+  Quizzes: 92
+
+================================================================================
+
+Sample Quiz Structure:
+  Keys: ['_id', 'id', 'module_id', 'title', 'description', 'passing_score', 'questions', 'time_limit_minutes', 'created_at']
+  Module ID field: 9c112f18-b725-4683-8ab8-a7f3071c3511
+
+================================================================================
+
+OK Accounts Payable Management
+OK Accounts Receivable Management
+OK Advanced B2B Marketing Strategies
+OK B2B Customer Success Management
+OK B2B Lead Generation Techniques
+OK B2B Partnership Development
+OK B2B Supply Chain Management
+OK Basics of Value-Added Tax
+OK Behavioral Interviewing Techniques for Employers
+OK Code of Ethics & Conduct
+OK Competency Mapping in HR: Transform People into Human Capital
+OK Conflict Management and Resolution
+OK Core Excel Skills for Accountants and Financial Professionals
+OK Cost and Management Accounting: Planning for Effective Strategy Execution
+OK Customer Care Skills and Telephone Etiquette
+OK Customer Service Skills for Industrial Equipment
+OK Diploma in Cost Accounting
+OK Diploma in Decision Making Using Financial Accounting
+OK Diploma in Financial Accounting
+OK Diploma in French Language Studies
+OK Diploma in Introduction to Human Resource Concepts
+OK Diploma in Laws of Thermodynamics
+OK Diploma in Management for New Managers
+OK Diploma in Mechatronics
+OK Diploma in Personal Development Skills
+OK Diploma in Sales Management
+OK Diploma in Strategic HR
+OK Diploma in Strategic Performance Management
+OK Diploma in Supply Chain Management
+OK Disciplinary Code
+OK Effective B2B Communication
+OK Effective Communication Skills for Managers
+OK Effective Sales Skills
+OK Emotional Resilience at Work
+OK Employee Management for Business Managers
+OK Employee Onboarding and Motivation
+OK Essentials of SAP CO - Managing and Controlling Cost
+OK Essentials of Throughput Accounting and Lean Accounting
+OK Executive Strategy and Management
+OK Facility Management: Maintenance and Repairs
+OK Financial Statement Analysis: Accounting Ratios and Analytical Strategy
+OK Freight Broker Training
+OK Fundamentals of Accounting
+OK Fundamentals of Budgeting and Variance Analysis
+OK Fundamentals of Health and Safety in the Workplace
+OK HR Analytics - Harnessing HR Data for Organization Success
+OK HR: Talent Management and Workforce Development
+OK HRM - The Ultimate Employee Onboarding Guide with 4Cs
+OK Health & Safety Policy
+OK Health and Safety - Personal Protective Equipment
+OK Health and Safety Well-being - Mental Health
+OK How to Design Performance Management System
+OK Human Resource Policies and Organization Structure
+OK Human Resource Systems and Processes
+OK Human Resources: Discipline and Termination
+OK Human Resources: Employee Management and Training
+OK International Marketing and Supply Chain Management
+OK Introduction to Business Accounting
+OK Introduction to International Commercial Terms (Incoterms)
+OK Introduction to Marketing Management
+OK Introduction to Modern Human Resource Management
+OK Leadership and Management for Managers
+OK Lean Six Sigma: White Belt
+OK Leave Policy - Ghana
+OK Line Management Essential Skills and Concepts
+OK Marine Auxiliary Machinery - Pumps, Fans and Blowers
+OK Marketing Management - Capturing Market Insights
+OK Master the Double-Entry Accounting System
+OK Mastering HR Budget: Strategic Financial Planning for Professionals
+OK Mastering Influence and Negotiation
+OK Mastering Influence in Sales
+OK Mechanical Engineering and Design Concepts
+OK Modern Human Resource Management - Recruitment and Selection Process
+OK Motivation - Power Guide to Motivating Yourself and Others
+OK Onboarding Principles for Employees
+OK Personal Branding for Professionals
+OK Respect Foundations: Diversity, Respect, and Substance Abuse in Workplace
+OK Sage One - Bookkeeping and Accounting
+OK Sales Techniques - Interacting with Customers
+OK Sales Techniques - Using Competitive Strategies
+OK Sales and Negotiation Skills
+OK Supply Chain Ecosystems & Six Sigma Fundamentals
+OK Tax Accounting Systems and Administration
+OK Telephone Etiquette for Personal Assistants
+OK The Accounting Cycle and Financial Statements
+OK The Complete Guide to Sea Export Forwarding
+OK Top 25 Excel Formulas
+OK Understanding Key Account Management
+OK Understanding Market Demand, Branding and Communications
+OK Understanding Supply Chain Risk Management
+OK Warehouse Management: Principles, Trends and Processes
+OK Workplace Communication Basics
+
+================================================================================
+
+Missing Quizzes: 0

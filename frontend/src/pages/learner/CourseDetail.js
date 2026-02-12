@@ -428,21 +428,27 @@ export default function CourseDetail() {
 
             {/* Page Dots Navigation */}
             <div className="flex items-center justify-center gap-2 pb-4">
-              {pages.map((page, index) => (
-                <button
-                  key={page.id}
-                  onClick={() => goToPage(index)}
-                  className={`w-3 h-3 rounded-full transition-all ${
-                    index === currentPageIndex 
-                      ? 'bg-[#095EB1] w-6' 
-                      : isPageCompleted(page.id)
-                        ? 'bg-emerald-500'
-                        : 'bg-slate-300 hover:bg-slate-400'
-                  }`}
-                  title={page.title}
-                  data-testid={`page-dot-${index}`}
-                />
-              ))}
+              {pages.map((page, index) => {
+                const canAccess = index === 0 || isPageCompleted(pages[index - 1].id);
+                return (
+                  <button
+                    key={page.id}
+                    onClick={() => canAccess && goToPage(index)}
+                    disabled={!canAccess}
+                    className={`w-3 h-3 rounded-full transition-all ${
+                      index === currentPageIndex 
+                        ? 'bg-[#095EB1] w-6' 
+                        : isPageCompleted(page.id)
+                          ? 'bg-emerald-500'
+                          : canAccess
+                            ? 'bg-slate-300 hover:bg-slate-400 cursor-pointer'
+                            : 'bg-slate-200 cursor-not-allowed opacity-50'
+                    }`}
+                    title={canAccess ? page.title : 'Complete previous page first'}
+                    data-testid={`page-dot-${index}`}
+                  />
+                );
+              })}
             </div>
           </div>
         </div>
@@ -615,26 +621,15 @@ export default function CourseDetail() {
 
                   {/* Next/Complete Button */}
                   {currentPageIndex < totalPages - 1 ? (
-                    isPageCompleted(currentPage.id) ? (
-                      <Button
-                        onClick={() => goToPage(currentPageIndex + 1)}
-                        className="h-12 px-6 rounded-xl bg-[#095EB1] hover:bg-[#074A8C]"
-                        data-testid="next-page-btn"
-                      >
-                        Next Page
-                        <ChevronRight className="w-5 h-5 ml-2" />
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={handleCompletePage}
-                        disabled={completingPage}
-                        className="h-12 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700"
-                        data-testid="complete-page-btn"
-                      >
-                        {completingPage ? 'Saving...' : 'Complete & Continue'}
-                        <ChevronRight className="w-5 h-5 ml-2" />
-                      </Button>
-                    )
+                    <Button
+                      onClick={handleCompletePage}
+                      disabled={completingPage || isPageCompleted(currentPage.id)}
+                      className="h-12 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700"
+                      data-testid="complete-page-btn"
+                    >
+                      {completingPage ? 'Saving...' : isPageCompleted(currentPage.id) ? 'Completed' : 'Complete & Continue'}
+                      <ChevronRight className="w-5 h-5 ml-2" />
+                    </Button>
                   ) : (
                     isPageCompleted(currentPage.id) && allLessonsCompleted ? (
                       quizzes.length > 0 ? (
