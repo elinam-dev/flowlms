@@ -1,23 +1,19 @@
-from pymongo import MongoClient
+import asyncio
+from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-MONGO_URL = os.getenv("MONGO_URL")
-DB_NAME = os.getenv("DB_NAME")
+async def check_courses():
+    client = AsyncIOMotorClient(os.environ['MONGO_URL'])
+    db = client[os.environ['DB_NAME']]
+    
+    courses = await db.courses.find({}).to_list(None)
+    print(f"Total courses: {len(courses)}\n")
+    for c in courses:
+        print(f"- {c['title']} ({c.get('code', 'N/A')}) - {c.get('course_type', 'N/A')}")
+    
+    client.close()
 
-client = MongoClient(MONGO_URL)
-db = client[DB_NAME]
-
-# Check courses
-courses = list(db.courses.find({}))
-print(f"Total courses in database: {len(courses)}")
-print("\nCourses:")
-for course in courses:
-    print(f"- {course.get('title')} (Code: {course.get('code')}, Type: {course.get('type')})")
-    print(f"  ID: {course.get('_id')}")
-    print(f"  Has 'id' field: {course.get('id', 'NO')}")
-    print()
-
-client.close()
+asyncio.run(check_courses())
