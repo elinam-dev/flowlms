@@ -29,9 +29,6 @@ Thumbs.db
 *.log
 logs/
 
-# Uploads (local)
-backend/uploads/
-
 # Test reports
 test_reports/
 
