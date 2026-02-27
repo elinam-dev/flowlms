@@ -399,13 +399,33 @@ async def update_lesson_progress(progress: ProgressUpdate, current_user: dict = 
         raise HTTPException(status_code=404, detail="Lesson not found")
     
     module = await db.modules.find_one({"id": lesson["module_id"]}, {"_id": 0})
+    if not module:
+        raise HTTPException(status_code=404, detail="Module not found")
+    
     course_id = module["course_id"]
     
-    # Update progress
+    # Check if user is enrolled in course
+    course = await db.courses.find_one({"id": course_id})
+    if not course or current_user["id"] not in course.get("enrolled_users", []):
+        raise HTTPException(status_code=400, detail="Not enrolled in this course")
+    
+    # Get or create progress record
     user_progress = await db.progress.find_one({"user_id": current_user["id"], "course_id": course_id})
     
     if not user_progress:
-        raise HTTPException(status_code=400, detail="Not enrolled in this course")
+        # Create progress record if it doesn't exist
+        progress_doc = {
+            "id": str(uuid.uuid4()),
+            "user_id": current_user["id"],
+            "course_id": course_id,
+            "completed_lessons": [],
+            "quiz_scores": {},
+            "percentage": 0,
+            "started_at": datetime.now(timezone.utc).isoformat(),
+            "last_accessed": datetime.now(timezone.utc).isoformat()
+        }
+        await db.progress.insert_one(progress_doc)
+        user_progress = progress_doc
     
     completed_lessons = user_progress.get("completed_lessons", [])
     if progress.completed and progress.lesson_id not in completed_lessons:
@@ -414,7 +434,9 @@ async def update_lesson_progress(progress: ProgressUpdate, current_user: dict = 
         completed_lessons.remove(progress.lesson_id)
     
     # Calculate percentage
-    total_lessons = await db.lessons.count_documents({"module_id": {"$in": [m["id"] async for m in db.modules.find({"course_id": course_id})]}})
+    course_modules = await db.modules.find({"course_id": course_id}).to_list(100)
+    module_ids = [m["id"] for m in course_modules]
+    total_lessons = await db.lessons.count_documents({"module_id": {"$in": module_ids}})
     percentage = (len(completed_lessons) / total_lessons * 100) if total_lessons > 0 else 0
     
     await db.progress.update_one(
@@ -428,7 +450,6 @@ async def update_lesson_progress(progress: ProgressUpdate, current_user: dict = 
         }
     )
     
-    # Check if course is completed
     if percentage >= 100:
         await check_course_completion(current_user["id"], course_id)
     

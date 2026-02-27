@@ -46,7 +46,7 @@ export default function CourseDetail() {
   // Check URL for action parameter
   const urlParams = new URLSearchParams(window.location.search);
   const action = urlParams.get('action');
-  const [showOverview, setShowOverview] = useState(action !== 'learn');
+  const [showOverview, setShowOverview] = useState(action !== 'learn' && !isEnrolled);
   const userProgress = course?.user_progress;
   const progressPercentage = userProgress?.percentage || 0;
   const isCompleted = progressPercentage >= 100;
@@ -132,9 +132,12 @@ export default function CourseDetail() {
         toast.success('Congratulations! You\'ve completed this course!');
       }
       
-      fetchCourse();
+      // Refresh course data to get updated progress
+      await fetchCourse();
     } catch (error) {
-      toast.error('Failed to save progress');
+      console.error('Failed to save progress:', error);
+      const errorMessage = error.response?.data?.detail || error.message || 'Failed to save progress';
+      toast.error(`Failed to save progress: ${errorMessage}`);
     } finally {
       setCompletingPage(false);
     }
@@ -275,7 +278,7 @@ export default function CourseDetail() {
   }
 
   // If showing overview or not enrolled, show course overview
-  if (showOverview || !isEnrolled) {
+  if (showOverview && !isEnrolled) {
     return (
       <Layout>
         <div data-testid="course-detail" className="bg-slate-50 min-h-screen">
@@ -380,7 +383,13 @@ export default function CourseDetail() {
 
                     <Button 
                       className="w-full h-12 rounded-xl font-semibold bg-[#095EB1] hover:bg-[#074A8C]"
-                      onClick={isEnrolled ? () => setShowOverview(false) : handleEnroll}
+                      onClick={isEnrolled ? () => {
+                        setShowOverview(false);
+                        // Force navigation to learning mode
+                        const url = new URL(window.location);
+                        url.searchParams.set('action', 'learn');
+                        window.history.pushState({}, '', url);
+                      } : handleEnroll}
                       disabled={enrolling}
                       data-testid="enroll-btn"
                     >

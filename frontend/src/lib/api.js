@@ -12,18 +12,35 @@ const getApiUrl = () => {
   return `${baseUrl}/api`;
 };
 
-// Set up axios interceptor to fix URLs
+// Set up axios interceptor to fix URLs and ensure auth headers
 axios.interceptors.request.use((config) => {
+  // Fix HTTPS URLs
   if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
     if (config.url && config.url.startsWith('http://')) {
       config.url = config.url.replace('http://', 'https://');
     }
     if (config.baseURL && config.baseURL.startsWith('http://')) {
-      config.baseURL = config.baseURL.replace('http://', 'https://');
+      config.baseURL = config.baseURL.replace('http://', 'https:/');
     }
   }
+  
+  // Ensure auth token is included
+  const token = localStorage.getItem('flowitec_token');
+  if (token && !config.headers.Authorization) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  
   return config;
 });
+
+// Add response interceptor for error handling
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('API Error:', error.response?.data || error.message);
+    return Promise.reject(error);
+  }
+);
 
 const API = getApiUrl();
 

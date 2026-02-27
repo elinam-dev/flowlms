@@ -121,3 +121,33 @@
   padding: 1.5rem !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
 }
+/* Incoterms Slides Styles */
+.incoterms-slides {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.slide-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.slide-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 768px) {
+  .slide-container {
+    padding: 15px;
+  }
+}
