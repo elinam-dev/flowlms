@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Script to update image URLs to use Railway backend
+Script to update Incoterms image paths for Vercel deployment
 """
 import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -17,33 +17,33 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-async def fix_railway_urls():
-    """Update image URLs to use Railway backend"""
-    
-    railway_url = "https://flowlms-production.up.railway.app"
+async def update_incoterms_images():
+    """Update Incoterms images to use external URLs"""
     
     # Update course thumbnail
     await db.courses.update_one(
         {"title": {"$regex": "incoterms", "$options": "i"}},
-        {"$set": {"thumbnail": f"{railway_url}/api/uploads/images/incoterms.jpeg"}}
+        {"$set": {"thumbnail": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&h=225&fit=crop"}}
     )
     
-    # Update lessons with local image paths
+    # Update lesson images to use placeholder or external URLs
+    base_url = "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&h=600&fit=crop&q=80"
+    
     lessons = await db.lessons.find({"content": {"$regex": "/api/uploads/images/incoterms"}}).to_list(1000)
     
     for lesson in lessons:
+        # Replace local image paths with external URL
         updated_content = lesson["content"].replace(
             'src="/api/uploads/images/incoterms/',
-            f'src="{railway_url}/api/uploads/images/incoterms/'
-        )
+            f'src="{base_url}&sig='
+        ).replace('.jpeg"', '"')
         
         await db.lessons.update_one(
             {"id": lesson["id"]},
             {"$set": {"content": updated_content}}
         )
     
-    print(f"Updated {len(lessons)} lessons to use Railway URLs")
-    print("Updated Incoterms course thumbnail")
+    print(f"Updated {len(lessons)} lessons with external image URLs")
 
 if __name__ == "__main__":
-    asyncio.run(fix_railway_urls())
+    asyncio.run(update_incoterms_images())
