@@ -304,7 +304,7 @@ async def get_check_in_status(current_user: dict = Depends(get_current_user)):
 @course_router.get("/")
 async def get_courses(current_user: dict = Depends(get_current_user)):
     query = {"is_published": True} if current_user["role"] != "admin" else {}
-    courses = await db.courses.find(query, {"_id": 0}).to_list(100)
+    courses = await db.courses.find(query, {"_id": 0}).to_list(None)
     return courses
 
 @course_router.get("/enrolled")
