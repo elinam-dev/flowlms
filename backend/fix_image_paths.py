@@ -1,45 +1,62 @@
+#!/usr/bin/env python3
 import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
-import uuid
+from pathlib import Path
 
-load_dotenv()
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
+
+mongo_url = os.environ['MONGO_URL']
+client = AsyncIOMotorClient(mongo_url)
+db = client[os.environ['DB_NAME']]
 
 async def fix_image_paths():
-    client = AsyncIOMotorClient(os.environ['MONGO_URL'])
-    db = client[os.environ['DB_NAME']]
+    """Convert absolute Windows paths to relative URLs"""
     
-    course = await db.courses.find_one({"code": "ENG-PUMP-001"})
-    module = await db.modules.find_one({"course_id": course['id']})
+    # Find all lessons with image content
+    lessons = await db.lessons.find({
+        "$or": [
+            {"content_type": "image"},
+            {"content": {"$regex": "C:\\\\Users"}}
+        ]
+    }).to_list(None)
     
-    await db.lessons.delete_many({"module_id": module['id']})
-    
-    for i in range(1, 30):
-        image_num = str(i).zfill(2)
-        # Use relative path - frontend will add backend URL
-        image_path = f"/api/uploads/images/presentation_on_pump_spares_{image_num}.png"
+    updated = 0
+    for lesson in lessons:
+        content = lesson.get("content", "")
         
-        content = f'''<div class="lesson-content">
-<div style="text-align: center; padding: 20px;">
-<img src="{image_path}" alt="Slide {i}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" onerror="console.error('Failed to load image: {image_path}')" />
-</div>
-<div style="text-align: center; margin-top: 20px; color: #64748b;">
-<p>Slide {i} of 29</p>
-</div>
-</div>'''
-        
-        await db.lessons.insert_one({
-            "id": str(uuid.uuid4()),
-            "module_id": module['id'],
-            "title": f"Slide {i}",
-            "content_type": "text",
-            "content": content,
-            "duration_minutes": 5,
-            "order": i - 1
-        })
+        # Replace absolute paths with relative URLs
+        if "C:\\Users\\User\\Desktop\\flowlms\\flowlms\\backend\\uploads" in content:
+            # For image type lessons
+            if lesson.get("content_type") == "image":
+                # Extract filename
+                filename = content.split("\\")[-1]
+                folder = content.split("\\")[-2]
+                new_url = f"/uploads/images/{folder}/{filename}"
+                
+                await db.lessons.update_one(
+                    {"id": lesson["id"]},
+                    {"$set": {"content": new_url}}
+                )
+                print(f"Updated {lesson['title']}: {new_url}")
+                updated += 1
+            else:
+                # For embedded images in HTML content
+                new_content = content.replace(
+                    'C:\\Users\\User\\Desktop\\flowlms\\flowlms\\backend\\uploads\\images\\diploma in supply chain\\',
+                    '/uploads/images/diploma in supply chain/'
+                ).replace('\\', '/')
+                
+                await db.lessons.update_one(
+                    {"id": lesson["id"]},
+                    {"$set": {"content": new_content}}
+                )
+                print(f"Updated HTML in {lesson['title']}")
+                updated += 1
     
-    print("Updated with error logging")
-    client.close()
+    print(f"\nTotal updated: {updated} lessons")
 
-asyncio.run(fix_image_paths())
+if __name__ == "__main__":
+    asyncio.run(fix_image_paths())
