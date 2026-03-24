@@ -306,25 +306,28 @@ async def get_courses(current_user: dict = Depends(get_current_user)):
     if current_user["role"] == "admin":
         return await db.courses.find({}, {"_id": 0}).to_list(None)
 
-    # Visible to all learners regardless of department
-    open_categories = ["french", "health_safety", "Safety", "Personal Branding", "LANGUAGE", "Language"]
+    # Categories visible to ALL learners
+    open_categories = ["french", "health_safety", "Safety", "Personal Branding"]
 
     # Department-specific categories
     dept_map = {
         "sales":        ["sales"],
-        "finance":      ["Finance", "finance"],
-        "supply_chain": ["Supply Chain", "supply_chain", "Engineering", "engineering"],
-        "hr":           ["hr", "HR Policy", "management", "Management"],
+        "finance":      ["Finance"],
+        "supply_chain": ["Supply Chain", "Engineering", "engineering"],
+        "hr":           ["hr", "HR Policy", "management"],
         "general":      [],
     }
     dept = current_user.get("department", "general")
     allowed = open_categories + dept_map.get(dept, [])
 
     return await db.courses.find(
-        {"is_published": True, "$or": [
-            {"course_type": "compulsory"},
-            {"category": {"$in": allowed}}
-        ]},
+        {
+            "is_published": True,
+            "$or": [
+                {"course_type": "compulsory"},
+                {"category": {"$in": allowed}}
+            ]
+        },
         {"_id": 0}
     ).to_list(None)
 
