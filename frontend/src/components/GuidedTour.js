@@ -118,6 +118,7 @@ export default function GuidedTour({ run, onFinish }) {
     setTimeout(() => driverObj.drive(), 300);
 
     return () => driverObj.destroy();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [run]);
 
   return null;
