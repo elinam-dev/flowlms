@@ -28,10 +28,10 @@ export const Navbar = () => {
     { href: '/admin/courses', label: 'Courses', icon: BookOpen },
     { href: '/admin/users', label: 'Users', icon: User },
   ] : [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/courses', label: 'Courses', icon: BookOpen },
-    { href: '/career-beetle', label: 'Career Beetle', icon: TrendingUp },
-    { href: '/certificates', label: 'Certificates', icon: Award },
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, tour: 'nav-dashboard' },
+    { href: '/courses', label: 'Courses', icon: BookOpen, tour: 'nav-courses' },
+    { href: '/career-beetle', label: 'Career Beetle', icon: TrendingUp, tour: 'nav-career' },
+    { href: '/certificates', label: 'Certificates', icon: Award, tour: 'nav-certificates' },
   ];
 
   const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/');
@@ -61,6 +61,7 @@ export const Navbar = () => {
                 to={link.href}
                 className={`nav-link ${isActive(link.href) ? 'nav-link-active' : ''}`}
                 data-testid={`nav-${link.label.toLowerCase()}`}
+                data-tour={link.tour || ''}
               >
                 <link.icon className="w-4 h-4" />
                 <span>{link.label}</span>

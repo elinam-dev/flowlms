@@ -122,22 +122,21 @@ export default function CourseDetail() {
     setCompletingPage(true);
     
     try {
-      await progressApi.updateLesson(currentPage.id, true);
+      // Mark as complete if not already
+      if (!isPageCompleted(currentPage.id)) {
+        await progressApi.updateLesson(currentPage.id, true);
+        await fetchCourse();
+      }
       
-      // Move to next page
+      // Always move to next page
       if (currentPageIndex < totalPages - 1) {
         setCurrentPageIndex(currentPageIndex + 1);
-        toast.success('Page completed! Moving to next page.');
       } else {
         toast.success('Congratulations! You\'ve completed this course!');
       }
-      
-      // Refresh course data to get updated progress
-      await fetchCourse();
     } catch (error) {
       console.error('Failed to save progress:', error);
-      const errorMessage = error.response?.data?.detail || error.message || 'Failed to save progress';
-      toast.error(`Failed to save progress: ${errorMessage}`);
+      toast.error('Failed to save progress');
     } finally {
       setCompletingPage(false);
     }
@@ -212,6 +211,12 @@ export default function CourseDetail() {
   const goToPage = (index) => {
     if (index >= 0 && index < totalPages) {
       setCurrentPageIndex(index);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPageIndex > 0) {
+      setCurrentPageIndex(currentPageIndex - 1);
     }
   };
 
@@ -460,27 +465,21 @@ export default function CourseDetail() {
 
             {/* Page Dots Navigation */}
             <div className="flex items-center justify-center gap-2 pb-4">
-              {pages.map((page, index) => {
-                const canAccess = index === 0 || isPageCompleted(pages[index - 1].id);
-                return (
-                  <button
-                    key={page.id}
-                    onClick={() => canAccess && goToPage(index)}
-                    disabled={!canAccess}
-                    className={`w-3 h-3 rounded-full transition-all ${
-                      index === currentPageIndex 
-                        ? 'bg-[#095EB1] w-6' 
-                        : isPageCompleted(page.id)
-                          ? 'bg-emerald-500'
-                          : canAccess
-                            ? 'bg-slate-300 hover:bg-slate-400 cursor-pointer'
-                            : 'bg-slate-200 cursor-not-allowed opacity-50'
-                    }`}
-                    title={canAccess ? page.title : 'Complete previous page first'}
-                    data-testid={`page-dot-${index}`}
-                  />
-                );
-              })}
+              {pages.map((page, index) => (
+                <button
+                  key={page.id}
+                  onClick={() => goToPage(index)}
+                  className={`w-3 h-3 rounded-full transition-all ${
+                    index === currentPageIndex 
+                      ? 'bg-[#095EB1] w-6' 
+                      : isPageCompleted(page.id)
+                        ? 'bg-emerald-500 hover:bg-emerald-600 cursor-pointer'
+                        : 'bg-slate-300 hover:bg-slate-400 cursor-pointer'
+                  }`}
+                  title={page.title}
+                  data-testid={`page-dot-${index}`}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -660,7 +659,7 @@ export default function CourseDetail() {
                   {/* Previous Button */}
                   <Button
                     variant="outline"
-                    onClick={() => goToPage(currentPageIndex - 1)}
+                    onClick={handlePrevPage}
                     disabled={currentPageIndex === 0}
                     className="h-12 px-6 rounded-xl"
                     data-testid="prev-page-btn"
@@ -677,9 +676,7 @@ export default function CourseDetail() {
                         Completed
                       </Badge>
                     ) : (
-                      <span className="text-slate-500">
-                        Mark as complete to continue
-                      </span>
+                      <span className="text-sm text-slate-500">Click Next to mark complete</span>
                     )}
                   </div>
 
@@ -687,15 +684,15 @@ export default function CourseDetail() {
                   {currentPageIndex < totalPages - 1 ? (
                     <Button
                       onClick={handleCompletePage}
-                      disabled={completingPage || isPageCompleted(currentPage.id)}
+                      disabled={completingPage}
                       className="h-12 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700"
                       data-testid="complete-page-btn"
                     >
-                      {completingPage ? 'Saving...' : isPageCompleted(currentPage.id) ? 'Completed' : 'Complete & Continue'}
+                      {completingPage ? 'Saving...' : isPageCompleted(currentPage.id) ? 'Next' : 'Complete & Next'}
                       <ChevronRight className="w-5 h-5 ml-2" />
                     </Button>
                   ) : (
-                    isPageCompleted(currentPage.id) && allLessonsCompleted ? (
+                    allLessonsCompleted && isPageCompleted(currentPage.id) ? (
                       quizzes.length > 0 ? (
                         <Button 
                           onClick={() => startQuiz(quizzes[0])} 

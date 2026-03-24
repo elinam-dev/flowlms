@@ -1,19 +1,28 @@
+import asyncio
+from motor.motor_asyncio import AsyncIOMotorClient
 import os
-from pymongo import MongoClient
 from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
 
-client = MongoClient(os.getenv('MONGO_URL', 'mongodb://localhost:27017'))
-db = client[os.getenv('DB_NAME', 'flowitec_lms')]
+mongo_url = os.environ['MONGO_URL']
+client = AsyncIOMotorClient(mongo_url)
+db = client[os.environ['DB_NAME']]
 
-course = db.courses.find_one({"title": {"$regex": "incoterms", "$options": "i"}})
-module = db.modules.find_one({"course_id": course["id"]})
+async def check_lessons():
+    # Get a sample lesson from incoterms
+    lesson = await db.lessons.find_one(
+        {"content": {"$regex": "incoterms"}},
+        {"_id": 0, "title": 1, "content": 1}
+    )
+    
+    if lesson:
+        print(f"Title: {lesson['title']}\n")
+        print(f"Content preview (first 500 chars):\n{lesson['content'][:500]}\n")
+    else:
+        print("No lesson found")
 
-print(f"Module has {len(module['lessons'])} lessons")
-print("\nFirst 3 lessons:")
-for i, lesson in enumerate(module['lessons'][:3], 1):
-    print(f"\n{i}. {lesson['title']}")
-    print(f"   Content: {lesson['content'][:150]}...")
-
-client.close()
+if __name__ == "__main__":
+    asyncio.run(check_lessons())

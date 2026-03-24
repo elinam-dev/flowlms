@@ -1,0 +1,20 @@
+import asyncio
+from motor.motor_asyncio import AsyncIOMotorClient
+import os
+from dotenv import load_dotenv
+from pathlib import Path
+
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
+
+mongo_url = os.environ['MONGO_URL']
+client = AsyncIOMotorClient(mongo_url)
+db = client[os.environ['DB_NAME']]
+
+async def check():
+    lesson = await db.lessons.find_one({"content": {"$regex": "warehouse_management"}})
+    if lesson:
+        print(lesson['content'][:500])
+
+if __name__ == "__main__":
+    asyncio.run(check())

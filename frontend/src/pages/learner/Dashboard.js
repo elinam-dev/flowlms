@@ -10,6 +10,7 @@ import { Skeleton } from '../../components/ui/skeleton';
 import { Badge } from '../../components/ui/badge';
 import { CourseCarousel } from '../../components/CourseCarousel';
 import { toast } from 'sonner';
+import GuidedTour from '../../components/GuidedTour';
 import { 
   BookOpen, 
   Award, 
@@ -36,6 +37,7 @@ export default function LearnerDashboard() {
   const [loading, setLoading] = useState(true);
   const [checkingIn, setCheckingIn] = useState(false);
   const [enrollingId, setEnrollingId] = useState(null);
+  const [showWelcome, setShowWelcome] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -138,6 +140,12 @@ export default function LearnerDashboard() {
     return 'Good evening';
   };
 
+  const isFirstTime = !loading && inProgressCourses.length === 0 && completedCourses.length === 0;
+
+  useEffect(() => {
+    if (isFirstTime) setShowWelcome(true);
+  }, [isFirstTime]);
+
   if (loading) {
     return (
       <Layout>
@@ -156,6 +164,7 @@ export default function LearnerDashboard() {
 
   return (
     <Layout>
+      <GuidedTour run={showWelcome} onFinish={() => setShowWelcome(false)} />
       <div data-testid="learner-dashboard">
         {/* Hero Section */}
         <section className="hero-pattern py-12 relative overflow-hidden">
@@ -165,21 +174,25 @@ export default function LearnerDashboard() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
               {/* Welcome Message */}
-              <div className="animate-fade-up">
+              <div className="animate-fade-up" data-tour="greeting">
                 <Badge className="bg-[#095EB1]/10 text-[#095EB1] mb-3 py-1.5 px-3">
                   <Sparkles className="w-3.5 h-3.5 mr-1.5" />
                   {getGreeting()}
                 </Badge>
                 <h1 className="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight mb-3">
-                  Welcome back, <span className="text-[#095EB1]">{user?.first_name}!</span>
+                  {inProgressCourses.length === 0 && completedCourses.length === 0
+                    ? <>Welcome, <span className="text-[#095EB1]">{user?.first_name}!</span></>
+                    : <>Welcome back, <span className="text-[#095EB1]">{user?.first_name}!</span></>}
                 </h1>
                 <p className="text-lg text-slate-600 max-w-xl">
-                  Continue your learning journey. You have {inProgressCourses.length} courses in progress.
+                  {inProgressCourses.length === 0 && completedCourses.length === 0
+                    ? "Welcome to Flowitec Go & Grow! Start your learning journey by exploring your courses."
+                    : `Continue your learning journey. You have ${inProgressCourses.length} course${inProgressCourses.length !== 1 ? 's' : ''} in progress.`}
                 </p>
               </div>
 
               {/* Daily Check-in Card */}
-              <div className="animate-fade-up stagger-2">
+              <div className="animate-fade-up stagger-2" data-tour="checkin">
                 <Card className="bg-gradient-to-br from-[#095EB1] to-[#074A8C] text-white border-0 shadow-xl shadow-[#095EB1]/25 overflow-hidden">
                   <CardContent className="p-6 relative">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
@@ -223,7 +236,7 @@ export default function LearnerDashboard() {
             </div>
 
             {/* Check-in Calendar Row */}
-            <div className="mt-8 animate-fade-up stagger-3">
+            <div className="mt-8 animate-fade-up stagger-3" data-tour="streak-calendar">
               <Card className="bg-white/80 backdrop-blur-sm border-slate-200">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-6">
@@ -264,7 +277,7 @@ export default function LearnerDashboard() {
         {/* Stats Section */}
         <section className="py-8 bg-white border-b border-slate-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6" data-tour="stats">
               {/* Enrolled */}
               <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-br from-blue-50 to-white border border-blue-100">
                 <div className="w-12 h-12 bg-gradient-to-br from-[#095EB1] to-[#0EA5E9] rounded-xl flex items-center justify-center shadow-lg shadow-blue-200">
@@ -335,7 +348,7 @@ export default function LearnerDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* My Courses List */}
               <div className="lg:col-span-8">
-                <Card className="border-slate-200 shadow-sm">
+                <Card className="border-slate-200 shadow-sm" data-tour="enrolled-courses">
                   <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-xl font-bold flex items-center gap-2">
@@ -466,7 +479,7 @@ export default function LearnerDashboard() {
               {/* Sidebar */}
               <div className="lg:col-span-4 space-y-6">
                 {/* Overall Progress */}
-                <Card className="border-slate-200 shadow-sm overflow-hidden">
+                <Card className="border-slate-200 shadow-sm overflow-hidden" data-tour="overall-progress">
                   <div className="h-1.5 bg-gradient-to-r from-[#095EB1] to-[#0EA5E9]" style={{ width: `${avgProgress}%` }} />
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium text-slate-500 flex items-center gap-2">
@@ -484,7 +497,7 @@ export default function LearnerDashboard() {
                 </Card>
 
                 {/* Recent Certificates */}
-                <Card className="border-slate-200 shadow-sm">
+                <Card className="border-slate-200 shadow-sm" data-tour="certificates">
                   <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-amber-50 to-white">
                     <CardTitle className="text-sm font-medium flex items-center gap-2">
                       <Award className="w-4 h-4 text-amber-500" />
