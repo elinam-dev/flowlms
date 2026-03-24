@@ -303,9 +303,30 @@ async def get_check_in_status(current_user: dict = Depends(get_current_user)):
 @course_router.get("")
 @course_router.get("/")
 async def get_courses(current_user: dict = Depends(get_current_user)):
-    query = {"is_published": True} if current_user["role"] != "admin" else {}
-    courses = await db.courses.find(query, {"_id": 0}).to_list(None)
-    return courses
+    if current_user["role"] == "admin":
+        return await db.courses.find({}, {"_id": 0}).to_list(None)
+
+    # Visible to all learners regardless of department
+    open_categories = ["french", "health_safety", "Safety", "Personal Branding", "LANGUAGE", "Language"]
+
+    # Department-specific categories
+    dept_map = {
+        "sales":        ["sales"],
+        "finance":      ["Finance", "finance"],
+        "supply_chain": ["Supply Chain", "supply_chain", "Engineering", "engineering"],
+        "hr":           ["hr", "HR Policy", "management", "Management"],
+        "general":      [],
+    }
+    dept = current_user.get("department", "general")
+    allowed = open_categories + dept_map.get(dept, [])
+
+    return await db.courses.find(
+        {"is_published": True, "$or": [
+            {"course_type": "compulsory"},
+            {"category": {"$in": allowed}}
+        ]},
+        {"_id": 0}
+    ).to_list(None)
 
 @course_router.get("/enrolled")
 async def get_enrolled_courses(current_user: dict = Depends(get_current_user)):
