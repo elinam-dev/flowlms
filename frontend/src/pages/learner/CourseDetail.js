@@ -404,15 +404,15 @@ export default function CourseDetail() {
                     <div className="mt-6 pt-6 border-t border-slate-100 space-y-3">
                       <div className="flex items-center gap-3 text-sm text-slate-600">
                         <CheckCircle className="w-4 h-4 text-emerald-500" />
-                        <span>Full access to all content</span>
+                        <span>Full access to all course content</span>
                       </div>
                       <div className="flex items-center gap-3 text-sm text-slate-600">
                         <CheckCircle className="w-4 h-4 text-emerald-500" />
-                        <span>Certificate on completion</span>
+                        <span>Earn a certificate when you complete</span>
                       </div>
                       <div className="flex items-center gap-3 text-sm text-slate-600">
                         <CheckCircle className="w-4 h-4 text-emerald-500" />
-                        <span>Track your progress</span>
+                        <span>See how you're doing in your department from your dashboard</span>
                       </div>
                     </div>
                   </CardContent>

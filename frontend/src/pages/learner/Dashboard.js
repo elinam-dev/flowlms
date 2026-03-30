@@ -478,23 +478,69 @@ export default function LearnerDashboard() {
 
               {/* Sidebar */}
               <div className="lg:col-span-4 space-y-6">
-                {/* Overall Progress */}
-                <Card className="border-slate-200 shadow-sm overflow-hidden" data-tour="overall-progress">
-                  <div className="h-1.5 bg-gradient-to-r from-[#095EB1] to-[#0EA5E9]" style={{ width: `${avgProgress}%` }} />
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-slate-500 flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4" />
-                      Overall Progress
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-end gap-2 mb-4">
-                      <span className="text-5xl font-bold bg-gradient-to-r from-[#095EB1] to-[#0EA5E9] bg-clip-text text-transparent">{avgProgress}%</span>
-                      <span className="text-slate-500 mb-1">average</span>
-                    </div>
-                    <Progress value={avgProgress} className="h-3" />
-                  </CardContent>
-                </Card>
+                {/* Departmental Status */}
+                {(() => {
+                  const deptLabel = {
+                    sales: 'Sales', finance: 'Finance', supply_chain: 'Supply Chain',
+                    hr: 'Human Resources', general: 'General', facilities: 'Facilities'
+                  }[user?.department] || (user?.department || 'Your Department');
+
+                  const deptCategoryMap = {
+                    sales: ['sales'],
+                    finance: ['Finance'],
+                    supply_chain: ['Supply Chain', 'Engineering', 'engineering'],
+                    hr: ['hr', 'HR Policy', 'management'],
+                    general: [],
+                  };
+                  const deptCategories = deptCategoryMap[user?.department] || [];
+                  const deptCourses = enrolledCourses.filter(c => deptCategories.includes(c.category));
+                  const deptCompleted = deptCourses.filter(c => c.progress >= 100).length;
+                  const deptAvg = deptCourses.length > 0
+                    ? Math.round(deptCourses.reduce((acc, c) => acc + c.progress, 0) / deptCourses.length)
+                    : 0;
+                  const deptCerts = certificates.filter(cert =>
+                    deptCourses.some(c => c.id === cert.course_id)
+                  );
+
+                  return (
+                    <Card className="border-slate-200 shadow-sm overflow-hidden" data-tour="overall-progress">
+                      <div className="h-1.5 bg-gradient-to-r from-[#095EB1] to-[#0EA5E9]" style={{ width: `${deptAvg}%` }} />
+                      <CardHeader className="pb-2 border-b border-slate-100">
+                        <CardTitle className="text-sm font-medium text-slate-500 flex items-center gap-2">
+                          <TrendingUp className="w-4 h-4 text-[#095EB1]" />
+                          {deptLabel} Department Status
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="pt-4 space-y-4">
+                        {deptCourses.length === 0 ? (
+                          <p className="text-sm text-slate-500 text-center py-4">Enroll in {deptLabel} courses to track your departmental progress.</p>
+                        ) : (
+                          <>
+                            <div className="flex items-end gap-2">
+                              <span className="text-5xl font-bold bg-gradient-to-r from-[#095EB1] to-[#0EA5E9] bg-clip-text text-transparent">{deptAvg}%</span>
+                              <span className="text-slate-500 mb-1">avg progress</span>
+                            </div>
+                            <Progress value={deptAvg} className="h-3" />
+                            <div className="grid grid-cols-3 gap-3 pt-2">
+                              <div className="text-center p-3 bg-blue-50 rounded-xl">
+                                <p className="text-xl font-bold text-[#095EB1]">{deptCourses.length}</p>
+                                <p className="text-xs text-slate-500 mt-0.5">Enrolled</p>
+                              </div>
+                              <div className="text-center p-3 bg-emerald-50 rounded-xl">
+                                <p className="text-xl font-bold text-emerald-600">{deptCompleted}</p>
+                                <p className="text-xs text-slate-500 mt-0.5">Completed</p>
+                              </div>
+                              <div className="text-center p-3 bg-amber-50 rounded-xl">
+                                <p className="text-xl font-bold text-amber-600">{deptCerts.length}</p>
+                                <p className="text-xs text-slate-500 mt-0.5">Certificates</p>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })()}
 
                 {/* Recent Certificates */}
                 <Card className="border-slate-200 shadow-sm" data-tour="certificates">
