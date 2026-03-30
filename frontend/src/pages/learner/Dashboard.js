@@ -57,6 +57,11 @@ export default function LearnerDashboard() {
       setCheckInStatus(checkInRes.data);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
+      // Retry individually so partial failures don't wipe everything
+      try { const r = await courseApi.getAll(); setAllCourses(r.data); } catch {}
+      try { const r = await courseApi.getEnrolled(); setEnrolledCourses(r.data); } catch {}
+      try { const r = await certificateApi.getAll(); setCertificates(r.data); } catch {}
+      try { const r = await userApi.getCheckInStatus(); setCheckInStatus(r.data); } catch {}
     } finally {
       setLoading(false);
     }
@@ -140,11 +145,11 @@ export default function LearnerDashboard() {
     return 'Good evening';
   };
 
-  const isFirstTime = !loading && inProgressCourses.length === 0 && completedCourses.length === 0;
-
   useEffect(() => {
-    if (isFirstTime) setShowWelcome(true);
-  }, [isFirstTime]);
+    if (!loading && !localStorage.getItem('tour_completed')) {
+      setShowWelcome(true);
+    }
+  }, [loading]);
 
   if (loading) {
     return (
@@ -164,7 +169,7 @@ export default function LearnerDashboard() {
 
   return (
     <Layout>
-      <GuidedTour run={showWelcome} onFinish={() => setShowWelcome(false)} />
+      <GuidedTour run={showWelcome} onFinish={() => { setShowWelcome(false); localStorage.setItem('tour_completed', 'true'); }} />
       <div data-testid="learner-dashboard">
         {/* Hero Section */}
         <section className="hero-pattern py-12 relative overflow-hidden">
