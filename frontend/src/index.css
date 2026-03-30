@@ -60,10 +60,13 @@
     @apply text-foreground antialiased;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background-color: #EFEFEF !important;
-    background-image:
-      linear-gradient(rgba(180,180,180,0.3) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(180,180,180,0.3) 1px, transparent 1px) !important;
-    background-size: 40px 40px !important;
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent,
+      transparent 20px,
+      rgba(180,180,180,0.2) 20px,
+      rgba(180,180,180,0.2) 21px
+    ) !important;
     background-attachment: fixed;
   }
   
