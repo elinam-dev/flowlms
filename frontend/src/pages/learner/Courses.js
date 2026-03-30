@@ -254,17 +254,26 @@ export default function Courses() {
                     className="relative rounded-2xl shadow-2xl w-full object-cover"
                   />
                   {/* Floating card */}
-                  <div className="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-xl p-4 animate-fade-up stagger-3">
+                  <Link to="/dashboard" className="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-xl p-4 animate-fade-up stagger-3 hover:shadow-2xl hover:-translate-y-1 transition-all duration-200 cursor-pointer group block">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
+                      <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
                         <TrendingUp className="w-6 h-6 text-emerald-600" />
                       </div>
-                      <div>
-                        <p className="font-bold text-slate-900">Track Progress</p>
-                        <p className="text-sm text-slate-500">Learn at your pace</p>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1">
+                          <p className="font-bold text-slate-900 text-sm">Track Your Progress</p>
+                          <ChevronRight className="w-3.5 h-3.5 text-emerald-600 group-hover:translate-x-0.5 transition-transform" />
+                        </div>
+                        <p className="text-xs text-slate-500">{completedCount} of {enrolledCourses.length} completed</p>
+                        <div className="mt-1.5 w-32 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                            style={{ width: enrolledCourses.length ? `${Math.round((completedCount / enrolledCourses.length) * 100)}%` : '0%' }}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 </div>
               </div>
             </div>
