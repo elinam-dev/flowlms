@@ -346,7 +346,7 @@ export default function Courses() {
         </section>
 
         {/* Course Content */}
-        <section className="py-12 bg-slate-50/50">
+        <section className="py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Show carousels on "All" tab without search */}
             {activeTab === 'all' && !searchQuery && categoryFilter === 'all' ? (
