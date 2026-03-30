@@ -23,7 +23,7 @@
 
 @layer base {
   :root {
-    --background: 220 13% 95%;
+    --background: 0 0% 94%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
@@ -59,21 +59,11 @@
   body {
     @apply text-foreground antialiased;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: #F0F0F2 !important;
-    background-image: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 40px,
-      rgba(0,0,0,0.04) 40px,
-      rgba(0,0,0,0.04) 41px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 40px,
-      rgba(0,0,0,0.04) 40px,
-      rgba(0,0,0,0.04) 41px
-    ) !important;
+    background-color: #EFEFEF !important;
+    background-image:
+      linear-gradient(rgba(180,180,180,0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(180,180,180,0.3) 1px, transparent 1px) !important;
+    background-size: 40px 40px !important;
     background-attachment: fixed;
   }
   
