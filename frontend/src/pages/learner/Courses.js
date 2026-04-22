@@ -137,7 +137,7 @@ export default function Courses() {
   };
 
   // Stats
-  const totalLearners = courses.reduce((acc, c) => acc + (c.enrolled_users?.length || 0), 0);
+  const totalLearners = enrolledCourses.length;
   const completedCount = enrolledCourses.filter(c => c.progress >= 100).length;
 
   const filteredCourses = getTabCourses();
@@ -229,7 +229,7 @@ export default function Courses() {
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-slate-900">{totalLearners.toLocaleString()}</p>
-                      <p className="text-sm text-slate-500">Enrollments</p>
+                      <p className="text-sm text-slate-500">My Enrollments</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
