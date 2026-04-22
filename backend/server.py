@@ -336,7 +336,7 @@ async def get_enrolled_courses(current_user: dict = Depends(get_current_user)):
     enrolled_ids = current_user.get("enrolled_courses", [])
     if not enrolled_ids:
         return []
-    courses = await db.courses.find({"id": {"$in": enrolled_ids}}, {"_id": 0}).to_list(100)
+    courses = await db.courses.find({"id": {"$in": enrolled_ids}}, {"_id": 0}).to_list(None)
     
     # Add progress info
     for course in courses:
