@@ -720,9 +720,17 @@ async def download_certificate_pdf(cert_id: str, current_user: dict = Depends(ge
 async def get_admin_stats(admin: dict = Depends(get_admin_user)):
     total_users = await db.users.count_documents({"role": "learner"})
     total_courses = await db.courses.count_documents({})
-    total_enrollments = await db.progress.count_documents({})
     total_certificates = await db.certificates.count_documents({})
-    
+
+    # Count total enrollments as sum of enrolled_courses across all learners
+    pipeline = [
+        {"$match": {"role": "learner"}},
+        {"$project": {"count": {"$size": {"$ifNull": ["$enrolled_courses", []]}}}},
+        {"$group": {"_id": None, "total": {"$sum": "$count"}}}
+    ]
+    result = await db.users.aggregate(pipeline).to_list(1)
+    total_enrollments = result[0]["total"] if result else 0
+
     return {
         "total_users": total_users,
         "total_courses": total_courses,
