@@ -38,6 +38,51 @@ LESSONS = [
         "type": "embed",
         "content": "https://player.vimeo.com/video/887617659?quality=720p&audiotrack=main&texttrack=en"
     },
+    {
+        "title": "Onboarding Checklist",
+        "type": "embed",
+        "content": "https://player.vimeo.com/video/887617677?quality=720p&audiotrack=main&texttrack=en"
+    },
+    {
+        "title": "Creating an Engaging Program",
+        "type": "embed",
+        "content": "https://player.vimeo.com/video/887617699?quality=720p&audiotrack=main&texttrack=en"
+    },
+    {
+        "title": "Following up with New Employees",
+        "type": "embed",
+        "content": "https://player.vimeo.com/video/887617717?quality=720p&audiotrack=main&texttrack=en"
+    },
+    {
+        "title": "Setting Expectations",
+        "type": "embed",
+        "content": "https://player.vimeo.com/video/887617741?quality=720p&audiotrack=main&texttrack=en"
+    },
+    {
+        "title": "Providing Feedback",
+        "type": "embed",
+        "content": "https://player.vimeo.com/video/887617759?quality=720p&audiotrack=main&texttrack=en"
+    },
+    {
+        "title": "Onboarding Diagram 2",
+        "type": "image",
+        "content": f"{BASE_URL}/uploads/images/HR/onboarding/onboarding02.jpeg"
+    },
+    {
+        "title": "Onboarding Diagram 3",
+        "type": "image",
+        "content": f"{BASE_URL}/uploads/images/HR/onboarding/onboarding03.jpeg"
+    },
+    {
+        "title": "Onboarding Diagram 4",
+        "type": "image",
+        "content": f"{BASE_URL}/uploads/images/HR/onboarding/onboarding04.jpeg"
+    },
+    {
+        "title": "Onboarding Diagram 5",
+        "type": "image",
+        "content": f"{BASE_URL}/uploads/images/HR/onboarding/onboarding05.jpeg"
+    },
 ]
 
 def make_content(lesson):
@@ -86,7 +131,11 @@ async def add_lessons():
         })
         print(f"  [{i+1}] {lesson['title']}")
 
-    print(f"\nAdded {len(LESSONS)} lessons. Course NOT published yet — more lessons to come.")
+    await db.courses.update_one(
+        {"id": course["id"]},
+        {"$set": {"is_published": True}}
+    )
+    print(f"\nAdded {len(LESSONS)} lessons and published the course.")
 
 if __name__ == "__main__":
     asyncio.run(add_lessons())
