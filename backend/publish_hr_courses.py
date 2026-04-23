@@ -1,39 +1,28 @@
+#!/usr/bin/env python3
 import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
-from dotenv import load_dotenv
 import os
+from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
-client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
-db = client[os.getenv('DB_NAME', 'flowitec_lms')]
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
+client = AsyncIOMotorClient(os.environ['MONGO_URL'])
+db = client[os.environ['DB_NAME']]
 
-async def main():
-    courses = await db.courses.find(
-        {"category": {"$regex": "hr|human resource|HR Policy", "$options": "i"}},
-        {"_id": 0, "id": 1, "title": 1}
-    ).to_list(200)
+async def publish():
+    titles = [
+        'human resource policies',
+        'onboarding principles',
+        'employee management and training'
+    ]
+    for t in titles:
+        r = await db.courses.update_one(
+            {'title': {'$regex': t, '$options': 'i'}},
+            {'$set': {'is_published': True}}
+        )
+        course = await db.courses.find_one({'title': {'$regex': t, '$options': 'i'}}, {'_id': 0, 'title': 1, 'is_published': 1})
+        print(f"  {course['title']} -> Published: {course['is_published']}")
 
-    to_publish = []
-    empty = []
-
-    for c in courses:
-        modules = await db.modules.find({"course_id": c["id"]}, {"_id": 0, "id": 1}).to_list(100)
-        lesson_count = 0
-        for m in modules:
-            lesson_count += await db.lessons.count_documents({"module_id": m["id"]})
-        
-        if lesson_count > 1:
-            to_publish.append(c)
-        else:
-            empty.append(c)
-
-    print("Publishing courses with content:")
-    for c in to_publish:
-        await db.courses.update_one({"id": c["id"]}, {"$set": {"published": True}})
-        print(f"  [PUBLISHED] {c['title']}")
-
-    print(f"\nEmpty courses ({len(empty)}) - not published:")
-    for c in empty:
-        print(f"  - {c['title']}")
-
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(publish())
