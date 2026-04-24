@@ -13,7 +13,7 @@ def check_incoterms_course():
     
     if course:
         print(f"Course found: {course['title']}")
-        print(f"Published: {course.get('published', False)}")
+        print(f"Published: {course.get('is_published', False)}")
         print(f"Category: {course.get('category', 'N/A')}")
         print(f"ID: {course['_id']}")
         print(f"Modules: {len(course.get('modules', []))}")
@@ -26,7 +26,7 @@ def check_incoterms_course():
     all_courses = list(db.courses.find({}, {"title": 1, "published": 1, "category": 1}))
     print(f"\nAll courses ({len(all_courses)}):")
     for c in all_courses:
-        print(f"- {c['title']} (Published: {c.get('published', False)}, Category: {c.get('category', 'N/A')})")
+        print(f"- {c['title']} (Published: {c.get('is_published', False)}, Category: {c.get('category', 'N/A')})")
 
 if __name__ == "__main__":
     check_incoterms_course()
