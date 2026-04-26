@@ -307,7 +307,7 @@ async def get_courses(current_user: dict = Depends(get_current_user)):
         return await db.courses.find({}, {"_id": 0}).to_list(None)
 
     # Categories visible to ALL learners
-    open_categories = ["french", "health_safety", "Safety", "Personal Branding"]
+    open_categories = ["french", "health_safety", "Safety", "Personal Branding", "general"]
 
     # Department-specific categories
     dept_map = {
