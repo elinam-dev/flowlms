@@ -18,7 +18,6 @@ import {
   Sparkles,
   Users,
   TrendingUp,
-  Clock,
   ChevronRight,
   Filter
 } from 'lucide-react';
@@ -378,8 +377,7 @@ export default function Courses() {
                     <h2 className="text-2xl font-bold text-slate-900">
                       {activeTab === 'enrolled' ? 'My Enrolled Courses' : 
                        activeTab === 'required' ? 'Required Courses' :
-                       activeTab === 'optional' ? 'Optional Courses' :
-                       activeTab === 'popular' ? 'Popular Courses' : 'All Courses'}
+                       activeTab === 'optional' ? 'Optional Courses' : 'All Courses'}
                     </h2>
                     <p className="text-slate-500 mt-1">
                       {filteredCourses.length} course{filteredCourses.length !== 1 ? 's' : ''} found
