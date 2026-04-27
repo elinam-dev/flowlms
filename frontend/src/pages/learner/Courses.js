@@ -334,19 +334,6 @@ export default function Courses() {
             {/* Show carousels on "All" tab without search */}
             {activeTab === 'all' && !searchQuery && categoryFilter === 'all' ? (
               <div className="space-y-16">
-                {/* Required Courses */}
-                {courses.filter(c => c.course_type === 'compulsory').length > 0 && (
-                  <CourseCarousel
-                    title="Required Courses"
-                    subtitle="Complete these courses to maintain compliance"
-                    courses={courses.filter(c => c.course_type === 'compulsory')}
-                    enrolledCourses={enrolledCourses}
-                    onEnroll={handleEnroll}
-                    enrollingId={enrollingId}
-                    showViewAll={false}
-                  />
-                )}
-
                 {/* Courses by Category */}
                 {Object.entries(coursesByCategory).map(([category, categoryCourses]) => (
                   <CourseCarousel
