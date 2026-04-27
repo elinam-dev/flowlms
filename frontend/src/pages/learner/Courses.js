@@ -293,14 +293,6 @@ export default function Courses() {
                     All Courses
                   </TabsTrigger>
                   <TabsTrigger 
-                    value="required" 
-                    className="px-4 py-2.5 rounded-full data-[state=active]:bg-[#095EB1] data-[state=active]:text-white data-[state=active]:shadow-md font-medium transition-all"
-                    data-testid="tab-required"
-                  >
-                    <GraduationCap className="w-4 h-4 mr-1.5" />
-                    Required
-                  </TabsTrigger>
-                  <TabsTrigger 
                     value="optional" 
                     className="px-4 py-2.5 rounded-full data-[state=active]:bg-[#095EB1] data-[state=active]:text-white data-[state=active]:shadow-md font-medium transition-all"
                     data-testid="tab-optional"
