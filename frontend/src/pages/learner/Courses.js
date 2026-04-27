@@ -294,14 +294,6 @@ export default function Courses() {
                     All Courses
                   </TabsTrigger>
                   <TabsTrigger 
-                    value="popular" 
-                    className="px-4 py-2.5 rounded-full data-[state=active]:bg-[#095EB1] data-[state=active]:text-white data-[state=active]:shadow-md font-medium transition-all"
-                    data-testid="tab-popular"
-                  >
-                    <TrendingUp className="w-4 h-4 mr-1.5" />
-                    Popular
-                  </TabsTrigger>
-                  <TabsTrigger 
                     value="required" 
                     className="px-4 py-2.5 rounded-full data-[state=active]:bg-[#095EB1] data-[state=active]:text-white data-[state=active]:shadow-md font-medium transition-all"
                     data-testid="tab-required"
@@ -351,17 +343,6 @@ export default function Courses() {
             {/* Show carousels on "All" tab without search */}
             {activeTab === 'all' && !searchQuery && categoryFilter === 'all' ? (
               <div className="space-y-16">
-                {/* Popular Courses Carousel */}
-                <CourseCarousel
-                  title="Popular Courses"
-                  subtitle="Most enrolled courses by our learners"
-                  courses={courses.sort((a, b) => (b.enrolled_users?.length || 0) - (a.enrolled_users?.length || 0)).slice(0, 8)}
-                  enrolledCourses={enrolledCourses}
-                  onEnroll={handleEnroll}
-                  enrollingId={enrollingId}
-                  showViewAll={false}
-                />
-
                 {/* Required Courses */}
                 {courses.filter(c => c.course_type === 'compulsory').length > 0 && (
                   <CourseCarousel
