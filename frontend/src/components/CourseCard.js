@@ -68,7 +68,7 @@ export const CourseCard = ({
           )}
           {course.category && (
             <Badge className="bg-white/95 text-slate-700 text-xs font-medium px-2 py-1 backdrop-blur-sm">
-              {course.category}
+              {course.category === 'hr' ? 'HR' : course.category}
             </Badge>
           )}
         </div>

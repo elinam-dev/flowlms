@@ -114,7 +114,7 @@ export default function Courses() {
       case 'popular':
         return filtered.sort((a, b) => (b.enrolled_users?.length || 0) - (a.enrolled_users?.length || 0));
       case 'required':
-        return filtered.filter(c => c.course_type === 'compulsory');
+        return filtered.filter(c => c.course_type === 'compulsory'); // kept for URL compatibility
       case 'optional':
         return filtered.filter(c => c.course_type === 'optional' || c.course_type === 'assigned');
       case 'enrolled':
@@ -338,7 +338,7 @@ export default function Courses() {
                 {Object.entries(coursesByCategory).map(([category, categoryCourses]) => (
                   <CourseCarousel
                     key={category}
-                    title={category}
+                    title={category === 'hr' ? 'HR' : category}
                     subtitle={`${categoryCourses.length} courses available`}
                     courses={categoryCourses}
                     enrolledCourses={enrolledCourses}
