@@ -1,24 +1,32 @@
+#!/usr/bin/env python3
 import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
-from dotenv import load_dotenv
 import os
+from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
-client = AsyncIOMotorClient(os.getenv('MONGO_URL'))
-db = client[os.getenv('DB_NAME', 'flowitec_lms')]
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
+client = AsyncIOMotorClient(os.environ['MONGO_URL'])
+db = client[os.environ['DB_NAME']]
 
-async def main():
+async def check():
     course = await db.courses.find_one(
-        {"title": {"$regex": "HR Analytics", "$options": "i"}},
-        {"_id": 0}
+        {'title': {'$regex': 'hr analytics', '$options': 'i'}},
+        {'_id': 0, 'id': 1, 'title': 1}
     )
-    print("Course:", course)
-    
-    modules = await db.modules.find({"course_id": course["id"]}, {"_id": 0}).to_list(100)
-    for m in modules:
-        print("\nModule:", m)
-        lessons = await db.lessons.find({"module_id": m["id"]}, {"_id": 0}).to_list(100)
-        for l in lessons:
-            print("  Lesson:", l)
+    print(f"Course: {course['title']}")
+    modules = await db.modules.find({'course_id': course['id']}).to_list(None)
+    module_ids = [m['id'] for m in modules]
+    lessons = await db.lessons.find({'module_id': {'$in': module_ids}}).sort('order', 1).to_list(None)
+    print(f"Total lessons: {len(lessons)}")
+    for l in lessons[:10]:
+        src = ''
+        if 'src=' in l['content']:
+            start = l['content'].find('src="') + 5
+            end = l['content'].find('"', start)
+            src = l['content'][start:end]
+        print(f"  order={l['order']} | {l['title']} | {src[-50:]}")
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(check())
