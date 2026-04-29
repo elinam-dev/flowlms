@@ -358,7 +358,7 @@ async def get_course(course_id: str, current_user: dict = Depends(get_current_us
     # Get modules with lessons
     modules = await db.modules.find({"course_id": course_id}, {"_id": 0}).sort("order", 1).to_list(100)
     for module in modules:
-        lessons = await db.lessons.find({"module_id": module["id"]}, {"_id": 0}).sort("order", 1).to_list(100)
+        lessons = await db.lessons.find({"module_id": module["id"]}, {"_id": 0}).sort("order", 1).to_list(None)
         module["lessons"] = lessons
         
         # Get quizzes for this module
