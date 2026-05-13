@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create a function to get the API URL dynamically
 const getApiUrl = () => {
-  let baseUrl = process.env.REACT_APP_BACKEND_URL || '';
+  let baseUrl = process.env.REACT_APP_BACKEND_URL || 'https://flowlms-backend.onrender.com';
   
   // Force HTTPS in production when accessed via HTTPS
   if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
