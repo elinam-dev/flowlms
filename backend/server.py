@@ -39,6 +39,15 @@ JWT_EXPIRATION_HOURS = 24
 # Create the main app
 app = FastAPI(title="Flowitec Go & Grow LMS")
 
+# CORS must be added before routers
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Create routers
 api_router = APIRouter(prefix="/api")
 auth_router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -1587,13 +1596,7 @@ async def serve_document(filename: str):
         }
     )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=[origin.strip() for origin in os.environ.get('CORS_ORIGINS', '*').split(',')],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# CORS already configured above
 
 # Configure logging
 logging.basicConfig(
