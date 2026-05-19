@@ -44,6 +44,9 @@ axios.interceptors.response.use(
 
 const API = getApiUrl();
 
+// Wake up Render backend on app load (free tier sleeps after inactivity)
+fetch(`${getApiUrl().replace('/api', '')}/api/auth/me`).catch(() => {});
+
 // Auth APIs
 export const authApi = {
   login: (data) => axios.post(`${API}/auth/login`, { identifier: data.identifier, password: data.password }),
