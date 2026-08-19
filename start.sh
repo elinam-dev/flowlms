@@ -18,4 +18,4 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR/backend"
 
 echo "▶️  Starting backend..."
-exec python -m uvicorn server:app --host 0.0.0.0 --port "${PORT:-8001}"
+exec python3 -m uvicorn server:app --host 0.0.0.0 --port "${PORT:-8001}"
