@@ -7,6 +7,7 @@ from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+import secrets
 from pathlib import Path
 from pydantic import BaseModel, Field, EmailStr, ConfigDict
 from typing import List, Optional, Any
@@ -32,7 +33,14 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # JWT Config
-JWT_SECRET = os.environ.get('JWT_SECRET', 'flowitec-lms-secret-key-2024')
+JWT_SECRET = os.environ.get('JWT_SECRET')
+if not JWT_SECRET:
+    # No hardcoded fallback: a known secret would let anyone forge admin
+    # tokens. Falling back to a random one still lets the app boot, at the
+    # cost of invalidating existing sessions on every restart until
+    # JWT_SECRET is set in the deployment environment.
+    JWT_SECRET = secrets.token_hex(32)
+    logging.warning("JWT_SECRET is not set - using a random secret for this process. Set JWT_SECRET in the environment to keep sessions valid across restarts.")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24
 
@@ -74,6 +82,9 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     identifier: str  # Can be email or employee ID
     password: str
+
+class PasswordResetRequest(BaseModel):
+    new_password: str
 
 class UserResponse(BaseModel):
     id: str
@@ -1088,8 +1099,22 @@ async def update_user_role(user_id: str, role: str, admin: dict = Depends(get_ad
     result = await db.users.update_one({"id": user_id}, {"$set": {"role": role}})
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="User not found")
-    
+
     return {"message": "Role updated"}
+
+@admin_router.post("/users/{user_id}/reset-password")
+async def reset_user_password(user_id: str, payload: PasswordResetRequest, admin: dict = Depends(get_admin_user)):
+    if len(payload.new_password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+
+    result = await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"password": hash_password(payload.new_password)}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return {"message": "Password reset successfully"}
 
 @admin_router.post("/courses")
 async def create_course(course: CourseCreate, admin: dict = Depends(get_admin_user)):
@@ -1612,47 +1637,31 @@ async def debug_lesson(lesson_id: str):
 
 @app.on_event("startup")
 async def startup():
-    # Create admin user if not exists
-    admin = await db.users.find_one({"email": "admin@flowitec.com"})
-    if not admin:
-        admin_doc = {
-            "id": str(uuid.uuid4()),
-            "email": "admin@flowitec.com",
-            "password": hash_password("admin123"),
-            "first_name": "Admin",
-            "last_name": "User",
-            "employee_id": "ADMIN-001",
-            "role": "admin",
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "enrolled_courses": [],
-            "completed_courses": [],
-            "certificates": []
-        }
-        await db.users.insert_one(admin_doc)
-        logger.info("Admin user created: admin@flowitec.com / admin123")
-    
-    # Create test learner user if not exists
-    learner = await db.users.find_one({"employee_id": "EMP-TEST-01"})
-    if not learner:
-        learner_doc = {
-            "id": str(uuid.uuid4()),
-            "email": "learner@test.com",
-            "password": hash_password("learner123"),
-            "first_name": "Test",
-            "last_name": "Learner",
-            "employee_id": "EMP-TEST-01",
-            "role": "learner",
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "enrolled_courses": [],
-            "completed_courses": [],
-            "certificates": [],
-            "check_ins": [],
-            "streak": 0,
-            "last_check_in": None
-        }
-        await db.users.insert_one(learner_doc)
-        logger.info("Test learner created: EMP-TEST-01 / learner123")
-    
+    # Bootstrap the first admin account, only if explicitly configured.
+    # No hardcoded credentials here: on a fresh database with no admins at
+    # all, set ADMIN_BOOTSTRAP_EMAIL and ADMIN_BOOTSTRAP_PASSWORD in the
+    # environment for one deploy to create the first admin, then unset them.
+    bootstrap_email = os.environ.get("ADMIN_BOOTSTRAP_EMAIL")
+    bootstrap_password = os.environ.get("ADMIN_BOOTSTRAP_PASSWORD")
+    if bootstrap_email and bootstrap_password:
+        existing_admin = await db.users.find_one({"email": bootstrap_email})
+        if not existing_admin:
+            admin_doc = {
+                "id": str(uuid.uuid4()),
+                "email": bootstrap_email,
+                "password": hash_password(bootstrap_password),
+                "first_name": "Admin",
+                "last_name": "User",
+                "employee_id": "ADMIN-001",
+                "role": "admin",
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "enrolled_courses": [],
+                "completed_courses": [],
+                "certificates": []
+            }
+            await db.users.insert_one(admin_doc)
+            logger.info(f"Admin user created from ADMIN_BOOTSTRAP_EMAIL: {bootstrap_email}")
+
     # Only seed courses if no courses exist
     existing_courses = await db.courses.count_documents({})
     if existing_courses == 0:
