@@ -26,15 +26,30 @@ export const CourseCard = ({
 
   // Get course thumbnail or fallback
   const getThumbnail = () => {
-    if (course.thumbnail) return course.thumbnail;
-    // Category-based fallback images
+    // A batch-seeding script once wrote this path into the database as a
+    // placeholder, but no such asset was ever added to the frontend.
+    const BROKEN_PLACEHOLDER = '/images/course-thumbnail.jpg';
+    if (course.thumbnail && course.thumbnail !== BROKEN_PLACEHOLDER) return course.thumbnail;
+
+    // Category-based fallback images (matched case-insensitively, since
+    // course categories aren't stored with consistent casing)
     const categoryImages = {
-      'International Trade': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
-      'Ethics': 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=225&fit=crop',
-      'HR Policy': 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=400&h=225&fit=crop',
-      'Safety': 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=225&fit=crop',
+      'hr': 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=400&h=225&fit=crop',
+      'hr policy': 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=400&h=225&fit=crop',
+      'finance': 'https://images.unsplash.com/photo-1758691736498-422201cc57da?w=400&h=225&fit=crop',
+      'sales': 'https://images.unsplash.com/photo-1758691736493-aa6d22c0f8a6?w=400&h=225&fit=crop',
+      'management': 'https://images.unsplash.com/photo-1758691736498-422201cc57da?w=400&h=225&fit=crop',
+      'personal branding': 'https://images.unsplash.com/photo-1758691736493-aa6d22c0f8a6?w=400&h=225&fit=crop',
+      'supply chain': 'https://images.unsplash.com/photo-1567641091594-71640a68f847?w=400&h=225&fit=crop',
+      'engineering': 'https://images.unsplash.com/photo-1753998943619-b9cd910887e5?w=400&h=225&fit=crop',
+      'international trade': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop',
+      'ethics': 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=225&fit=crop',
+      'health_safety': 'https://images.unsplash.com/photo-1655313719612-8248b2c4d1e7?w=400&h=225&fit=crop',
+      'safety': 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=225&fit=crop',
+      'french': 'https://images.unsplash.com/photo-1712732581664-7c8c1a4ab4b6?w=400&h=225&fit=crop',
     };
-    return categoryImages[course.category] || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=225&fit=crop';
+    const key = (course.category || '').toLowerCase();
+    return categoryImages[key] || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=225&fit=crop';
   };
 
   const handleEnrollClick = (e) => {
