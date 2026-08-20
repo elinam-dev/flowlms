@@ -118,7 +118,7 @@ export default function Login() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-[#095EB1] to-[#0EA5E9] hover:from-[#074A8C] hover:to-[#0284C7] h-12 text-base font-semibold shadow-lg shadow-[#095EB1]/25 transition-all hover:shadow-xl hover:shadow-[#095EB1]/30"
+                  className="w-full bg-gradient-to-r from-[#095EB1] to-[#0EA5E9] hover:from-[#074A8C] hover:to-[#0284C7] h-12 text-base font-semibold shadow-lg shadow-[#095EB1]/25 transition-shadow hover:shadow-xl hover:shadow-[#095EB1]/30"
                   disabled={loading}
                   data-testid="login-submit"
                 >

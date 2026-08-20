@@ -470,7 +470,7 @@ export default function CourseDetail() {
                 <button
                   key={page.id}
                   onClick={() => goToPage(index)}
-                  className={`w-3 h-3 rounded-full transition-all ${
+                  className={`w-3 h-3 rounded-full transition-[width,background-color] ${
                     index === currentPageIndex 
                       ? 'bg-[#095EB1] w-6' 
                       : isPageCompleted(page.id)

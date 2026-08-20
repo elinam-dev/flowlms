@@ -253,7 +253,7 @@ export default function Courses() {
                     className="relative rounded-2xl shadow-2xl w-full object-cover"
                   />
                   {/* Floating card */}
-                  <Link to="/dashboard" className="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-xl p-4 animate-fade-up stagger-3 hover:shadow-2xl hover:-translate-y-1 transition-all duration-200 cursor-pointer group block">
+                  <Link to="/dashboard" className="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-xl p-4 animate-fade-up stagger-3 hover:shadow-2xl hover:-translate-y-1 transition-[transform,box-shadow] duration-200 cursor-pointer group block">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
                         <TrendingUp className="w-6 h-6 text-emerald-600" />
@@ -266,7 +266,7 @@ export default function Courses() {
                         <p className="text-xs text-slate-500">{completedCount} of {enrolledCourses.length} completed</p>
                         <div className="mt-1.5 w-32 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                            className="h-full bg-emerald-500 rounded-full transition-[width] duration-500"
                             style={{ width: enrolledCourses.length ? `${Math.round((completedCount / enrolledCourses.length) * 100)}%` : '0%' }}
                           />
                         </div>
@@ -287,14 +287,14 @@ export default function Courses() {
                 <TabsList className="bg-transparent h-auto p-0 gap-1">
                   <TabsTrigger 
                     value="all" 
-                    className="px-4 py-2.5 rounded-full data-[state=active]:bg-[#095EB1] data-[state=active]:text-white data-[state=active]:shadow-md font-medium transition-all"
+                    className="px-4 py-2.5 rounded-full data-[state=active]:bg-[#095EB1] data-[state=active]:text-white data-[state=active]:shadow-md font-medium transition-[background-color,color,box-shadow]"
                     data-testid="tab-all"
                   >
                     All Courses
                   </TabsTrigger>
                   <TabsTrigger 
                     value="optional" 
-                    className="px-4 py-2.5 rounded-full data-[state=active]:bg-[#095EB1] data-[state=active]:text-white data-[state=active]:shadow-md font-medium transition-all"
+                    className="px-4 py-2.5 rounded-full data-[state=active]:bg-[#095EB1] data-[state=active]:text-white data-[state=active]:shadow-md font-medium transition-[background-color,color,box-shadow]"
                     data-testid="tab-optional"
                   >
                     <BookOpen className="w-4 h-4 mr-1.5" />
@@ -302,7 +302,7 @@ export default function Courses() {
                   </TabsTrigger>
                   <TabsTrigger 
                     value="enrolled" 
-                    className="px-4 py-2.5 rounded-full data-[state=active]:bg-[#095EB1] data-[state=active]:text-white data-[state=active]:shadow-md font-medium transition-all"
+                    className="px-4 py-2.5 rounded-full data-[state=active]:bg-[#095EB1] data-[state=active]:text-white data-[state=active]:shadow-md font-medium transition-[background-color,color,box-shadow]"
                     data-testid="tab-enrolled"
                   >
                     <Award className="w-4 h-4 mr-1.5" />

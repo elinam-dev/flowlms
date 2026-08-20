@@ -204,7 +204,7 @@ export default function Analytics() {
                 {analytics?.completion_trend?.map((data, index) => (
                   <div key={index} className="flex flex-col items-center flex-1">
                     <div 
-                      className="w-full bg-gradient-to-t from-[#095EB1] to-[#0EA5E9] rounded-t-lg transition-all hover:from-[#0EA5E9] hover:to-[#095EB1]"
+                      className="w-full bg-gradient-to-t from-[#095EB1] to-[#0EA5E9] rounded-t-lg transition-[height] hover:from-[#0EA5E9] hover:to-[#095EB1]"
                       style={{ height: `${(data.completions / maxCompletions) * 100}%`, minHeight: '20px' }}
                     />
                     <span className="text-xs text-slate-500 mt-2">{data.month}</span>
@@ -237,7 +237,7 @@ export default function Analytics() {
                       </div>
                       <div className="w-full bg-slate-100 rounded-full h-3">
                         <div 
-                          className={`${colors[index % colors.length]} h-3 rounded-full transition-all`}
+                          className={`${colors[index % colors.length]} h-3 rounded-full transition-[width]`}
                           style={{ width: `${percentage}%` }}
                         />
                       </div>

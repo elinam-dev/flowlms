@@ -257,7 +257,7 @@ export default function LearnerDashboard() {
                         return (
                           <div 
                             key={date} 
-                            className={`w-12 h-14 rounded-xl flex flex-col items-center justify-center text-xs transition-all ${
+                            className={`w-12 h-14 rounded-xl flex flex-col items-center justify-center text-xs transition-colors ${
                               isCheckedIn 
                                 ? 'bg-gradient-to-br from-orange-400 to-red-500 text-white shadow-lg shadow-orange-200' 
                                 : isToday 

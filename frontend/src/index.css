@@ -111,7 +111,7 @@
   }
   
   .progress-fill {
-    @apply h-full bg-[#095EB1] rounded-full transition-all duration-500;
+    @apply h-full bg-[#095EB1] rounded-full transition-[width] duration-500;
   }
   
   .bento-grid {

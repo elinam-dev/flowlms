@@ -60,7 +60,7 @@ export const CourseCard = ({
 
   return (
     <div 
-      className="group relative bg-white rounded-xl border border-slate-200 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-200/50 h-full flex flex-col"
+      className="group relative bg-white rounded-xl border border-slate-200 overflow-hidden transition-[transform,box-shadow] duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-200/50 h-full flex flex-col"
       data-testid={`course-card-${course.id}`}
     >
       {/* Image Container */}
@@ -98,7 +98,7 @@ export const CourseCard = ({
 
         {/* Hover Overlay with Actions */}
         {showActions && (
-          <div className="absolute inset-0 flex items-end justify-center p-4 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
+          <div className="absolute inset-0 flex items-end justify-center p-4 opacity-0 group-hover:opacity-100 transition-[opacity,transform] duration-300 translate-y-4 group-hover:translate-y-0">
             <div className="flex gap-2 w-full">
               <Link 
                 to={`/courses/${course.id}`}

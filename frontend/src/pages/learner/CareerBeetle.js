@@ -223,7 +223,7 @@ export default function CareerBeetle() {
                             <Collapsible open={isExpanded} onOpenChange={() => toggleRole(role.id)}>
                               <CollapsibleTrigger asChild>
                                 <Card 
-                                  className={`cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1 border-slate-200 ${
+                                  className={`cursor-pointer transition-[transform,box-shadow] hover:shadow-lg hover:-translate-y-1 border-slate-200 ${
                                     isExpanded ? 'ring-2 ring-[#095EB1] shadow-lg' : ''
                                   }`}
                                   data-testid={`role-card-${role.id}`}
