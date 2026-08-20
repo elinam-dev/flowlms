@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Layout } from '../../components/layout/Layout';
 import { useAuth } from '../../context/AuthContext';
@@ -647,9 +648,20 @@ export default function CourseDetail() {
 
               {/* Page Content */}
               <div className="p-8 bg-white">
-                <div 
+                <div
                   className="lesson-content"
-                  dangerouslySetInnerHTML={{ __html: currentPage.content }}
+                  dangerouslySetInnerHTML={{
+                    // Lesson content is admin-authored HTML (slides, embeds),
+                    // not sanitized on the way in, so it must be sanitized on
+                    // the way out. iframe is explicitly allowed on top of
+                    // DOMPurify's defaults since embed-type lessons rely on
+                    // it (e.g. video/presentation embeds); scripts, inline
+                    // event handlers, and javascript: URLs are still stripped.
+                    __html: DOMPurify.sanitize(currentPage.content, {
+                      ADD_TAGS: ['iframe'],
+                      ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'target'],
+                    }),
+                  }}
                 />
               </div>
 

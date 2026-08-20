@@ -49,10 +49,23 @@ JWT_EXPIRATION_HOURS = 24
 # Create the main app
 app = FastAPI(title="Flowitec Go & Grow LMS")
 
-# CORS must be added before routers
+# CORS must be added before routers.
+# Origins are configurable via CORS_ORIGINS (comma-separated) so the allowed
+# list can change without a code deploy; falls back to the known production
+# and local-dev origins. Vercel preview deployments get their own subdomain
+# per build, so those are matched by pattern instead of listed individually.
+_cors_origins_env = os.environ.get("CORS_ORIGINS", "")
+_default_cors_origins = [
+    "https://flowitecgoandgrow.com",
+    "https://www.flowitecgoandgrow.com",
+    "http://localhost:3000",
+]
+CORS_ORIGINS = [o.strip() for o in _cors_origins_env.split(",") if o.strip()] or _default_cors_origins
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=CORS_ORIGINS,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -1443,8 +1456,10 @@ async def upload_image(
 @upload_router.get("/view/{filename}")
 async def view_document(filename: str):
     """View document inline - converts DOCX to HTML, serves PDF as-is"""
-    file_path = ROOT_DIR / "uploads" / "documents" / filename
-    
+    # Path(...).name strips any directory components (e.g. "../../.env"),
+    # so this can only ever resolve to a file directly inside documents/.
+    file_path = ROOT_DIR / "uploads" / "documents" / Path(filename).name
+
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Document not found")
     
@@ -1625,8 +1640,8 @@ if UPLOADS_DIR.exists():
 @app.get("/api/documents/{filename}")
 async def serve_document(filename: str):
     """Serve documents directly"""
-    file_path = ROOT_DIR / "uploads" / "documents" / filename
-    
+    file_path = ROOT_DIR / "uploads" / "documents" / Path(filename).name
+
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Document not found")
     
@@ -1661,11 +1676,6 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-
-@app.get("/debug/lesson/{lesson_id}")
-async def debug_lesson(lesson_id: str):
-    lesson = await db.lessons.find_one({"id": lesson_id}, {"_id": 0})
-    return {"found": lesson is not None, "lesson": lesson}
 
 @app.on_event("startup")
 async def startup():
