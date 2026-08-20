@@ -8,6 +8,8 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 import secrets
+import time
+from collections import defaultdict
 from pathlib import Path
 from pydantic import BaseModel, Field, EmailStr, ConfigDict
 from typing import List, Optional, Any
@@ -200,6 +202,24 @@ async def get_admin_user(current_user: dict = Depends(get_current_user)):
 
 # ======================= AUTH ROUTES =======================
 
+# Simple in-memory brute-force guard, keyed by login identifier. Resets on
+# restart and doesn't share state across instances, but Railway runs a
+# single instance here, and this is enough to stop unlimited password
+# guessing against one account.
+_login_attempts: dict[str, list[float]] = defaultdict(list)
+LOGIN_MAX_ATTEMPTS = 5
+LOGIN_WINDOW_SECONDS = 300
+
+def _check_login_rate_limit(identifier: str):
+    now = time.time()
+    attempts = _login_attempts[identifier]
+    attempts[:] = [t for t in attempts if now - t < LOGIN_WINDOW_SECONDS]
+    if len(attempts) >= LOGIN_MAX_ATTEMPTS:
+        raise HTTPException(
+            status_code=429,
+            detail="Too many login attempts. Try again in a few minutes."
+        )
+
 @auth_router.post("/register", response_model=TokenResponse)
 async def register(user_data: UserCreate):
     # Registration is disabled - only admin can create users
@@ -207,6 +227,8 @@ async def register(user_data: UserCreate):
 
 @auth_router.post("/login", response_model=TokenResponse)
 async def login(credentials: UserLogin):
+    _check_login_rate_limit(credentials.identifier)
+
     # Find user by email or employee ID
     user = await db.users.find_one({
         "$or": [
@@ -214,10 +236,13 @@ async def login(credentials: UserLogin):
             {"employee_id": credentials.identifier}
         ]
     })
-    
+
     if not user or not verify_password(credentials.password, user["password"]):
+        _login_attempts[credentials.identifier].append(time.time())
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    
+
+    _login_attempts.pop(credentials.identifier, None)
+
     # Create token
     token = create_token(user["id"], user["role"])
     
@@ -383,6 +408,13 @@ async def get_course(course_id: str, current_user: dict = Depends(get_current_us
         
         # Get quizzes for this module
         quizzes = await db.quizzes.find({"module_id": module["id"]}, {"_id": 0}).to_list(10)
+        if current_user.get("role") != "admin":
+            # Strip answer keys - learners take quizzes through
+            # /api/quizzes/{id}, which already does this correctly; this
+            # endpoint was leaking correct_answer to anyone viewing a course.
+            for quiz in quizzes:
+                for question in quiz.get("questions", []):
+                    question.pop("correct_answer", None)
         module["quizzes"] = quizzes
     
     course["modules"] = modules
